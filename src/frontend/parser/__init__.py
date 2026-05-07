@@ -5,9 +5,9 @@ from .return_parser import ParseReturnStmt
 from .parser import Parser
 
 __all__ = [
-	"Parser",
-	"ParseExpression",
-	"ParseFunctionDef",
-	"ParseIfStatement",
-	"ParseReturnStmt",
+    "Parser",
+    "ParseExpression",
+    "ParseFunctionDef",
+    "ParseIfStatement",
+    "ParseReturnStmt",
 ]

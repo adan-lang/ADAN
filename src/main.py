@@ -4,6 +4,9 @@ import os
 from frontend.scanner.scanner import Scanner, Scan
 from frontend.parser.parser import Parser
 from frontend.semantic.analyzer import SemanticAnalyzer
+from middlend.ir.lowering import Lowering
+from middlend.ir.serialize import Encode
+from middlend.opt.pass_manager import PassManager
 
 VERSION = "0.1.0"
 
@@ -46,7 +49,9 @@ def CompileFile(FilePath: str, OutputPath: str, Silent: bool) -> bool:
     LexErrors = [T for T in Tokens if T.TokType.name == "TOKEN_ERROR"]
     if LexErrors:
         for T in LexErrors:
-            print(f"  Lexer error at line {T.Line}, column {T.Column}: unexpected '{T.Lexeme}'")
+            print(
+                f"  Lexer error at line {T.Line}, column {T.Column}: unexpected '{T.Lexeme}'"
+            )
         return False
 
     State = Parser(Tokens)
@@ -63,6 +68,10 @@ def CompileFile(FilePath: str, OutputPath: str, Silent: bool) -> bool:
             print(f"  Semantic error: {E}")
         return False
 
+    IRMod = Lowering().Lower(Nodes)
+    IRMod = PassManager.Full().Run(IRMod)
+    IRJson = Encode(IRMod)
+
     if OutputPath is None:
         Base = os.path.splitext(FilePath)[0]
         OutputPath = Base + ".out"
@@ -71,7 +80,7 @@ def CompileFile(FilePath: str, OutputPath: str, Silent: bool) -> bool:
         OutputPath = os.path.join(OutputPath, Base + ".out")
 
     with open(OutputPath, "w") as F:
-        F.write("")
+        F.write(IRJson)
 
     if not Silent:
         print(f"  Output: {OutputPath}")

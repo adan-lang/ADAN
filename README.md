@@ -9,3 +9,6 @@
 <h3 align="left">
  <i>Simplify low level programming</i>.
 </h3>
+
+> [!WARNING]
+> This project currently only supports the Linux operating system. Support for Windows and macOS is coming shortly after base compilation is finished.
