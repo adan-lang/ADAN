@@ -1,4 +1,7 @@
-from .parser import Parser
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .parser import Parser
 from .expression_parser import ParseExpression
 from frontend.ast.statements import IfStmt
 

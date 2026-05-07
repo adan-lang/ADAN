@@ -3,8 +3,9 @@ from typing import List
 from frontend.scanner.tokens import Token, TokenType
 from .function_parser import ParseFunctionDef
 from .if_parser import ParseIfStatement
+from .return_parser import ParseReturnStmt
 from .expression_parser import ParseExpression
-from frontend.ast.statements import AssignmentStmt, ExpressionStmt
+from frontend.ast.statements import AssignmentStmt, ExpressionStmt, PassStmt, ReturnStmt
 
 class Parser():
 	def __init__(self, Tokens: List[Token]):
@@ -22,6 +23,11 @@ class Parser():
 				Node = ParseFunctionDef(self)
 			elif Tok.TokType == TokenType.TOKEN_IF:
 				Node = ParseIfStatement(self)
+			elif Tok.TokType == TokenType.TOKEN_RETURN:
+				Node = ParseReturnStmt(self)
+			elif Tok.TokType == TokenType.TOKEN_PASS:
+				self.Advance()
+				Node = PassStmt()
 			elif Tok.TokType == TokenType.TOKEN_IDENTIFIER and self.Current + 1 < len(self.Tokens) and self.Tokens[self.Current + 1].TokType == TokenType.TOKEN_EQUAL:
 				Name = self.Advance()
 				self.Advance()

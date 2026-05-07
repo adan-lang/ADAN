@@ -23,6 +23,7 @@ class TokenType(Enum):
     TOKEN_IF = auto()
     TOKEN_ELSE = auto()
     TOKEN_RETURN = auto()
+    TOKEN_PASS = auto()
     TOKEN_TRUE = auto()
     TOKEN_FALSE = auto()
     TOKEN_NONE = auto()

@@ -1,4 +1,7 @@
-from .parser import Parser
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .parser import Parser
 from .expression_parser import ParseExpression
 from frontend.ast.statements import FunctionDefStmt
 
@@ -95,25 +98,30 @@ def ParseFunctionDef(State: Parser):
 		raise ValueError(f"{Message} at line {Token.Line}, column {Token.Column}: got '{Token.Lexeme}'")
 	State.Advance()
 
+	NeedsReturn = len(ReturnTypes) > 0 and not (
+		len(ReturnTypes) == 1 and ReturnTypes[0].Lexeme in {"none", "nil"}
+	)
+
 	Body = []
 	while not State.IsAtEnd() and State.Peek().Lexeme != "return":
 		Body.append(State.Advance())
 
-	if State.IsAtEnd() or State.Peek().Lexeme != "return":
+	ReturnExpr = None
+	if not State.IsAtEnd() and State.Peek().Lexeme == "return":
+		State.Advance()
+		ReturnExpr = ParseExpression(State)
+		if not ReturnExpr:
+			if State.IsAtEnd():
+				raise ValueError("Expected expression after 'return' at EOF")
+			ReturnExpr = []
+			while not State.IsAtEnd():
+				ReturnExpr.append(State.Advance())
+	elif NeedsReturn:
 		Token = State.Peek() if not State.IsAtEnd() else None
 		Message = "Expected 'return' in function body"
 		if Token is None:
 			raise ValueError(f"{Message} at EOF")
 		raise ValueError(f"{Message} at line {Token.Line}, column {Token.Column}: got '{Token.Lexeme}'")
-	State.Advance()
-
-	ReturnExpr = ParseExpression(State)
-	if not ReturnExpr:
-		if State.IsAtEnd():
-			raise ValueError("Expected expression after 'return' at EOF")
-		ReturnExpr = []
-		while not State.IsAtEnd():
-			ReturnExpr.append(State.Advance())
 
 	Node = FunctionDefStmt()
 	Node.Name = NameToken

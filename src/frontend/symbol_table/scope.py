@@ -9,7 +9,11 @@ class Scope():
 		self.Symbols: Dict[str, Symbol] = {}
 
 	def Define(self, Entry: Symbol) -> None:
-		pass
+		self.Symbols[Entry.Name] = Entry
 
 	def Resolve(self, Name: str):
-		pass
+		if Name in self.Symbols:
+			return self.Symbols[Name]
+		if self.Parent:
+			return self.Parent.Resolve(Name)
+		return None

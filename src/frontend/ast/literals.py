@@ -2,20 +2,25 @@ from .base import Expression
 
 
 class NumberLiteral(Expression):
-	pass
+	def __init__(self, Value=None):
+		self.Value = Value
 
 
 class StringLiteral(Expression):
-	pass
+	def __init__(self, Value=None):
+		self.Value = Value
 
 
 class BoolLiteral(Expression):
-	pass
+	def __init__(self, Value=None):
+		self.Value = Value
 
 
 class NoneLiteral(Expression):
-	pass
+	def __init__(self):
+		self.Value = None
 
 
 class NilLiteral(Expression):
-	pass
+	def __init__(self):
+		self.Value = None

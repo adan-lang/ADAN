@@ -68,6 +68,7 @@ def TokenFromLexeme(Lexeme: str) -> TokenType:
         "if": TokenType.TOKEN_IF,
         "else": TokenType.TOKEN_ELSE,
         "return": TokenType.TOKEN_RETURN,
+        "pass": TokenType.TOKEN_PASS,
         "true": TokenType.TOKEN_TRUE,
         "false": TokenType.TOKEN_FALSE,
         "none": TokenType.TOKEN_NONE,

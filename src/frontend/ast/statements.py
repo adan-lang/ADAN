@@ -2,20 +2,38 @@ from .base import Statement
 
 
 class AssignmentStmt(Statement):
-	pass
+	def __init__(self):
+		self.Name = None
+		self.Value = None
 
 
 class FunctionDefStmt(Statement):
-	pass
+	def __init__(self):
+		self.Name = None
+		self.Parameters = []
+		self.ReturnTypes = []
+		self.Body = []
+		self.ReturnExpr = None
+		self.InferredReturnType = None
 
 
 class IfStmt(Statement):
-	pass
+	def __init__(self):
+		self.Condition = None
+		self.ThenBranch = []
+		self.ElseBranch = None
 
 
 class ReturnStmt(Statement):
-	pass
+	def __init__(self):
+		self.Expression = None
 
 
 class ExpressionStmt(Statement):
-	pass
+	def __init__(self):
+		self.Expression = None
+
+
+class PassStmt(Statement):
+	def __init__(self):
+		pass

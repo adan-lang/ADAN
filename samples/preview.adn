@@ -1,3 +1,18 @@
-define main():
-    -- "Hello, world"
-    pass
+-- ADAN Preview File
+--[[
+
+    Designed to show all of the features ADAN supports,
+        updated over time to show the latest stuff!
+
+     https://github.com/transicle/ADAN/
+     https://adan.sh/
+
+    Updated on May 7th, 2026
+
+]]
+
+language = "ADAN"
+return_value = ""
+
+function new_return_value(value: string): -- Auto assumes return type based on given `return`.
+    return_value = value

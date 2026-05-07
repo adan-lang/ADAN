@@ -8,13 +8,14 @@ class SymbolTable():
 		self.CurrentScope = self.GlobalScope
 
 	def EnterScope(self) -> None:
-		pass
+		self.CurrentScope = Scope(self.CurrentScope)
 
 	def ExitScope(self) -> None:
-		pass
+		if self.CurrentScope.Parent:
+			self.CurrentScope = self.CurrentScope.Parent
 
 	def Define(self, Entry: Symbol) -> None:
-		pass
+		self.CurrentScope.Define(Entry)
 
 	def Resolve(self, Name: str):
-		pass
+		return self.CurrentScope.Resolve(Name)

@@ -3,3 +3,5 @@ class Symbol():
 		self.Name = Name
 		self.SymbolType = SymbolType
 		self.Value = Value
+		self.Line = None
+		self.Column = None
