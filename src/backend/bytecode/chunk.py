@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from .instr import Instr
 
+
 @dataclass
 class Chunk:
     Name: str
@@ -11,11 +12,11 @@ class Chunk:
     def EmitConst(self, val) -> int:
         self.Consts.append(val)
         return len(self.Consts) - 1
-    
+
     def EmitLocal(self, name: str) -> int:
         if name not in self.Locals:
             self.Locals.append(name)
         return self.Locals.index(name)
-    
+
     def Emit(self, instr: Instr):
         self.Instrs.append(instr)
