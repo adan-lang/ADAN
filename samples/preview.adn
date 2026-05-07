@@ -1,18 +1,31 @@
--- ADAN Preview File
 --[[
-
-    Designed to show all of the features ADAN supports,
-        updated over time to show the latest stuff!
-
-     https://github.com/transicle/ADAN/
-     https://adan.sh/
-
-    Updated on May 7th, 2026
-
+    ADAN Preview File
+    https://github.com/transicle/ADAN/
 ]]
 
-language = "ADAN"
-return_value = ""
+-- Variables
+name  = "ADAN"
+count = 42
+flag  = true
 
-function new_return_value(value: string): -- Auto assumes return type based on given `return`.
-    return_value = value
+-- Interpolation
+message = `Hello, {name}!`
+
+-- Functions
+function add(a: number, b: number) -> number:
+    return a + b
+
+function greet(user: string) -> string:
+    return `Hey, {user}!`
+
+-- If / else
+function sign(n: number) -> string:
+    if n > 0:
+        return "positive"
+    else:
+        return "negative"
+
+-- Calls
+result  = add(10, 32)
+greeted = greet(name)
+label   = sign(-5)

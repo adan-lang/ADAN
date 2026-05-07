@@ -13,6 +13,42 @@
 > [!WARNING]
 > This project currently only supports the Linux operating system. Support for Windows and macOS is coming shortly after base compilation is finished.
 
+## Preview
+
+```adan
+--[[
+    ADAN Preview File
+    https://github.com/transicle/ADAN/
+]]
+
+-- Variables
+name  = "ADAN"
+count = 42
+flag  = true
+
+-- Interpolation
+message = `Hello, {name}!`
+
+-- Functions
+function add(a: number, b: number): -- Compiler assumes type: number
+    return a + b
+
+function greet(user: string) -> string:
+    return `Hey, {user}!`
+
+-- If / else
+function sign(n: number) -> string:
+    if n > 0:
+        return "positive"
+    else:
+        return "negative"
+
+-- Calls
+result  = add(10, 32)
+greeted = greet(name)
+label   = sign(-5)
+```
+
 ## How It's Built
 
 - **Scanner**: Tokenizes raw `.adn` source into structured symbols  
