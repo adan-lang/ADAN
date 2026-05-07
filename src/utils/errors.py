@@ -28,8 +28,37 @@ class FrontendError(ADANError):
 
 
 class LexerError(FrontendError):
-	pass
+	def __init__(self,
+				 Message: str = "Lexer error",
+				 Line: int = None,
+				 Column: int = None,
+				 Position: int = None):
+		super().__init__(Message, Line, Column, Position)
 
+	@staticmethod
+	def FormatCharacter(Character: str) -> str:
+		if Character is None:
+			return "EOF"
+
+		EscapeMap = {
+			"\n": "\\n",
+			"\r": "\\r",
+			"\t": "\\t",
+			"\0": "\\0",
+		}
+
+		return EscapeMap.get(Character, Character)
+
+	@classmethod
+	def FromCharacter(cls,
+					  Prefix: str,
+					  Character: str,
+					  Line: int,
+					  Column: int,
+					  Position: int):
+		DisplayChar = cls.FormatCharacter(Character)
+		Message = f"{Prefix}: '{DisplayChar}'"
+		return cls(Message, Line, Column, Position)
 
 class UnexpectedCharacterError(LexerError):
 	def __init__(self,
@@ -38,12 +67,6 @@ class UnexpectedCharacterError(LexerError):
 				 Column: int,
 				 Position: int):
 		self.Character = Character
-		DisplayChar = Character
-
-		if Character == "\n":
-			DisplayChar = "\\n"
-		elif Character == "\t":
-			DisplayChar = "\\t"
-
+		DisplayChar = self.FormatCharacter(Character)
 		Message = f"Unexpected character: '{DisplayChar}'"
 		super().__init__(Message, Line, Column, Position)
