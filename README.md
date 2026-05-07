@@ -16,11 +16,6 @@
 ## Preview
 
 ```adan
---[[
-    ADAN Preview File
-    https://github.com/transicle/ADAN/
-]]
-
 -- Variables
 name  = "ADAN"
 count = 42
