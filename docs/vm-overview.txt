@@ -1,0 +1,50 @@
+ADAN is a compiled programming language, we are required to choose between compiling down
+ to machine instructions, such as x86_64 or ARM64 assembly, or compiling into a set of
+ bytecode instructions for a custom VM to process and handle accordingly, essentially
+ eliminating the barrier to the assembly situation we otherwise could have.
+
+0. What does the compiler pipeline look like?
+
+The compiler is built upon various stages and substages, those being:
+    
+    - Lexical Analysis:                The process of turning human-readable source code
+                                         into a stream, or array of tokens, making future
+                                         analysis easier.
+
+    - Parsing:                         Handling the token stream provided by the scanner and transforming that
+                                         into the raw AST, providing an easily transformable visual representation
+                                         on the code. Storing identifiers into a symbol table, tracking the scope
+                                         and variable names, to be used later.
+
+    - Semantic Analysis:               Matches and verifies that types match how they're being used,
+                                         identifies variables and validates scopes based on the filled
+                                         out symbol table.
+
+    - Intermediate Representation:     An assembly-like intermediate language creating a
+                                         bridge between the frontend and backend of the
+                                         compiler. Transforms and optimizes the AST to make
+                                         your code more efficient.
+
+    - IR Lowering:                     Translates the optimized IR into a flat, stack-based bytecode format,
+                                         converting the block based IR instructions (like BINARY, CALL, RET) into a
+                                         linear sequence of simpler opcodes that a stack machine can execute one at
+                                         a time.
+
+    - Bytecode Verification:           Runs a correctness pass over the bytecode before execution. It
+                                         validates that control flow is sane, the operand stack won't
+                                         underflow/overflow, and the bytecode is structurally sound. It
+                                         catches bugs in the compiler itself before it causes silent VM
+                                         crashes.
+
+    - Virtual Machine:                 Everything runs in this section, the VM is a frame-based interpreter loop that fetches,
+                                         decodes, and dispatches bytecode instructions at runtime. It maintaines an operand stack
+                                         for intermediate values, call frames for function calls and local variables, and a
+                                         program counter stepping through bytecode.
+
+1. What kind of machine am I building?
+
+2. How does code move throughout the compiler?
+
+3. How does the VM execute programs?
+
+4. What are the major subsystems?
