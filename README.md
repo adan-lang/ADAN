@@ -7,11 +7,11 @@
 </div>
 
 <h3 align="left">
- <i>Simplify low level programming</i>.
+ <i>Simplify programming for everyone</i>.
 </h3>
 
 > [!WARNING]
-> This project currently only supports the Linux operating system. Support for Windows and macOS is coming shortly after base compilation is finished.
+> This project currently only supports operating systems using the Linux kernel. Support for Windows and macOS is coming shortly after base compilation is finished.
 
 ## Preview
 
