@@ -5,9 +5,6 @@
 #include <vector>
 #include "../../middlend/ir/common.hpp"
 
-// Forward declaration
-class Emitter;
-
 class Reader {
 public:
     // Dispatch on IRVal kind: 'C' = Const, 'T' = Temp, 'V' = Var
@@ -16,13 +13,11 @@ public:
     // Dispatch on IRInstr opcode for expression-producing instructions
     static IRVal ReadInstr(const IRInstr& instr, Emitter& emitter);
 
-    // Read a list of IR values (e.g. call arguments)
     static std::vector<IRVal> ReadValues(
         const std::vector<IRVal>& vals,
         Emitter& emitter
     );
 
-    // Infer IRType string from a literal IRVal
     static std::string InferLiteralType(const IRVal& val);
 
 private:

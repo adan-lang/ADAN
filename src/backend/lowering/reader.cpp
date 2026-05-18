@@ -41,8 +41,17 @@ std::string Reader::InferLiteralType(const IRVal& val) {
 }
 
 IRVal Reader::ReadConst(const IRVal& val, Emitter& emitter) {
-    // TODO: Emit a CONST instruction via emitter
-    return val;
+    if (val.kind != 'C') {
+        throw std::runtime_error(
+            "ReadConst called with non-const IRVal (kind: " + std::string(1, val.kind) + ")"
+        );
+    }
+
+    IRVal c = val;
+    if (c.type.empty() || c.type == "UNKNOWN") {
+        c.type = InferLiteralType(c);
+    }
+    return emitter.EmitConst(c);
 }
 
 IRVal Reader::ReadLoad(const IRVal& val, Emitter& emitter) {
