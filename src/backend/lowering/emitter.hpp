@@ -16,7 +16,7 @@ public:
   IRVal EmitInterp(const std::vector<IRVal> &parts);
 
 private:
-  ` int _next_temp = 0;
+  int _next_temp = 0;
 
   IRVal MakeTemp(const std::string &type);
 };
