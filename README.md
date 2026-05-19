@@ -1,7 +1,7 @@
 ## Live Progress
 
 View the progress of the ADAN programming language live on my YouTube channel **:3**
-- [youtube.com/@transicle](https://www.youtube.com/@transicle/)
+- [youtube.com/@transicle/streams](https://www.youtube.com/@transicle/streams)
 
 ## Learn It
 
