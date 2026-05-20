@@ -1,6 +1,6 @@
 Declaring a function in ADAN will be like the following:
 
-```adn
+```adan
 func example(): <type>? {
 
 }
