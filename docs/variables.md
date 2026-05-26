@@ -16,7 +16,7 @@ a = 2;
 readonly var c: <type>? = 1;
 ```
 
-- `<type>?` Refers to an *optional* type, if no type is provided, one will be inferred by the function's result.
+- `<type>?` Refers to an *optional* type, if no type is provided, one will be inferred by the variable's result.
 - - If no type is provided, `: <type>?` can be fully omitted.
 
 Unlike *most modern languages* (**i.e.** JavaScript, Python, etc.), variables are capable of starting with integers.
