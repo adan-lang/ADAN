@@ -16,4 +16,6 @@ This will not error. :)
 This will error! :(
 ```
 
-When using language servers (LSPs), a *very quick* and useful shortcut for writing a single-lined comment is `CTRL + /`, similarly goes for multi-lined comments being `CTRL + //` (Press `/` 2x)
+When using language servers (LSPs), a *very quick* and useful shortcut for writing a single-lined comment is `CTRL + /`.
+
+- Similarly goes for multi-lined comments being `CTRL + //` (Press `/` 2x)
