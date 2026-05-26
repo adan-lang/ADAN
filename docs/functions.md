@@ -1,3 +1,5 @@
+## Creating a Block of Code
+
 Declaring a function in ADAN will be like the following:
 
 ```adan

@@ -1,3 +1,5 @@
+## Basic Variable Rules
+
 You can declare a variable in ADAN using the `var` keyword. Variables are both *mutable by default* and *infer* (assume) *the type* at runtime.
 
 - Optionally, a type can be provided if it would not be explicitly known at compile time (**i.e.** sending HTTP requests and saving the response)
@@ -25,6 +27,8 @@ var 18thVariable = 18;
 
 ---
 
+## Global Variables
+
 And finally, a nice feature ADAN introduces are *global variables*.
 
 - Using the `global` keyword before `var`/`readonly` allows that variable to be used anywhere after it's defined!
@@ -43,6 +47,8 @@ func sampleScope() {
 > When assigning a global variable a new value, it must also be given the `global` tag.
 
 ---
+
+## Conclusion
 
 In conclusion, here are all of the various ways variables may be defined:
 

@@ -1,3 +1,5 @@
+## Documenting Code
+
 Writing comments in ADAN is very similar to beginner friendly languages, such as Python.
 
 Single-lined comments are able to be used with the `#` syntax. Though, unlike Python, multi-lined comments can be written using `##`, as seen in the example below:
