@@ -23,6 +23,8 @@ Unlike *most modern languages* (**i.e.** JavaScript, Python, etc.), variables ar
 var 18thVariable = 18;
 ```
 
+---
+
 And finally, a nice feature ADAN introduces are *global variables*.
 
 - Using the `global` keyword before `var`/`readonly` allows that variable to be used anywhere after it's defined!
@@ -39,6 +41,8 @@ func sampleScope() {
 
 > [!NOTE]
 > When assigning a global variable a new value, it must also be given the `global` tag.
+
+---
 
 In conclusion, here are all of the various ways variables may be defined:
 
