@@ -20,10 +20,15 @@ var b = 2;
 
 // This will always evaluate to true.
 if a {
-    
     // This will always evaluate to false.
     if (a == b) {
         
+    }
+
+    // NOW, this will always evaluate to true.
+    a = 2
+    if a == b {
+
     }
 }
 ```
