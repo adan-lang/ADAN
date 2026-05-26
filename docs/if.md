@@ -18,15 +18,16 @@ Expressions in ADAN follow the [order of operations](https://en.wikipedia.org/wi
 var a = 1;
 var b = 2;
 
-// This will always evaluate to true.
+# This'll always be true.
 if a {
-    // This will always evaluate to false.
+
+    # This'll always be false.
     if (a == b) {
         
     }
 
-    // NOW, this will always evaluate to true.
-    a = 2
+    # This'll now be true.
+    a = 2;
     if a == b {
 
     }
