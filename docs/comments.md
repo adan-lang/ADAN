@@ -10,7 +10,9 @@ This is a multi-lined comment,
   anything before the final ## will be
   excluded at compilation.
 
-This will not error. :)
+That means, you can have as MANY #'s as you'd like!
+
+- The only ones that matter are the very start ones, and the very end ones :)
 ##
 
 This will error! :(
