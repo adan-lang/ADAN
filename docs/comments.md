@@ -19,7 +19,3 @@ That means, you can have as MANY #'s as you'd like!
 
 This will error! :(
 ```
-
-When using language servers (LSPs), a *very quick* and useful shortcut for writing a single-lined comment is `CTRL + /`.
-
-- Similarly goes for multi-lined comments being `CTRL + //` (Press `/` 2x)

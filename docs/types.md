@@ -18,4 +18,4 @@ There are various kinds of built-in types in ADAN, which consist of:
 - Bool
 - None
 - Void
-- Auto (If specifying a type, this will assume the type at runtime)
+- Any
