@@ -3,15 +3,15 @@
 Declaring a function in ADAN will be like the following:
 
 ```adan
-func example(<Params>): <type>? {
+func example(<Params>): <Type>? {
 
 }
 ```
 
-- `<type>?` Refers to an *optional* type, if no type is provided, one will be inferred by the function's result.
-- - If no type is provided, `: <type>?` can be fully omitted.
+- `<Type>?` Refers to an *optional* type, if no type is provided, one will be inferred by the function's result.
+- - If no type is provided, `: <Type>?` can be fully omitted.
 
-After a function is defined, it is callable using the `<name>(<params>);` syntax:
+After a function is defined, it is callable using the `<Name>(<Params>);` syntax:
 
 ```adan
 func example(): Integer ... # Let's say this returns `1`.

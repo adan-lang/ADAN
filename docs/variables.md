@@ -9,15 +9,15 @@ Variables can be read only (immutable) using the `readonly` keyword beforehand.
 ```adan
 var a = 1;
 
-var b: <type>? = 1;
+var b: <Type>? = 1;
 
 a = 2;
 
-readonly var c: <type>? = 1;
+readonly var c: <Type>? = 1;
 ```
 
-- `<type>?` Refers to an *optional* type, if no type is provided, one will be inferred by the variable's result.
-- - If no type is provided, `: <type>?` can be fully omitted.
+- `<Type>?` Refers to an *optional* type, if no type is provided, one will be inferred by the variable's result.
+- - If no type is provided, `: <Type>?` can be fully omitted.
 
 Unlike *most modern languages* (**i.e.** JavaScript, Python, etc.), variables are capable of starting with integers.
 
@@ -55,16 +55,16 @@ In conclusion, here are all of the various ways variables may be defined:
 ```adan
 var a = 1;
 
-var b: <type>? = 1;
+var b: <Type>? = 1;
 
 a = 2; # Assigning an existing variable a new value.
        # Cannot declare variables this way.
 
-readonly var c: <type>? = 1;
+readonly var c: <Type>? = 1;
 
-global var d: <type>? = 1;
+global var d: <Type>? = 1;
 
-global readonly var e: <type>? = 1;
+global readonly var e: <Type>? = 1;
 
 global d = 2;
 ```
