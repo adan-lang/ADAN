@@ -59,3 +59,10 @@ repeat {
     ...
 } until <Condition>;
 ```
+
+## Loop Specific Keywords
+
+Inside loops, sometimes you cannot programmatically write what you want without exiting early or skipping to the next iteration.
+
+- To *stop* a loop early, you can use the `break` keyword, which will stop the loop early, disregarding any future code after it.
+- To *skip* to the next iteration without actually stopping it, you can use the `pass` keyword, which, similarly to `break`, disregards any future code, but keeps the loop itself running for all future iterations.
