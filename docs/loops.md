@@ -2,7 +2,7 @@
 
 There are various kinds of loops supported in the ADAN programming language.
 
-All of generally server the same purpose, *to iterate over a loop*, but the way they accomplish this task, and the results they provide are different.
+All of which generally serve the same purpose, *to iterate over a loop*, but the way they accomplish this task, and the results they provide are different.
 
 ### For-in Loop
 
