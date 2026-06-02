@@ -13,7 +13,7 @@ A for-in loop is a kind of loop that can optionally save the `key` *and* the `va
 
 ## <...>? = <...> (local variable) OR _ (no variable)
 
-for <Key>?, <Value>? in <Loop> {
+for <Key>?, <Value>? in <Array> {
     ...
 }
 ```
