@@ -16,5 +16,6 @@ You can learn the ADAN programming language for yourself ***!!***
    3. [Types](docs/types.md)
 2. Control Flow
    1. [If Statements](docs/if.md)
+   2. [Loops](docs/loops.md)
 3. Functions
    1. [Functions](docs/functions.md)
