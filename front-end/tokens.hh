@@ -1,6 +1,7 @@
 #include <iostream>
 
-typedef enum {
+typedef enum TokenType
+{
     /* Special */
     TOKEN_ERROR,
     TOKEN_EOF,
@@ -36,7 +37,8 @@ typedef enum {
     TOKEN_SEMICOPLON,
 } TokenType;
 
-typedef struct Token {
+typedef struct Token
+{
     std::string pos;
     int line;
     int col;
