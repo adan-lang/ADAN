@@ -1,3 +1,5 @@
+#include "utility/fsys.hh"
+
 #include "tokens.hh"
 #include  "lexer.hh"
 
@@ -8,10 +10,11 @@ Lexer::Lexer(
     int col,
     bool abort
 ) {
-    source = 
+    this->source = source;
+    this->pos = pos;
+    this->line = line;
+    this->col = col;
+    this->abort = abort;
 }
 
-Lexer::~Lexer()
-{
-    
-}
+Lexer::~Lexer() { }

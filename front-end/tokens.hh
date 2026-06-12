@@ -21,20 +21,55 @@ typedef enum TokenType
     TOKEN_PASS,
     TOKEN_IN,
 
+    /* Types */
+    TOKEN_STRING,
+    TOKEN_CHAR,
+    TOKEN_NUMBER,
+    TOKEN_INTEGER,
+    TOKEN_FLOAT,
+    TOKEN_BOOL,
+    TOKEN_NONE,
+    TOKEN_VOID,
+    TOKEN_AUTO,
+
     /* Symbols */
     TOKEN_COMMA,
     TOKEN_COLON,
-    TOKEN_EQUALS,
-    TOKEN_NOT,
-    TOKEN_SUB,
-    TOKEN_ADD,
-    TOKEN_MUL,
-    TOKEN_DIV,
     TOKEN_LPAREN,
     TOKEN_RPAREN,
     TOKEN_LBRACE,
     TOKEN_RBRACE,
-    TOKEN_SEMICOPLON,
+    TOKEN_LBRACKET,
+    TOKEN_RBRACKET,
+    TOKEN_SEMICOLON,
+
+    /* Binary Operators */
+    TOKEN_ADD,
+    TOKEN_SUB,
+    TOKEN_MUL,
+    TOKEN_DIV,
+    TOKEN_REMAINDER,
+    TOKEN_EQUALS,
+    TOKEN_NOT_EQUALS,
+    TOKEN_LESS,
+    TOKEN_LESS_EQUAL,
+    TOKEN_GREATER,
+    TOKEN_GREATER_EQUAL,
+    TOKEN_AND,
+    TOKEN_OR,
+    TOKEN_ASSIGN,
+    TOKEN_ADD_ASSIGN,
+    TOKEN_SUB_ASSIGN,
+    TOKEN_DIV_ASSIGN,
+    TOKEN_REMAINDER_ASSIGN,
+    TOKEN_FLOOR_DIV,
+    TOKEN_FLOOR_DIV_ASSIGN,
+    TOKEN_NOT_NULL_ASSERT, // !! -- stolen from kotlin
+    TOKEN_ELVIS, // ?:
+
+    /* Unary Operators */
+    TOKEN_NOT,
+    TOKEN_NEGATE
 } TokenType;
 
 typedef struct Token

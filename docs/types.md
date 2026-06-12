@@ -24,4 +24,4 @@ This process can be stacked to create higher dimensions of arrays, such as `<Typ
 - Bool
 - None
 - Void
-- Any
+- Auto

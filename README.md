@@ -14,6 +14,8 @@ You can learn the ADAN programming language for yourself ***!!***
    1. [Comments](docs/comments.md)
    2. [Variables](docs/variables.md)
    3. [Types](docs/types.md)
+   4. [Unary Operators](docs/unary-ops.md)
+   5. [Binary Operators](docs/binary-ops.md)
 2. Control Flow
    1. [If Statements](docs/if.md)
    2. [Loops](docs/loops.md)

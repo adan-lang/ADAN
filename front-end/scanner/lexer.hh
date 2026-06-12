@@ -1,6 +1,6 @@
 #include <iostream>
 
-typedef struct LexerType
+struct LexerType
 {
     std::string source;
     int pos;
@@ -12,6 +12,11 @@ typedef struct LexerType
 class Lexer
 {
 private:
+    std::string source;
+    int pos;
+    int line;
+    int col;
+    bool abort;
     
 public:
     Lexer(
@@ -19,7 +24,7 @@ public:
         int pos,
         int line,
         int col,
-        bool abort
+        bool abort = false
     );
     
     ~Lexer();
