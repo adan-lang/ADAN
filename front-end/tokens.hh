@@ -64,10 +64,10 @@ typedef enum TokenType
     TOKEN_REMAINDER_ASSIGN,
     TOKEN_FLOOR_DIV,
     TOKEN_FLOOR_DIV_ASSIGN,
-    TOKEN_NOT_NULL_ASSERT, // !! -- stolen from kotlin
-    TOKEN_ELVIS, // ?:
-
+    TOKEN_ELVIS, // ?: -- stolen from kotlin
+    
     /* Unary Operators */
+    TOKEN_NOT_NULL_ASSERT, // !!
     TOKEN_NOT,
     TOKEN_NEGATE
 } TokenType;
