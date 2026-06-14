@@ -21,3 +21,5 @@ You can learn the ADAN programming language for yourself ***!!***
    2. [Loops](docs/loops.md)
 3. Functions
    1. [Functions](docs/functions.md)
+4. Modules
+   1. [Importing Files and Libraries](docs/import.md)
