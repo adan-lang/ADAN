@@ -4,17 +4,15 @@
 #include  "lexer.hh"
 
 Lexer::Lexer(
-    std::string source,
-    int pos,
-    int line,
-    int col,
-    bool abort
+    LexerType lexer
 ) {
-    this->source = source;
-    this->pos = pos;
-    this->line = line;
-    this->col = col;
-    this->abort = abort;
+    this->source = lexer.source;
+    this->pos = lexer.pos;
+    this->line = lexer.line;
+    this->col = lexer.col;
+    this->abort = lexer.abort;
 }
 
 Lexer::~Lexer() { }
+
+void scan() { }

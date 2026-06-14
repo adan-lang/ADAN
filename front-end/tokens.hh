@@ -20,6 +20,9 @@ typedef enum TokenType
     TOKEN_BREAK,
     TOKEN_PASS,
     TOKEN_IN,
+    TOKEN_INCLUDE,
+    TOKEN_USING,
+    TOKEN_EXPORT,
 
     /* Types */
     TOKEN_STRING,
@@ -42,6 +45,8 @@ typedef enum TokenType
     TOKEN_LBRACKET,
     TOKEN_RBRACKET,
     TOKEN_SEMICOLON,
+    TOKEN_QUOTE,
+    TOKEN_APOSTRAPHE,
 
     /* Binary Operators */
     TOKEN_ADD,
