@@ -2,6 +2,9 @@
 
 View the progress of the ADAN programming language live on [my YouTube channel](https://www.youtube.com/@transicle/streams) **:3**
 
+> [!NOTE]
+> **0 AI** is being used for the code, only used for small research _!!_ **:3**
+
 ## Learn It
 
 You can learn the ADAN programming language for yourself ***!!***
