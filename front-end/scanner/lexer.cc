@@ -14,5 +14,3 @@ Lexer::Lexer(
 }
 
 Lexer::~Lexer() { }
-
-void scan() { }

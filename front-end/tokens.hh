@@ -79,9 +79,9 @@ typedef enum TokenType
 
 typedef struct Token
 {
-    std::string pos;
+    int pos;
     int line;
     int col;
     std::string lexeme;
-    TokenType* type;
+    TokenType type;
 } Token;

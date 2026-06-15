@@ -1,4 +1,8 @@
 #include <iostream>
+#include   <format>
+#include   <string>
+#include   <vector>
+#include  <variant>
 
 typedef struct LexerType
 {
@@ -31,7 +35,15 @@ private:
         int offset = 0
     )
     {
+        if ((pos + offset) >= source.length())
+        {
+            return '\0';
+        }
 
+        else
+        {
+            return source[pos + offset];
+        }
     }
 
     /**
@@ -44,7 +56,7 @@ private:
      */
     char peek_next()
     {
-
+        return peek(1);
     }
     
     /**
@@ -58,7 +70,20 @@ private:
      */
     char consume()
     {
+        char current_char = peek();
+        
+        if (current_char == '\n')
+        {
+            line += 1;
+            col = 1;
+        }
 
+        else
+        {
+            col += 1;
+        }
+
+        pos += 1;
     }
 
     /**
@@ -75,7 +100,8 @@ private:
     bool match(
         char to_match
     ) {
-
+        consume();
+        return peek() != to_match;
     }
     
     /**
@@ -87,7 +113,37 @@ private:
      */
     void skip_comments()
     {
+        if (peek() == '#')
+        {
+            consume();
 
+            while (peek() != '\n' && peek() != '\0')
+            {
+                consume();
+            }
+        }
+
+        else if (peek() == '#' && peek_next() == '#')
+        {
+            consume();
+            consume();
+
+            while (!(peek() == '#' && peek_next() == '#'))
+            {
+                if (peek() == '\0')
+                {
+                    throw std::runtime_error(
+                        std::format("[error]: never-ending multi-line comment found on line {}", line)
+                    );
+                    abort = true;
+                }
+
+                consume();
+            }
+
+            consume();
+            consume();
+        }
     }
 
     /**
@@ -99,7 +155,12 @@ private:
      */
     void skip_whitespace()
     {
-
+        while (
+            peek() == ' '  || peek() == '\t' ||
+            peek() == '\r' || peek() == '\n'
+        ) {
+            consume();
+        }
     }
 
 public:
@@ -116,5 +177,48 @@ public:
      * 
      * @param LexerType* lexer
      */
-    void scan();
+    std::vector<Token> scan()
+    {
+        std::vector<Token> tokens;
+
+        for (;;)
+        {
+            for (;;)
+            {
+                int current_pos{pos};
+
+                skip_whitespace();
+                skip_comments();
+                
+                if (pos == current_pos)
+                {
+                    break;
+                }
+            }
+
+            char current = peek();
+
+            if (current == '\0')
+            {
+                tokens.push_back(Token{
+                    pos,
+                    line, col,
+                    std::string{},
+                    TOKEN_EOF
+                });
+
+                break;
+            }
+
+            /**
+             * 
+             * @todo: lex the following: IDENTIFIERS, KEYWORDS, SYMBOLS,
+             *                           NUMBERS (Integers and Floating Points)
+             */
+
+             consume();
+        }
+
+        return tokens;
+    }
 };
