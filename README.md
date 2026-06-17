@@ -1,9 +1,16 @@
-## Live Progress
-
-View the progress of the ADAN programming language live on [my YouTube channel](https://www.youtube.com/@transicle/streams) **:3**
+<div align="center">
+   <h1>ADAN</h1>
+   <img alt="Version" src="https://img.shields.io/badge/version-1.0.a-blue">
+   <img alt="Latest Release" src="https://img.shields.io/github/v/release/transicle/adan">
+   <img alt="Docs" src="https://img.shields.io/badge/docs-docs.adan.sh-blue">
+   <br><br>
+   <p>
+      Beginner friendly language with inferred typing and no memory managing.
+   </p>
+</div>
 
 > [!NOTE]
-> **0 AI** is being used for the code, only used for small research _!!_ **:3**
+> Absolutely **0 AI** is being used for ADAN's code, AI is used for researching and study purposes only **_!!_** ❤️
 
 ## Learn It
 
