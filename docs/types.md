@@ -9,8 +9,8 @@ There are various kinds of built-in types in ADAN, which consist of:
 
 ### Number-based Types
 
-- Number (Handles *both* Integers and Floating-point values automatically)
-- Integer
+- Number (Handles *both* Ints and Floating-point values automatically)
+- Int
 - Float
 
 ### Array Types

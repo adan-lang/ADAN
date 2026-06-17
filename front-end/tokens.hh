@@ -1,4 +1,6 @@
-#include <iostream>
+#include <unordered_map>
+#include      <iostream>
+#include        <string>
 
 typedef enum TokenType
 {
@@ -52,6 +54,7 @@ typedef enum TokenType
     TOKEN_ADD,
     TOKEN_SUB,
     TOKEN_MUL,
+    TOKEN_POW,
     TOKEN_DIV,
     TOKEN_REMAINDER,
     TOKEN_EQUALS,
@@ -65,6 +68,8 @@ typedef enum TokenType
     TOKEN_ASSIGN,
     TOKEN_ADD_ASSIGN,
     TOKEN_SUB_ASSIGN,
+    TOKEN_MUL_ASSIGN,
+    TOKEN_POW_ASSIGN,
     TOKEN_DIV_ASSIGN,
     TOKEN_REMAINDER_ASSIGN,
     TOKEN_FLOOR_DIV,
@@ -85,3 +90,9 @@ typedef struct Token
     std::string lexeme;
     TokenType type;
 } Token;
+
+extern std::unordered_map<std::string, TokenType> Keywords;
+
+extern std::unordered_map<std::string, TokenType> Types;
+
+extern std::unordered_map<std::string, TokenType> Symbols;

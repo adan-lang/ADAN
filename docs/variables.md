@@ -40,7 +40,7 @@ func sampleScope() {
     global readonly var name = "Lily"; # Scope 1 (Deeper)
 }
 
-# `name` CAN be accessed from a scope higher than where it's defined.
+# `name` CAN be accessed from any scope higher or lower than where it's defined.
 ```
 
 > [!NOTE]

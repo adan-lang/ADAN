@@ -1,8 +1,12 @@
-#include <iostream>
-#include   <format>
-#include   <string>
-#include   <vector>
-#include  <variant>
+#include      <iostream>
+#include        <format>
+#include        <string>
+#include        <vector>
+#include       <variant>
+#include        <cctype>
+#include <unordered_map>
+
+#include "../tokens.hh"
 
 typedef struct LexerType
 {
@@ -198,11 +202,15 @@ public:
 
             char current = peek();
 
+            int start_line = line;
+            int start_col = col;
+
             if (current == '\0')
             {
                 tokens.push_back(Token{
                     pos,
-                    line, col,
+                    start_line,
+                    start_col,
                     std::string{},
                     TOKEN_EOF
                 });
@@ -210,13 +218,73 @@ public:
                 break;
             }
 
+            if (std::isalpha(current) || current == '_')
+            {
+                int start = pos;
+                
+                consume();
+
+                while (std::isalnum(peek()) || peek() == '_')
+                {
+                    consume();
+                }
+
+                std::string lexeme = source.substr(start, pos - start);
+
+                auto iterator = Keywords.find(lexeme);
+                auto type_iterator = Types.find(lexeme);
+                
+                TokenType token_type;
+
+                if (iterator != Keywords.end())
+                    token_type = static_cast<TokenType>(iterator->second);
+                else if (type_iterator != Types.end())
+                    token_type = static_cast<TokenType>(type_iterator->second);
+                else
+                    token_type = TOKEN_IDENTIFIER;
+
+                tokens.push_back(Token{
+                    pos,
+                    start_line,
+                    start_col,
+                    lexeme,
+                    token_type
+                });
+
+                continue;
+            }
+
+            // @todo add floating point (TOKEN_FLOAT) support
+            if (std::isdigit(current))
+            {
+                int start = pos;
+                
+                consume();
+
+                while (std::isdigit(peek()))
+                {
+                    consume();
+                }
+
+                std::string lexeme = source.substr(start, pos - start);
+
+                tokens.push_back(Token{
+                    pos,
+                    start_line,
+                    start_col,
+                    lexeme,
+                    TOKEN_INTEGER
+                });
+
+                continue;
+            }
+
             /**
              * 
-             * @todo: lex the following: IDENTIFIERS, KEYWORDS, SYMBOLS,
-             *                           NUMBERS (Integers and Floating Points)
+             * @todo: lex the following: SYMBOLS
              */
 
-             consume();
+            consume();
         }
 
         return tokens;

@@ -14,7 +14,7 @@ func example(<Params>): <Type>? {
 After a function is defined, it is callable using the `<Name>(<Params>);` syntax:
 
 ```adan
-func example(): Integer ... # Let's say this returns `1`.
+func example(): Int ... # Let's say this returns `1`.
 
 example(); # <-- A function's returned value is given when calling a function.
 
@@ -32,7 +32,7 @@ func myName(): String {
 
 var name = myName(); # Type: String, Value: "Lily"
 
-if name == 18 { ... } # <-- This would throw a compile-time error because of the type mismatch between `name` and `18`. (String vs. Integer)
+if name == 18 { ... } # <-- This would throw a compile-time error because of the type mismatch between `name` and `18`. (String vs. Int)
 ```
 
 ## Parameters
