@@ -72,13 +72,13 @@ using module std.net;
 readonly var MAX_RETRIES = 3;
 
 func fetchWithRetry(url: String, retries: Int): String {
-    var response = null;
+    var response: String = None;
     var attempts = 0;
 
     repeat {
         response = net.get(url);
         attempts += 1;
-    } until response != null or attempts >= retries;
+    } until response != None or attempts >= retries;
 
     return response ?: "no response";
 }
