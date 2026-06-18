@@ -136,10 +136,11 @@ private:
             {
                 if (peek() == '\0')
                 {
+                    abort = true;
+                    
                     throw std::runtime_error(
                         std::format("[error]: never-ending multi-line comment found on line {}", line)
                     );
-                    abort = true;
                 }
 
                 consume();
@@ -254,10 +255,10 @@ public:
                 continue;
             }
 
-            // @todo add floating point (TOKEN_FLOAT) support
             if (std::isdigit(current))
             {
                 int start = pos;
+                bool is_float = false;
                 
                 consume();
 
@@ -266,6 +267,30 @@ public:
                     consume();
                 }
 
+                if (peek() == '.') // if matches; we want to treat this number as a floating point instead of an integer.
+                {
+                    if (std::isdigit(peek_next()))
+                    {
+                        is_float = true;
+                        
+                        consume();
+                        
+                        while (std::isdigit(peek()))
+                        {
+                            consume();
+                        }
+                    }
+
+                    else
+                    {
+                        abort = true;
+
+                        throw std::runtime_error(
+                            std::format("[error]: incomplete floating point found on line {}", line)
+                        );
+                    }
+                }
+                
                 std::string lexeme = source.substr(start, pos - start);
 
                 tokens.push_back(Token{
@@ -273,7 +298,7 @@ public:
                     start_line,
                     start_col,
                     lexeme,
-                    TOKEN_INTEGER
+                    !is_float ? TOKEN_INTEGER : TOKEN_FLOAT
                 });
 
                 continue;
