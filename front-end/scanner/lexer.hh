@@ -91,6 +91,8 @@ private:
         }
 
         pos += 1;
+
+        return current_char;
     }
 
     /**
@@ -120,17 +122,7 @@ private:
      */
     void skip_comments()
     {
-        if (peek() == '#')
-        {
-            consume();
-
-            while (peek() != '\n' && peek() != '\0')
-            {
-                consume();
-            }
-        }
-
-        else if (peek() == '#' && peek_next() == '#')
+        if (peek() == '#' && peek_next() == '#')
         {
             consume();
             consume();
@@ -146,7 +138,7 @@ private:
                     non_terminating_comment.message = "Never ending multiline comment found";
                     non_terminating_comment.severity = ErrorSeverity::SEVERITY_FATAL;
                     non_terminating_comment.line = line;
-                    non_terminating_comment.line = col;
+                    non_terminating_comment.col = col;
 
                     report(non_terminating_comment);
                 }
@@ -156,6 +148,16 @@ private:
 
             consume();
             consume();
+        }
+
+        else if (peek() == '#')
+        {
+            consume();
+
+            while (peek() != '\n' && peek() != '\0')
+            {
+                consume();
+            }
         }
     }
 
@@ -211,8 +213,8 @@ public:
 
             char current = peek();
 
-            int start_line = line;
-            int start_col = col;
+            int start_line{line};
+            int start_col{col};
 
             if (current == '\0')
             {
@@ -221,7 +223,7 @@ public:
                     start_line,
                     start_col,
                     std::string{},
-                    TOKEN_EOF
+                    TokenType::TOKEN_EOF
                 });
 
                 break;
@@ -229,7 +231,7 @@ public:
 
             if (std::isalpha(current) || current == '_')
             {
-                int start = pos;
+                int start{pos};
                 
                 consume();
 
@@ -250,9 +252,9 @@ public:
                 else if (type_iterator != Types.end())
                     token_type = static_cast<TokenType>(type_iterator->second);
                 else
-                    token_type = TOKEN_IDENTIFIER;
+                    token_type = TokenType::TOKEN_IDENTIFIER;
 
-                tokens.push_back(Token{
+                tokens.push_back(Token {
                     pos,
                     start_line,
                     start_col,
@@ -265,7 +267,7 @@ public:
 
             if (std::isdigit(current))
             {
-                int start = pos;
+                int start{pos};
                 bool is_float = false;
                 
                 consume();
@@ -297,8 +299,8 @@ public:
 
                         incomplete_floating_point.message = "Incomplete floating point value found; meaning you have `<INTEGER>.`, without anything afterwards found";
                         incomplete_floating_point.severity = ErrorSeverity::SEVERITY_ERROR;
-                        incomplete_floating_point.line = line;
-                        incomplete_floating_point.line = col;
+                        incomplete_floating_point.line = start_line;
+                        incomplete_floating_point.col = start_col;
 
                         report(incomplete_floating_point);
                     }
@@ -306,21 +308,564 @@ public:
                 
                 std::string lexeme = source.substr(start, pos - start);
 
-                tokens.push_back(Token{
+                tokens.push_back(Token {
                     pos,
                     start_line,
                     start_col,
                     lexeme,
-                    !is_float ? TOKEN_INTEGER : TOKEN_FLOAT
+                    !is_float ? TokenType::TOKEN_INTEGER : TokenType::TOKEN_FLOAT
                 });
 
                 continue;
             }
 
-            /**
-             * 
-             * @todo: lex the following: SYMBOLS
-             */
+            int start{pos};
+
+            switch (peek())
+            {
+                /* simple baby tokens */
+                case ',':
+                    consume();
+
+                    tokens.push_back(Token {
+                        pos,
+                        start_line,
+                        start_col,
+                        source.substr(start, pos - start),
+                        TokenType::TOKEN_COMMA
+                    });
+
+                    continue;
+
+                case ':':
+                    consume();
+
+                    tokens.push_back(Token {
+                        pos,
+                        start_line,
+                        start_col,
+                        source.substr(start, pos - start),
+                        TokenType::TOKEN_COLON
+                    });
+
+                    continue;
+
+                case '(':
+                    consume();
+
+                    tokens.push_back(Token {
+                        pos,
+                        start_line,
+                        start_col,
+                        source.substr(start, pos - start),
+                        TokenType::TOKEN_LPAREN
+                    });
+
+                    continue;
+
+                case ')':
+                    consume();
+
+                    tokens.push_back(Token {
+                        pos,
+                        start_line,
+                        start_col,
+                        source.substr(start, pos - start),
+                        TokenType::TOKEN_RPAREN
+                    });
+
+                    continue;
+
+                case '{':
+                    consume();
+
+                    tokens.push_back(Token {
+                        pos,
+                        start_line,
+                        start_col,
+                        source.substr(start, pos - start),
+                        TokenType::TOKEN_LBRACE
+                    });
+
+                    continue;
+
+                case '}':
+                    consume();
+
+                    tokens.push_back(Token {
+                        pos,
+                        start_line,
+                        start_col,
+                        source.substr(start, pos - start),
+                        TokenType::TOKEN_RBRACE
+                    });
+
+                    continue;
+
+                case '[':
+                    consume();
+
+                    tokens.push_back(Token {
+                        pos,
+                        start_line,
+                        start_col,
+                        source.substr(start, pos - start),
+                        TokenType::TOKEN_LBRACKET
+                    });
+
+                    continue;
+
+                case ']':
+                    consume();
+
+                    tokens.push_back(Token {
+                        pos,
+                        start_line,
+                        start_col,
+                        source.substr(start, pos - start),
+                        TokenType::TOKEN_RBRACKET
+                    });
+
+                    continue;
+
+                case ';':
+                    consume();
+
+                    tokens.push_back(Token {
+                        pos,
+                        start_line,
+                        start_col,
+                        source.substr(start, pos - start),
+                        TokenType::TOKEN_SEMICOLON
+                    });
+
+                    continue;
+
+                case '"':
+                    consume();
+
+                    tokens.push_back(Token {
+                        pos,
+                        start_line,
+                        start_col,
+                        source.substr(start, pos - start),
+                        TokenType::TOKEN_QUOTE
+                    });
+
+                    continue;
+
+                case '\'':
+                    consume();
+
+                    tokens.push_back(Token {
+                        pos,
+                        start_line,
+                        start_col,
+                        source.substr(start, pos - start),
+                        TokenType::TOKEN_APOSTRAPHE
+                    });
+
+                    continue;
+
+                /* tokens dat use lotta logic */
+                case '=':
+                    consume();
+
+                    if (peek() == '=')
+                    {
+                        consume();
+
+                        tokens.push_back(Token {
+                            pos,
+                            start_line,
+                            start_col,
+                            source.substr(start, pos - start),
+                            TokenType::TOKEN_EQUALS
+                        });
+
+                        continue;
+                    }
+
+                    else
+                    {
+                        tokens.push_back(Token {
+                            pos,
+                            start_line,
+                            start_col,
+                            source.substr(start, pos - start),
+                            TokenType::TOKEN_ASSIGN
+                        });
+
+                        continue;
+                    }
+
+                case '+':
+                    consume();
+
+                    if (peek() == '=')
+                    {
+                        consume();
+                     
+                        tokens.push_back(Token {
+                            pos,
+                            start_line,
+                            start_col,
+                            source.substr(start, pos - start),
+                            TokenType::TOKEN_ADD_ASSIGN
+                        });
+
+                        continue;
+                    }
+
+                    else
+                    {
+                        tokens.push_back(Token {
+                            pos,
+                            start_line,
+                            start_col,
+                            source.substr(start, pos - start),
+                            TokenType::TOKEN_ADD
+                        });
+
+                        continue;
+                    }
+
+                case '-':
+                    consume();
+
+                    if (peek() == '=')
+                    {
+                        consume();
+                     
+                        tokens.push_back(Token {
+                            pos,
+                            start_line,
+                            start_col,
+                            source.substr(start, pos - start),
+                            TokenType::TOKEN_SUB_ASSIGN
+                        });
+
+                        continue;
+                    }
+
+                    else
+                    {
+                        tokens.push_back(Token {
+                            pos,
+                            start_line,
+                            start_col,
+                            source.substr(start, pos - start),
+                            TokenType::TOKEN_SUB
+                        });
+
+                        continue;
+                    }
+
+                case '*':
+                    consume();
+
+                    if (peek() == '=')
+                    {
+                        consume();
+                     
+                        tokens.push_back(Token {
+                            pos,
+                            start_line,
+                            start_col,
+                            source.substr(start, pos - start),
+                            TokenType::TOKEN_MUL_ASSIGN
+                        });
+
+                        continue;
+                    }
+
+                    else if (peek() == '*')
+                    {
+                        consume();
+                     
+                        if (peek() == '=')
+                        {
+                            consume();
+                            
+                            tokens.push_back(Token {
+                                pos,
+                                start_line,
+                                start_col,
+                                source.substr(start, pos - start),
+                                TokenType::TOKEN_POW_ASSIGN
+                            });
+                        }
+
+                        else
+                        {
+                            tokens.push_back(Token {
+                                pos,
+                                start_line,
+                                start_col,
+                                source.substr(start, pos - start),
+                                TokenType::TOKEN_POW
+                            });
+                        }
+
+                        continue;
+                    }
+
+                    else
+                    {
+                        tokens.push_back(Token {
+                            pos,
+                            start_line,
+                            start_col,
+                            source.substr(start, pos - start),
+                            TokenType::TOKEN_MUL
+                        });
+
+                        continue;
+                    }
+
+                case '/':
+                    consume();
+
+                    if (peek() == '=')
+                    {
+                        consume();
+                     
+                        tokens.push_back(Token {
+                            pos,
+                            start_line,
+                            start_col,
+                            source.substr(start, pos - start),
+                            TokenType::TOKEN_DIV_ASSIGN
+                        });
+
+                        continue;
+                    }
+
+                    else if (peek() == '/')
+                    {
+                        consume();
+                     
+                        if (peek() == '=')
+                        {
+                            consume();
+
+                            tokens.push_back(Token {
+                                pos,
+                                start_line,
+                                start_col,
+                                source.substr(start, pos - start),
+                                TokenType::TOKEN_FLOOR_DIV_ASSIGN
+                            });
+                        }
+
+                        else
+                        {
+                            tokens.push_back(Token {
+                                pos,
+                                start_line,
+                                start_col,
+                                source.substr(start, pos - start),
+                                TokenType::TOKEN_FLOOR_DIV
+                            });
+                        }
+
+                        continue;
+                    }
+
+                    else
+                    {
+                        tokens.push_back(Token {
+                            pos,
+                            start_line,
+                            start_col,
+                            source.substr(start, pos - start),
+                            TokenType::TOKEN_DIV
+                        });
+
+                        continue;
+                    }
+
+                case '%':
+                    consume();
+
+                    if (peek() == '=')
+                    {
+                        consume();
+                     
+                        tokens.push_back(Token {
+                            pos,
+                            start_line,
+                            start_col,
+                            source.substr(start, pos - start),
+                            TokenType::TOKEN_REMAINDER_ASSIGN
+                        });
+
+                        continue;
+                    }
+
+                    else
+                    {
+                        tokens.push_back(Token {
+                            pos,
+                            start_line,
+                            start_col,
+                            source.substr(start, pos - start),
+                            TokenType::TOKEN_REMAINDER
+                        });
+
+                        continue;
+                    }
+
+                case '>':
+                    consume();
+
+                    if (peek() == '=')
+                    {
+                        consume();
+                     
+                        tokens.push_back(Token {
+                            pos,
+                            start_line,
+                            start_col,
+                            source.substr(start, pos - start),
+                            TokenType::TOKEN_GREATER_EQUAL
+                        });
+
+                        continue;
+                    }
+
+                    else
+                    {
+                        tokens.push_back(Token {
+                            pos,
+                            start_line,
+                            start_col,
+                            source.substr(start, pos - start),
+                            TokenType::TOKEN_GREATER
+                        });
+
+                        continue;
+                    }
+
+                case '<':
+                    consume();
+
+                    if (peek() == '=')
+                    {
+                        consume();
+                     
+                        tokens.push_back(Token {
+                            pos,
+                            start_line,
+                            start_col,
+                            source.substr(start, pos - start),
+                            TokenType::TOKEN_LESS_EQUAL
+                        });
+
+                        continue;
+                    }
+
+                    else
+                    {
+                        tokens.push_back(Token {
+                            pos,
+                            start_line,
+                            start_col,
+                            source.substr(start, pos - start),
+                            TokenType::TOKEN_LESS
+                        });
+
+                        continue;
+                    }
+
+                case '!':
+                    consume();
+
+                    if (peek() == '=')
+                    {
+                        consume();
+                     
+                        tokens.push_back(Token {
+                            pos,
+                            start_line,
+                            start_col,
+                            source.substr(start, pos - start),
+                            TokenType::TOKEN_NOT_EQUALS
+                        });
+
+                        continue;
+                    }
+
+                    else if (peek() == '!')
+                    {
+                        consume();
+                        
+                        tokens.push_back(Token {
+                            pos,
+                            start_line,
+                            start_col,
+                            source.substr(start, pos - start),
+                            TokenType::TOKEN_NOT_NULL_ASSERT
+                        });
+
+                        continue;
+                    }
+
+                    else
+                    {
+                        Error unexpected_char;
+                        unexpected_char.message = "An unexpected character found after \"!\"";
+                        unexpected_char.severity = ErrorSeverity::SEVERITY_ERROR;
+                        unexpected_char.line = line;
+                        unexpected_char.col = col;
+
+                        report(unexpected_char);
+
+                        continue;
+                    }
+
+                case '?':
+                    consume();
+                    
+                    if (peek() == ':')
+                    {
+                        consume();
+                        
+                        tokens.push_back(Token {
+                            pos,
+                            start_line,
+                            start_col,
+                            source.substr(start, pos - start),
+                            TokenType::TOKEN_ELVIS
+                        });
+
+                        continue;
+                    }
+
+                    else
+                    {
+                        Error unexpected_char;
+                        unexpected_char.message = "An unexpected character found after \"?\"";
+                        unexpected_char.severity = ErrorSeverity::SEVERITY_ERROR;
+                        unexpected_char.line = line;
+                        unexpected_char.col = col;
+
+                        report(unexpected_char);
+
+                        continue;
+                    }
+
+                default:
+                    Error unexpected_char;
+                    unexpected_char.message = "An unexpected character found";
+                    unexpected_char.severity = ErrorSeverity::SEVERITY_ERROR;
+                    unexpected_char.line = line;
+                    unexpected_char.col = col;
+
+                    report(unexpected_char);
+
+                    continue;
+            }
 
             consume();
         }
