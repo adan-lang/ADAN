@@ -1,3 +1,5 @@
+#pragma
+
 #include      <iostream>
 #include        <format>
 #include        <string>
@@ -6,7 +8,8 @@
 #include        <cctype>
 #include <unordered_map>
 
-#include "../tokens.hh"
+#include            "../tokens.hh"
+#include "../../utility/errors.hh"
 
 typedef struct LexerType
 {
@@ -138,9 +141,14 @@ private:
                 {
                     abort = true;
                     
-                    throw std::runtime_error(
-                        std::format("[error]: never-ending multi-line comment found on line {}", line)
-                    );
+                    Error non_terminating_comment;
+
+                    non_terminating_comment.message = "Never ending multiline comment found";
+                    non_terminating_comment.severity = ErrorSeverity::SEVERITY_FATAL;
+                    non_terminating_comment.line = line;
+                    non_terminating_comment.line = col;
+
+                    report(non_terminating_comment);
                 }
 
                 consume();
@@ -267,7 +275,7 @@ public:
                     consume();
                 }
 
-                if (peek() == '.') // if matches; we want to treat this number as a floating point instead of an integer.
+                if (peek() == '.')
                 {
                     if (std::isdigit(peek_next()))
                     {
@@ -285,9 +293,14 @@ public:
                     {
                         abort = true;
 
-                        throw std::runtime_error(
-                            std::format("[error]: incomplete floating point found on line {}", line)
-                        );
+                        Error incomplete_floating_point;
+
+                        incomplete_floating_point.message = "Incomplete floating point value found; meaning you have `<INTEGER>.`, without anything afterwards found";
+                        incomplete_floating_point.severity = ErrorSeverity::SEVERITY_ERROR;
+                        incomplete_floating_point.line = line;
+                        incomplete_floating_point.line = col;
+
+                        report(incomplete_floating_point);
                     }
                 }
                 

@@ -1,3 +1,5 @@
+#pragma
+
 #include <iostream>
 
 std::string read_file(
