@@ -120,8 +120,12 @@ private:
      * skip token scanning for anything that is inside of a comment,
      *  shifts current position in file for you.
      */
-    void skip_comments()
+    void scan_comments(std::vector<Token>& tokens)
     {
+        int start = pos;
+        int start_line = line;
+        int start_col = col;
+
         if (peek() == '#' && peek_next() == '#')
         {
             consume();
@@ -134,20 +138,33 @@ private:
                     abort = true;
                     
                     Error non_terminating_comment;
-
                     non_terminating_comment.message = "Never ending multiline comment found";
                     non_terminating_comment.severity = ErrorSeverity::SEVERITY_FATAL;
                     non_terminating_comment.line = line;
                     non_terminating_comment.col = col;
 
                     report(non_terminating_comment);
+                    break;
                 }
 
                 consume();
             }
 
-            consume();
-            consume();
+            if (peek() != '\0')
+            {
+                consume();
+                consume();
+            }
+
+            std::string lexeme = source.substr(start, pos - start);
+
+            tokens.push_back(Token {
+                pos,
+                start_line,
+                start_col,
+                lexeme,
+                TokenType::TOKEN_MULTILINE_COMMENT
+            });
         }
 
         else if (peek() == '#')
@@ -158,6 +175,16 @@ private:
             {
                 consume();
             }
+
+            std::string lexeme = source.substr(start, pos - start);
+
+            tokens.push_back(Token {
+                pos,
+                start_line,
+                start_col,
+                lexeme,
+                TokenType::TOKEN_COMMENT
+            });
         }
     }
 
@@ -166,15 +193,32 @@ private:
      * @category helper
      * 
      * skip any whitespace characters for you, similarly to
-     *  `self->skip_comments()`.
+     *  `self->scan_comments()`.
      */
-    void skip_whitespace()
+    void scan_whitespace(std::vector<Token>& tokens)
     {
-        while (
-            peek() == ' '  || peek() == '\t' ||
-            peek() == '\r' || peek() == '\n'
-        ) {
-            consume();
+        int start = pos;
+        int start_line = line;
+        int start_col = col;
+
+        if (peek() == ' ' || peek() == '\t' || peek() == '\r' || peek() == '\n')
+        {
+            while (
+                peek() == ' '  || peek() == '\t' ||
+                peek() == '\r' || peek() == '\n'
+            ) {
+                consume();
+            }
+
+            std::string lexeme = source.substr(start, pos - start);
+
+            tokens.push_back(Token {
+                pos,
+                start_line,
+                start_col,
+                lexeme,
+                TokenType::TOKEN_WHITESPACE
+            });
         }
     }
 
@@ -202,8 +246,8 @@ public:
             {
                 int current_pos{pos};
 
-                skip_whitespace();
-                skip_comments();
+                scan_whitespace(tokens);
+                scan_comments(tokens);
                 
                 if (pos == current_pos)
                 {

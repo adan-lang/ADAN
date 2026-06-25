@@ -5,7 +5,7 @@
 #include   <memory>
 #include <optional>
 
-#include           "../tokens.hh"
+#include            "../tokens.hh"
 #include "../../middle-end/ast.hh"
 
 typedef enum Precedence

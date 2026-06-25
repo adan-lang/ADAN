@@ -102,7 +102,7 @@ typedef struct TypeNode
 typedef struct ParamNode
 {
     std::string name;
-    std::optional<TypeNode> type;
+    TypeNode type;
     bool is_readonly;
     bool is_variadic;
 } ParamNode;
@@ -110,7 +110,7 @@ typedef struct ParamNode
 typedef struct VarDeclNode
 {
     std::string name;
-    std::optional<TypeNode> type;
+    TypeNode type;
     Expr value;
     bool is_readonly;
     bool is_global;
@@ -128,7 +128,7 @@ typedef struct FuncDeclNode
 {
     std::string name;
     std::vector<ParamNode> params;
-    std::optional<TypeNode> return_type;
+    TypeNode return_type;
     std::vector<struct Statement> body;
 } FuncDeclNode;
 

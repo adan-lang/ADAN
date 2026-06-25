@@ -10,6 +10,7 @@ typedef enum TokenType
     TOKEN_ERROR,
     TOKEN_EOF,
     TOKEN_IDENTIFIER,
+    TOKEN_WHITESPACE,
 
     /* Keywords */
     TOKEN_VAR,
@@ -51,6 +52,8 @@ typedef enum TokenType
     TOKEN_SEMICOLON,
     TOKEN_QUOTE,
     TOKEN_APOSTRAPHE,
+    TOKEN_COMMENT,
+    TOKEN_MULTILINE_COMMENT,
 
     /* Binary Operators */
     TOKEN_ADD,
