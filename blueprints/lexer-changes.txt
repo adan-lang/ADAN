@@ -1,6 +1,0 @@
-The following is necessary to be able to work with the new architecture.
-
-- Removing the logic in the lexer that strips comments and whitespace.
-- Replace them with actual tokenization for these characters.
-
-Removing these are necessary to construct a CST later on when parsing.
