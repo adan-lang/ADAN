@@ -1,15 +1,15 @@
 #pragma
 
-#include      <iostream>
-#include        <format>
-#include        <string>
-#include        <vector>
-#include       <variant>
-#include        <cctype>
 #include <unordered_map>
+#include <iostream>
+#include <variant>
+#include <format>
+#include <string>
+#include <vector>
+#include <cctype>
 
-#include            "../tokens.hh"
 #include "../../utility/errors.hh"
+#include "../tokens.hh"
 
 typedef struct LexerType
 {

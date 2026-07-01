@@ -1,5 +1,5 @@
 #include <cstdlib>
-#include   <print>
+#include <print>
 
 #include "errors.hh"
 

@@ -1,8 +1,8 @@
 #pragma
 
 #include <unordered_map>
-#include      <iostream>
-#include        <string>
+#include <iostream>
+#include <string>
 
 typedef enum TokenType
 {

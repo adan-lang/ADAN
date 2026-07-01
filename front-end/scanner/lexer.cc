@@ -1,7 +1,7 @@
 #include "utility/fsys.hh"
 
 #include "tokens.hh"
-#include  "lexer.hh"
+#include "lexer.hh"
 
 Lexer::Lexer(
     LexerType lexer
