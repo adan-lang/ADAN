@@ -158,13 +158,13 @@ private:
 
             std::string lexeme = source.substr(start, pos - start);
 
-            tokens.push_back(Token {
+            tokens.emplace_back(
                 pos,
                 start_line,
                 start_col,
                 lexeme,
                 TokenType::TOKEN_MULTILINE_COMMENT
-            });
+            );
         }
 
         else if (peek() == '#')
@@ -178,13 +178,13 @@ private:
 
             std::string lexeme = source.substr(start, pos - start);
 
-            tokens.push_back(Token {
+            tokens.emplace_back(
                 pos,
                 start_line,
                 start_col,
                 lexeme,
                 TokenType::TOKEN_COMMENT
-            });
+            );
         }
     }
 
@@ -212,13 +212,13 @@ private:
 
             std::string lexeme = source.substr(start, pos - start);
 
-            tokens.push_back(Token {
+            tokens.emplace_back(
                 pos,
                 start_line,
                 start_col,
                 lexeme,
                 TokenType::TOKEN_WHITESPACE
-            });
+            );
         }
     }
 
@@ -262,13 +262,13 @@ public:
 
             if (current == '\0')
             {
-                tokens.push_back(Token{
+                tokens.emplace_back(
                     pos,
                     start_line,
                     start_col,
                     std::string{},
                     TokenType::TOKEN_EOF
-                });
+                );
 
                 break;
             }
@@ -298,13 +298,13 @@ public:
                 else
                     token_type = TokenType::TOKEN_IDENTIFIER;
 
-                tokens.push_back(Token {
+                tokens.emplace_back(
                     pos,
                     start_line,
                     start_col,
                     lexeme,
                     token_type
-                });
+                );
 
                 continue;
             }
@@ -352,13 +352,13 @@ public:
                 
                 std::string lexeme = source.substr(start, pos - start);
 
-                tokens.push_back(Token {
+                tokens.emplace_back(
                     pos,
                     start_line,
                     start_col,
                     lexeme,
                     !is_float ? TokenType::TOKEN_INTEGER : TokenType::TOKEN_FLOAT
-                });
+                );
 
                 continue;
             }
@@ -371,143 +371,143 @@ public:
                 case ',':
                     consume();
 
-                    tokens.push_back(Token {
+                    tokens.emplace_back(
                         pos,
                         start_line,
                         start_col,
                         source.substr(start, pos - start),
                         TokenType::TOKEN_COMMA
-                    });
+                    );
 
                     continue;
 
                 case ':':
                     consume();
 
-                    tokens.push_back(Token {
+                    tokens.emplace_back(
                         pos,
                         start_line,
                         start_col,
                         source.substr(start, pos - start),
                         TokenType::TOKEN_COLON
-                    });
+                    );
 
                     continue;
 
                 case '(':
                     consume();
 
-                    tokens.push_back(Token {
+                    tokens.emplace_back(
                         pos,
                         start_line,
                         start_col,
                         source.substr(start, pos - start),
                         TokenType::TOKEN_LPAREN
-                    });
+                    );
 
                     continue;
 
                 case ')':
                     consume();
 
-                    tokens.push_back(Token {
+                    tokens.emplace_back(
                         pos,
                         start_line,
                         start_col,
                         source.substr(start, pos - start),
                         TokenType::TOKEN_RPAREN
-                    });
+                    );
 
                     continue;
 
                 case '{':
                     consume();
 
-                    tokens.push_back(Token {
+                    tokens.emplace_back(
                         pos,
                         start_line,
                         start_col,
                         source.substr(start, pos - start),
                         TokenType::TOKEN_LBRACE
-                    });
+                    );
 
                     continue;
 
                 case '}':
                     consume();
 
-                    tokens.push_back(Token {
+                    tokens.emplace_back(
                         pos,
                         start_line,
                         start_col,
                         source.substr(start, pos - start),
                         TokenType::TOKEN_RBRACE
-                    });
+                    );
 
                     continue;
 
                 case '[':
                     consume();
 
-                    tokens.push_back(Token {
+                    tokens.emplace_back(
                         pos,
                         start_line,
                         start_col,
                         source.substr(start, pos - start),
                         TokenType::TOKEN_LBRACKET
-                    });
+                    );
 
                     continue;
 
                 case ']':
                     consume();
 
-                    tokens.push_back(Token {
+                    tokens.emplace_back(
                         pos,
                         start_line,
                         start_col,
                         source.substr(start, pos - start),
                         TokenType::TOKEN_RBRACKET
-                    });
+                    );
 
                     continue;
 
                 case ';':
                     consume();
 
-                    tokens.push_back(Token {
+                    tokens.emplace_back(
                         pos,
                         start_line,
                         start_col,
                         source.substr(start, pos - start),
                         TokenType::TOKEN_SEMICOLON
-                    });
+                    );
 
                     continue;
 
                 case '"':
                     consume();
 
-                    tokens.push_back(Token {
+                    tokens.emplace_back(
                         pos,
                         start_line,
                         start_col,
                         source.substr(start, pos - start),
                         TokenType::TOKEN_QUOTE
-                    });
+                    );
 
                     continue;
 
                 case '\'':
                     consume();
 
-                    tokens.push_back(Token {
+                    tokens.emplace_back(
                         pos,
                         start_line,
                         start_col,
                         source.substr(start, pos - start),
                         TokenType::TOKEN_APOSTRAPHE
-                    });
+                    );
 
                     continue;
 
@@ -519,26 +519,26 @@ public:
                     {
                         consume();
 
-                        tokens.push_back(Token {
+                        tokens.emplace_back(
                             pos,
                             start_line,
                             start_col,
                             source.substr(start, pos - start),
                             TokenType::TOKEN_EQUALS
-                        });
+                        );
 
                         continue;
                     }
 
                     else
                     {
-                        tokens.push_back(Token {
+                        tokens.emplace_back(
                             pos,
                             start_line,
                             start_col,
                             source.substr(start, pos - start),
                             TokenType::TOKEN_ASSIGN
-                        });
+                        );
 
                         continue;
                     }
@@ -550,26 +550,26 @@ public:
                     {
                         consume();
                      
-                        tokens.push_back(Token {
+                        tokens.emplace_back(
                             pos,
                             start_line,
                             start_col,
                             source.substr(start, pos - start),
                             TokenType::TOKEN_ADD_ASSIGN
-                        });
+                        );
 
                         continue;
                     }
 
                     else
                     {
-                        tokens.push_back(Token {
+                        tokens.emplace_back(
                             pos,
                             start_line,
                             start_col,
                             source.substr(start, pos - start),
                             TokenType::TOKEN_ADD
-                        });
+                        );
 
                         continue;
                     }
@@ -581,26 +581,26 @@ public:
                     {
                         consume();
                      
-                        tokens.push_back(Token {
+                        tokens.emplace_back(
                             pos,
                             start_line,
                             start_col,
                             source.substr(start, pos - start),
                             TokenType::TOKEN_SUB_ASSIGN
-                        });
+                        );
 
                         continue;
                     }
 
                     else
                     {
-                        tokens.push_back(Token {
+                        tokens.emplace_back(
                             pos,
                             start_line,
                             start_col,
                             source.substr(start, pos - start),
                             TokenType::TOKEN_SUB
-                        });
+                        );
 
                         continue;
                     }
@@ -612,13 +612,13 @@ public:
                     {
                         consume();
                      
-                        tokens.push_back(Token {
+                        tokens.emplace_back(
                             pos,
                             start_line,
                             start_col,
                             source.substr(start, pos - start),
                             TokenType::TOKEN_MUL_ASSIGN
-                        });
+                        );
 
                         continue;
                     }
@@ -631,24 +631,24 @@ public:
                         {
                             consume();
                             
-                            tokens.push_back(Token {
+                            tokens.emplace_back(
                                 pos,
                                 start_line,
                                 start_col,
                                 source.substr(start, pos - start),
                                 TokenType::TOKEN_POW_ASSIGN
-                            });
+                            );
                         }
 
                         else
                         {
-                            tokens.push_back(Token {
+                            tokens.emplace_back(
                                 pos,
                                 start_line,
                                 start_col,
                                 source.substr(start, pos - start),
                                 TokenType::TOKEN_POW
-                            });
+                            );
                         }
 
                         continue;
@@ -656,13 +656,13 @@ public:
 
                     else
                     {
-                        tokens.push_back(Token {
+                        tokens.emplace_back(
                             pos,
                             start_line,
                             start_col,
                             source.substr(start, pos - start),
                             TokenType::TOKEN_MUL
-                        });
+                        );
 
                         continue;
                     }
@@ -674,13 +674,13 @@ public:
                     {
                         consume();
                      
-                        tokens.push_back(Token {
+                        tokens.emplace_back(
                             pos,
                             start_line,
                             start_col,
                             source.substr(start, pos - start),
                             TokenType::TOKEN_DIV_ASSIGN
-                        });
+                        );
 
                         continue;
                     }
@@ -693,24 +693,24 @@ public:
                         {
                             consume();
 
-                            tokens.push_back(Token {
+                            tokens.emplace_back(
                                 pos,
                                 start_line,
                                 start_col,
                                 source.substr(start, pos - start),
                                 TokenType::TOKEN_FLOOR_DIV_ASSIGN
-                            });
+                            );
                         }
 
                         else
                         {
-                            tokens.push_back(Token {
+                            tokens.emplace_back(
                                 pos,
                                 start_line,
                                 start_col,
                                 source.substr(start, pos - start),
                                 TokenType::TOKEN_FLOOR_DIV
-                            });
+                            );
                         }
 
                         continue;
@@ -718,13 +718,13 @@ public:
 
                     else
                     {
-                        tokens.push_back(Token {
+                        tokens.emplace_back(
                             pos,
                             start_line,
                             start_col,
                             source.substr(start, pos - start),
                             TokenType::TOKEN_DIV
-                        });
+                        );
 
                         continue;
                     }
@@ -736,26 +736,26 @@ public:
                     {
                         consume();
                      
-                        tokens.push_back(Token {
+                        tokens.emplace_back(
                             pos,
                             start_line,
                             start_col,
                             source.substr(start, pos - start),
                             TokenType::TOKEN_REMAINDER_ASSIGN
-                        });
+                        );
 
                         continue;
                     }
 
                     else
                     {
-                        tokens.push_back(Token {
+                        tokens.emplace_back(
                             pos,
                             start_line,
                             start_col,
                             source.substr(start, pos - start),
                             TokenType::TOKEN_REMAINDER
-                        });
+                        );
 
                         continue;
                     }
@@ -767,26 +767,26 @@ public:
                     {
                         consume();
                      
-                        tokens.push_back(Token {
+                        tokens.emplace_back(
                             pos,
                             start_line,
                             start_col,
                             source.substr(start, pos - start),
                             TokenType::TOKEN_GREATER_EQUAL
-                        });
+                        );
 
                         continue;
                     }
 
                     else
                     {
-                        tokens.push_back(Token {
+                        tokens.emplace_back(
                             pos,
                             start_line,
                             start_col,
                             source.substr(start, pos - start),
                             TokenType::TOKEN_GREATER
-                        });
+                        );
 
                         continue;
                     }
@@ -798,26 +798,26 @@ public:
                     {
                         consume();
                      
-                        tokens.push_back(Token {
+                        tokens.emplace_back(
                             pos,
                             start_line,
                             start_col,
                             source.substr(start, pos - start),
                             TokenType::TOKEN_LESS_EQUAL
-                        });
+                        );
 
                         continue;
                     }
 
                     else
                     {
-                        tokens.push_back(Token {
+                        tokens.emplace_back(
                             pos,
                             start_line,
                             start_col,
                             source.substr(start, pos - start),
                             TokenType::TOKEN_LESS
-                        });
+                        );
 
                         continue;
                     }
@@ -829,13 +829,13 @@ public:
                     {
                         consume();
                      
-                        tokens.push_back(Token {
+                        tokens.emplace_back(
                             pos,
                             start_line,
                             start_col,
                             source.substr(start, pos - start),
                             TokenType::TOKEN_NOT_EQUALS
-                        });
+                        );
 
                         continue;
                     }
@@ -844,13 +844,13 @@ public:
                     {
                         consume();
                         
-                        tokens.push_back(Token {
+                        tokens.emplace_back(
                             pos,
                             start_line,
                             start_col,
                             source.substr(start, pos - start),
                             TokenType::TOKEN_NOT_NULL_ASSERT
-                        });
+                        );
 
                         continue;
                     }
@@ -875,13 +875,13 @@ public:
                     {
                         consume();
                         
-                        tokens.push_back(Token {
+                        tokens.emplace_back(
                             pos,
                             start_line,
                             start_col,
                             source.substr(start, pos - start),
                             TokenType::TOKEN_ELVIS
-                        });
+                        );
 
                         continue;
                     }
