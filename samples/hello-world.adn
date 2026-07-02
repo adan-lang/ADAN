@@ -1,0 +1,5 @@
+using module std.io;
+
+var hello_world: String = "Hello, world!";
+
+io.log(hello_world);
