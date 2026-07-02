@@ -19,6 +19,7 @@ std::unordered_map<std::string, TokenType> Keywords = {
     {"include",  TOKEN_INCLUDE},    // Include source files using a file-path system. Example: "src/utils/parser.adn"
     {"using",    TOKEN_USING},      // Modular importing system, similar to C#. Resolve libraries via name rather than path.
     {"export",   TOKEN_EXPORT},     // Export functions, variables, etc. to be used in other files. (Required when creating libraries)
+    {"todo",     TOKEN_TODO},       // Works similarly to Python's `pass` keyword, and Gleam's `todo` keyword.
 };
 
 std::unordered_map<std::string, TokenType> Types = {

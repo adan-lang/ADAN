@@ -28,6 +28,7 @@ typedef enum TokenType
     TOKEN_INCLUDE,
     TOKEN_USING,
     TOKEN_EXPORT,
+    TOKEN_TODO,
 
     /* Types */
     TOKEN_STRING,
