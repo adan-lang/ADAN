@@ -2,7 +2,7 @@
 #include <string>
 #include <string_view>
 
-std::string __LOCAL_VERSION__ = "1.0.c"; // probably not an ideal way of doing this
+std::string __LOCAL_VERSION__ = "1.0.cb"; // probably not an ideal way of doing this
 
 struct Option {
     std::string_view short_name;
@@ -46,20 +46,22 @@ int main(
             {
                 if (arg == "v" || arg == "version")
                 {
-                    std::cout << __LOCAL_VERSION__ << "\n";
+                    std::cout << "ADAN version " << __LOCAL_VERSION__ << "\n";
                 }
 
                 else if (arg == "h" || arg == "help")
                 {
                     std::cout <<
 
-                        "Usage: " << argv[0] << " [options] <file>" << "\n\n" <<
-                        "Arguments:" << "\n" <<
-                        "   --version, -v       Get your version of ADAN that's on your machine." << "\n" <<
-                        "   --help, -h          Display this message." << "\n\n" <<
+                        "\x1b[1mUsage\x1b[0m: " << argv[0] << " \x1b[2m[options]\x1b[0m <file>" << "\n\n" <<
+                        "\x1b[1mArguments\x1b[0m:" << "\n" <<
+                        "   \x1b[32m--version\x1b[0m, \x1b[32m-v\x1b[0m       Get your version of ADAN that's on your machine." << "\n" <<
+                        "   \x1b[32m--help\x1b[0m, \x1b[32m-h\x1b[0m          Display this message." << "\n\n" <<
                         
                         "Support the development of ADAN by starring the " << "\n" <<
-                        "  repository on GitHub: " << "https://github.adan.sh/" << "\n\n" <<
+                        "repository on GitHub." << "\n\n" <<
+                        
+                        "  → \x1b[3m\x1b[34m\x1b[1mhttps://github.adan.sh/\x1b[0m" << "\n\n" <<
 
                         "For reporting a bug, create a new issue on GitHub."
                         

@@ -1,0 +1,10 @@
+x.x.mi <-- Minireenas,       FNaF 5 A
+x.x.bb <-- Balloon Boy,      FNaF 2 B
+x.x.cb <-- Circus Baby,      FNaF 5 C
+x.x.tc <-- Toy Chica,        FNaF 2 D
+x.x.rw <-- Roxanne Wolf,     FNaF 9 E
+x.x.mn <-- Mangle,           FNaF 2 F
+x.x.mg <-- Montgomery Gator, FNaF 9 G
+x.x.gc <-- Glamrock Chica,   FNaF 9 H
+x.x.tf <-- Toy Freddy,       FNaF 2 I
+x.x.ff <-- Funtime Foxy,     FNaF 5 J
