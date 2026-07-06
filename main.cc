@@ -59,7 +59,7 @@ int main(
                         "   --help, -h          Display this message." << "\n\n" <<
                         
                         "Support the development of ADAN by starring the " << "\n" <<
-                        "repository on GitHub: " << "https://github.adan.sh/" << "\n\n" <<
+                        "  repository on GitHub: " << "https://github.adan.sh/" << "\n\n" <<
 
                         "For reporting a bug, create a new issue on GitHub."
                         
