@@ -1,6 +1,6 @@
 <div align="center">
    <h1>The ADAN Programming Language</h1>
-   <img alt="Version" src="https://img.shields.io/badge/version-1.0.b-blue">
+   <img alt="Version" src="https://img.shields.io/badge/version-1.0.c-blue">
    <img alt="Latest Release" src="https://img.shields.io/github/v/release/transicle/adan">
    <img alt="Docs" src="https://img.shields.io/badge/docs-docs.adan.sh-blue">
    <br><br>
