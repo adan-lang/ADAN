@@ -20,7 +20,7 @@ int main(
 ) {
     if (argc < 2)
     {
-        std::cout << "Usage: " << argv[0] << " <arg>\n";
+        std::cout << "Usage: " << argv[0] << " [options] <file>\n";
         return 1;
     }
 
@@ -47,6 +47,23 @@ int main(
                 if (arg == "v" || arg == "version")
                 {
                     std::cout << __LOCAL_VERSION__ << "\n";
+                }
+
+                else if (arg == "h" || arg == "help")
+                {
+                    std::cout <<
+
+                        "Usage: " << argv[0] << " [options] <file>" << "\n\n" <<
+                        "Arguments:" << "\n" <<
+                        "   --version, -v           Get your version of ADAN that's on your machine." << "\n" <<
+                        "   --help, -h              Display this message." << "\n\n" <<
+                        
+                        "Support the development of ADAN by starring the repository" << "\n" <<
+                        "on GitHub:" << "https://github.adan.sh/" << "\n\n" <<
+
+                        "For reporting a bug, create a new issue on GitHub."
+                        
+                    << "\n";
                 }
                 
                 break;
