@@ -55,11 +55,11 @@ int main(
 
                         "Usage: " << argv[0] << " [options] <file>" << "\n\n" <<
                         "Arguments:" << "\n" <<
-                        "   --version, -v           Get your version of ADAN that's on your machine." << "\n" <<
-                        "   --help, -h              Display this message." << "\n\n" <<
+                        "   --version, -v       Get your version of ADAN that's on your machine." << "\n" <<
+                        "   --help, -h          Display this message." << "\n\n" <<
                         
-                        "Support the development of ADAN by starring the repository" << "\n" <<
-                        "on GitHub:" << "https://github.adan.sh/" << "\n\n" <<
+                        "Support the development of ADAN by starring the " << "\n" <<
+                        "repository on GitHub: " << "https://github.adan.sh/" << "\n\n" <<
 
                         "For reporting a bug, create a new issue on GitHub."
                         
