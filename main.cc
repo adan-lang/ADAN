@@ -12,6 +12,7 @@ struct Option {
 constexpr Option options[] = {
     {"v", "version"},
     {"h", "help"},
+    {"t", "test"},
 };
 
 int main(
@@ -66,6 +67,11 @@ int main(
                         "For reporting a bug, create a new issue on GitHub."
                         
                     << "\n";
+                }
+
+                else if (arg == "t" || arg == "test")
+                {
+                    
                 }
                 
                 break;

@@ -70,6 +70,7 @@ void Lexer::scan_comments(
                 abort = true;
                 
                 Error non_terminating_comment;
+
                 non_terminating_comment.message = "Never ending multiline comment found";
                 non_terminating_comment.severity = ErrorSeverity::SEVERITY_FATAL;
                 non_terminating_comment.line = line;
@@ -762,6 +763,7 @@ std::vector<Token> Lexer::scan()
                 else
                 {
                     Error unexpected_char;
+                    
                     unexpected_char.message = "An unexpected character found after \"!\"";
                     unexpected_char.severity = ErrorSeverity::SEVERITY_ERROR;
                     unexpected_char.line = line;
@@ -793,6 +795,7 @@ std::vector<Token> Lexer::scan()
                 else
                 {
                     Error unexpected_char;
+
                     unexpected_char.message = "An unexpected character found after \"?\"";
                     unexpected_char.severity = ErrorSeverity::SEVERITY_ERROR;
                     unexpected_char.line = line;
@@ -805,6 +808,7 @@ std::vector<Token> Lexer::scan()
 
             default:
                 Error unexpected_char;
+
                 unexpected_char.message = "An unexpected character found";
                 unexpected_char.severity = ErrorSeverity::SEVERITY_ERROR;
                 unexpected_char.line = line;
