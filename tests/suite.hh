@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 #include <functional>
 #include <string_view>
@@ -24,7 +26,7 @@ class TestSuite
 {
 private:
     std::string test_name_;
-    std::function<T(std::string_view)> run_fn_;
+    std::function<T> run_fn_;
     std::function<std::string(const T&)> serialize_fn_;
     std::vector<Case> cases_;
 
