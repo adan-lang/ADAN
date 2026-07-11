@@ -1,15 +1,15 @@
-#pragma
+#pragma once
 
 #include <string>
 
-typedef enum ErrorSeverity
+enum ErrorSeverity
 {
     SEVERITY_FATAL,
     SEVERITY_ERROR,
     SEVERITY_WARN
 };
 
-typedef struct Error
+struct Error
 {
     std::string message;
     ErrorSeverity severity;

@@ -1,0 +1,46 @@
+cmake_minimum_required(VERSION 3.20)
+
+if(NOT DEFINED CMAKE_C_COMPILER)
+    set(CMAKE_C_COMPILER gcc)
+endif()
+
+if(NOT DEFINED CMAKE_CXX_COMPILER)
+    set(CMAKE_CXX_COMPILER g++)
+endif()
+
+project(adan CXX)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    message(FATAL_ERROR "This project must be built with GCC (g++), but detected '${CMAKE_CXX_COMPILER_ID}'.")
+endif()
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
+
+file(GLOB_RECURSE ADAN_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_SOURCE_DIR}/*.cc"
+)
+
+list(FILTER ADAN_SOURCES EXCLUDE REGEX "${CMAKE_BINARY_DIR}/.*")
+
+file(GLOB_RECURSE ADAN_HEADERS CONFIGURE_DEPENDS
+    "${CMAKE_SOURCE_DIR}/*.hh"
+)
+list(FILTER ADAN_HEADERS EXCLUDE REGEX "${CMAKE_BINARY_DIR}/.*")
+
+set(ADAN_INCLUDE_DIRS "")
+foreach(header_file ${ADAN_HEADERS})
+    get_filename_component(header_dir ${header_file} DIRECTORY)
+    list(APPEND ADAN_INCLUDE_DIRS ${header_dir})
+endforeach()
+list(REMOVE_DUPLICATES ADAN_INCLUDE_DIRS)
+
+add_executable(${PROJECT_NAME} ${ADAN_SOURCES} ${ADAN_HEADERS})
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${CMAKE_SOURCE_DIR}
+    ${ADAN_INCLUDE_DIRS}
+)

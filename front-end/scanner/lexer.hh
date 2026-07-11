@@ -8,8 +8,8 @@
 #include <vector>
 #include <cctype>
 
-#include "../../utility/errors.hh"
-#include "../tokens.hh"
+#include "errors.hh"
+#include "tokens.hh"
 
 typedef struct LexerType
 {

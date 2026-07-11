@@ -29,6 +29,9 @@ typedef enum TokenType
     TOKEN_USING,
     TOKEN_EXPORT,
     TOKEN_TODO,
+    TOKEN_AND,
+    TOKEN_OR,
+    TOKEN_ELSE,
 
     /* Types */
     TOKEN_STRING,
@@ -52,9 +55,16 @@ typedef enum TokenType
     TOKEN_RBRACKET,
     TOKEN_SEMICOLON,
     TOKEN_QUOTE,
-    TOKEN_APOSTRAPHE,
+    TOKEN_APOSTROPHE,
     TOKEN_COMMENT,
     TOKEN_MULTILINE_COMMENT,
+    TOKEN_QUESTION,
+    TOKEN_PERIOD,
+
+    /* Literals */
+    TOKEN_INT_LITERAL,
+    TOKEN_FLOAT_LITERAL,
+    TOKEN_STRING_LITERAL,
 
     /* Binary Operators */
     TOKEN_ADD,
@@ -69,8 +79,6 @@ typedef enum TokenType
     TOKEN_LESS_EQUAL,
     TOKEN_GREATER,
     TOKEN_GREATER_EQUAL,
-    TOKEN_AND,
-    TOKEN_OR,
     TOKEN_ASSIGN,
     TOKEN_ADD_ASSIGN,
     TOKEN_SUB_ASSIGN,

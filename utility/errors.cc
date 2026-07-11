@@ -1,5 +1,5 @@
 #include <cstdlib>
-#include <print>
+#include <iostream>
 
 #include "errors.hh"
 
@@ -8,17 +8,16 @@ void report(
 ) {
     if (error.severity == SEVERITY_FATAL)
     {
-        std::print("[FATAL Error]: {} on line {}:{}", error.message, error.line, error.col);
-        std::exit(1);
+        std::cout << "[FATAL Error]: " << error.message << " on line " << error.line << ":" << error.col << "\n";
     }
 
     else if (error.severity == SEVERITY_ERROR)
     {
-        std::print("[Error]: {} on line {}:{}", error.message, error.line, error.col);
+        std::cout << "[Error]: " << error.message << " on line " << error.line << ":" << error.col << "\n";
     }
 
     else if (error.severity == SEVERITY_WARN)
     {
-        std::print("[Warning]: {} on line {}:{}", error.message, error.line, error.col);
+        std::cout << "[Warning]: " << error.message << " on line " << error.line << ":" << error.col << "\n";
     }
 }

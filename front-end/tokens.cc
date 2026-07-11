@@ -20,6 +20,9 @@ std::unordered_map<std::string, TokenType> Keywords = {
     {"using",    TOKEN_USING},      // Modular importing system, similar to C#. Resolve libraries via name rather than path.
     {"export",   TOKEN_EXPORT},     // Export functions, variables, etc. to be used in other files. (Required when creating libraries)
     {"todo",     TOKEN_TODO},       // Works similarly to Python's `pass` keyword, and Gleam's `todo` keyword.
+    {"and",      TOKEN_AND},
+    {"or",       TOKEN_OR},
+    {"else",     TOKEN_ELSE},
 };
 
 std::unordered_map<std::string, TokenType> Types = {
@@ -47,7 +50,9 @@ std::unordered_map<std::string, TokenType> Symbols = {
     {"]",  TOKEN_RBRACKET},
     {";",  TOKEN_SEMICOLON},
     {"\"", TOKEN_QUOTE},
-    {"'",  TOKEN_APOSTRAPHE},
+    {"'",  TOKEN_APOSTROPHE},
+    {".",  TOKEN_PERIOD},
+    {"?",  TOKEN_QUESTION},
 
     /* Binary Operators */
     {"+",   TOKEN_ADD},
@@ -62,8 +67,6 @@ std::unordered_map<std::string, TokenType> Symbols = {
     {"<=",  TOKEN_LESS_EQUAL},
     {">",   TOKEN_GREATER},
     {">=",  TOKEN_GREATER_EQUAL},
-    {"and", TOKEN_AND},
-    {"or",  TOKEN_OR},
     {"=",   TOKEN_ASSIGN},
     {"+=",  TOKEN_ADD_ASSIGN},
     {"-=",  TOKEN_SUB_ASSIGN},

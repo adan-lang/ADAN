@@ -2,6 +2,8 @@
 #include <string>
 #include <string_view>
 
+#include "lexer-tests.hh"
+
 std::string __LOCAL_VERSION__ = "1.0.cb"; // probably not an ideal way of doing this
 
 struct Option {
@@ -71,7 +73,7 @@ int main(
 
                 else if (arg == "t" || arg == "test")
                 {
-                    
+                    run_lexer_tests();
                 }
                 
                 break;

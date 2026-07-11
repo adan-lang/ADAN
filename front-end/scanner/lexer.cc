@@ -6,7 +6,7 @@
 // private
 
 char Lexer::peek(
-    int offset = 0
+    int offset
 ) {
     if ((pos + offset) >= source.length())
     {
@@ -54,51 +54,87 @@ bool Lexer::match(
 void Lexer::scan_comments(
     std::vector<Token>& tokens
 ) {
+    if (peek() != '#')
+    {
+        return;
+    }
+
     int start = pos;
     int start_line = line;
     int start_col = col;
+    int delimiter{};
 
-    if (peek() == '#' && peek_next() == '#')
+    while (peek() == '#')
     {
         consume();
-        consume();
+        delimiter++;
+    }
 
-        while (!(peek() == '#' && peek_next() == '#'))
-        {
-            if (peek() == '\0')
-            {
-                abort = true;
-                
-                Error non_terminating_comment;
-
-                non_terminating_comment.message = "Never ending multiline comment found";
-                non_terminating_comment.severity = ErrorSeverity::SEVERITY_FATAL;
-                non_terminating_comment.line = line;
-                non_terminating_comment.col = col;
-
-                report(non_terminating_comment);
-                break;
-            }
-
-            consume();
-        }
-
-        if (peek() != '\0')
+    if (delimiter == 1)
+    {
+        while (peek() != '\n' && peek() != '\0')
         {
             consume();
-            consume();
         }
-
-        std::string lexeme = source.substr(start, pos - start);
 
         tokens.emplace_back(
             pos,
             start_line,
             start_col,
-            lexeme,
-            TokenType::TOKEN_MULTILINE_COMMENT
+            source.substr(start, pos - start),
+            TokenType::TOKEN_COMMENT
         );
+
+        return;
     }
+
+    while (true)
+    {
+        if (peek() == '\0')
+        {
+            abort = true;
+
+            Error err;
+
+            err.message = "Never ending multiline comment found";
+            err.severity = SEVERITY_FATAL;
+            err.line = start_line;
+            err.col = start_col;
+
+            report(err);
+            return;
+        }
+
+        if (peek() == '#')
+        {
+            int count = 0;
+
+            while (peek(count) == '#')
+            {
+                count++;
+            }
+
+            if (count == delimiter)
+            {
+                for (int i = 0; i < delimiter; i++)
+                {
+                    consume();
+                }
+
+                break;
+            }
+        }
+
+        consume();
+    }
+
+    tokens.emplace_back(
+        pos,
+        start_line,
+        start_col,
+        source.substr(start, pos - start),
+        TokenType::TOKEN_MULTILINE_COMMENT
+    );
 }
 
 void Lexer::scan_whitespace(
@@ -147,6 +183,11 @@ std::vector<Token> Lexer::scan()
 
     for (;;)
     {
+        if (abort)
+        {
+            break;
+        }
+
         for (;;)
         {
             int current_pos{pos};
@@ -218,7 +259,7 @@ std::vector<Token> Lexer::scan()
         {
             int start{pos};
             bool is_float = false;
-            
+
             consume();
 
             while (std::isdigit(peek()))
@@ -242,11 +283,9 @@ std::vector<Token> Lexer::scan()
 
                 else
                 {
-                    abort = true;
-
                     Error incomplete_floating_point;
 
-                    incomplete_floating_point.message = "Incomplete floating point value found; meaning you have `<INTEGER>.`, without anything afterwards found";
+                    incomplete_floating_point.message = "Incomplete floating point value found; meaning you have `<INTEGER>.`, without anything afterwards, found";
                     incomplete_floating_point.severity = ErrorSeverity::SEVERITY_ERROR;
                     incomplete_floating_point.line = start_line;
                     incomplete_floating_point.col = start_col;
@@ -254,7 +293,27 @@ std::vector<Token> Lexer::scan()
                     report(incomplete_floating_point);
                 }
             }
-            
+
+            if (std::isalpha(peek()) || peek() == '_')
+            {
+                while (std::isalnum(peek()) || peek() == '_')
+                {
+                    consume();
+                }
+
+                std::string lexeme = source.substr(start, pos - start);
+
+                tokens.emplace_back(
+                    pos,
+                    start_line,
+                    start_col,
+                    lexeme,
+                    TokenType::TOKEN_IDENTIFIER
+                );
+
+                continue;
+            }
+
             std::string lexeme = source.substr(start, pos - start);
 
             tokens.emplace_back(
@@ -262,8 +321,92 @@ std::vector<Token> Lexer::scan()
                 start_line,
                 start_col,
                 lexeme,
-                !is_float ? TokenType::TOKEN_INTEGER : TokenType::TOKEN_FLOAT
+                !is_float ? TokenType::TOKEN_INT_LITERAL : TokenType::TOKEN_FLOAT_LITERAL
             );
+
+            continue;
+        }
+
+        if (current == '"')
+        {
+            int start{pos};
+            int str_start_line{start_line};
+            int str_start_col{start_col};
+
+            consume();
+
+            while (true)
+            {
+                if (peek() == '\0')
+                {
+                    abort = true;
+
+                    Error unterminated_string;
+
+                    unterminated_string.message = "Unterminated string literal";
+                    unterminated_string.severity = SEVERITY_FATAL;
+                    unterminated_string.line = str_start_line;
+                    unterminated_string.col = str_start_col;
+
+                    report(unterminated_string);
+                    break;
+                }
+
+                if (peek() == '\\')
+                {
+                    consume(); // '\'
+
+                    switch (peek())
+                    {
+                        case 'n':
+                        case 'r':
+                        case 't':
+                        case '"':
+                        case '\'':
+                        case '\\':
+                            consume();
+                            break;
+
+                        default:
+                        {
+                            Error invalid_escape;
+
+                            invalid_escape.message = "Invalid escape sequence";
+                            invalid_escape.severity = SEVERITY_ERROR;
+                            invalid_escape.line = line;
+                            invalid_escape.col = col;
+
+                            report(invalid_escape);
+
+                            consume();
+                            break;
+                        }
+                    }
+
+                    continue;
+                }
+
+                if (peek() == '"')
+                {
+                    consume();
+                    break;
+                }
+
+                consume();
+            }
+
+            if (!abort)
+            {
+                std::string lexeme = source.substr(start, pos - start);
+
+                tokens.emplace_back(
+                    pos,
+                    str_start_line,
+                    str_start_col,
+                    lexeme,
+                    TokenType::TOKEN_STRING_LITERAL
+                );
+            }
 
             continue;
         }
@@ -282,6 +425,19 @@ std::vector<Token> Lexer::scan()
                     start_col,
                     source.substr(start, pos - start),
                     TokenType::TOKEN_COMMA
+                );
+
+                continue;
+
+            case '.':
+                consume();
+
+                tokens.emplace_back(
+                    pos,
+                    start_line,
+                    start_col,
+                    source.substr(start, pos - start),
+                    TokenType::TOKEN_PERIOD
                 );
 
                 continue;
@@ -390,19 +546,6 @@ std::vector<Token> Lexer::scan()
 
                 continue;
 
-            case '"':
-                consume();
-
-                tokens.emplace_back(
-                    pos,
-                    start_line,
-                    start_col,
-                    source.substr(start, pos - start),
-                    TokenType::TOKEN_QUOTE
-                );
-
-                continue;
-
             case '\'':
                 consume();
 
@@ -411,7 +554,7 @@ std::vector<Token> Lexer::scan()
                     start_line,
                     start_col,
                     source.substr(start, pos - start),
-                    TokenType::TOKEN_APOSTRAPHE
+                    TokenType::TOKEN_APOSTROPHE
                 );
 
                 continue;
@@ -499,12 +642,31 @@ std::vector<Token> Lexer::scan()
 
                 else
                 {
+                    auto it = tokens.rbegin();
+                    
+                    while (it != tokens.rend() &&
+                          (it->type == TokenType::TOKEN_WHITESPACE ||
+                           it->type == TokenType::TOKEN_COMMENT    ||
+                           it->type == TokenType::TOKEN_MULTILINE_COMMENT))
+                    {
+                        ++it;
+                    }
+
+                    bool prev_ends_expression =
+                        it != tokens.rend() &&
+                       (it->type == TokenType::TOKEN_IDENTIFIER     ||
+                        it->type == TokenType::TOKEN_INT_LITERAL    ||
+                        it->type == TokenType::TOKEN_FLOAT_LITERAL  ||
+                        it->type == TokenType::TOKEN_STRING_LITERAL ||
+                        it->type == TokenType::TOKEN_RPAREN         ||
+                        it->type == TokenType::TOKEN_RBRACKET);
+
                     tokens.emplace_back(
                         pos,
                         start_line,
                         start_col,
                         source.substr(start, pos - start),
-                        TokenType::TOKEN_SUB
+                        prev_ends_expression ? TokenType::TOKEN_SUB : TokenType::TOKEN_NEGATE
                     );
 
                     continue;
@@ -733,15 +895,15 @@ std::vector<Token> Lexer::scan()
                 if (peek() == '=')
                 {
                     consume();
-                    
+
                     tokens.emplace_back(
-                        pos,
-                        start_line,
-                        start_col,
-                        source.substr(start, pos - start),
+                        pos, 
+                        start_line, 
+                        start_col, 
+                        source.substr(start, pos - start), 
                         TokenType::TOKEN_NOT_EQUALS
                     );
-
+                    
                     continue;
                 }
 
@@ -750,42 +912,41 @@ std::vector<Token> Lexer::scan()
                     consume();
                     
                     tokens.emplace_back(
-                        pos,
-                        start_line,
-                        start_col,
-                        source.substr(start, pos - start),
+                        pos, 
+                        start_line, 
+                        start_col, 
+                        source.substr(start, pos - start), 
                         TokenType::TOKEN_NOT_NULL_ASSERT
                     );
-
+                    
                     continue;
                 }
 
                 else
                 {
-                    Error unexpected_char;
+                    tokens.emplace_back(
+                        pos, 
+                        start_line, 
+                        start_col, 
+                        source.substr(start, pos - start), 
+                        TokenType::TOKEN_NOT
+                    );
                     
-                    unexpected_char.message = "An unexpected character found after \"!\"";
-                    unexpected_char.severity = ErrorSeverity::SEVERITY_ERROR;
-                    unexpected_char.line = line;
-                    unexpected_char.col = col;
-
-                    report(unexpected_char);
-
                     continue;
                 }
 
             case '?':
                 consume();
-                
+
                 if (peek() == ':')
                 {
                     consume();
                     
                     tokens.emplace_back(
-                        pos,
-                        start_line,
-                        start_col,
-                        source.substr(start, pos - start),
+                        pos, 
+                        start_line, 
+                        start_col, 
+                        source.substr(start, pos - start), 
                         TokenType::TOKEN_ELVIS
                     );
 
@@ -794,15 +955,14 @@ std::vector<Token> Lexer::scan()
 
                 else
                 {
-                    Error unexpected_char;
-
-                    unexpected_char.message = "An unexpected character found after \"?\"";
-                    unexpected_char.severity = ErrorSeverity::SEVERITY_ERROR;
-                    unexpected_char.line = line;
-                    unexpected_char.col = col;
-
-                    report(unexpected_char);
-
+                    tokens.emplace_back(
+                        pos, 
+                        start_line, 
+                        start_col, 
+                        source.substr(start, pos - start), 
+                        TokenType::TOKEN_QUESTION
+                    );
+                    
                     continue;
                 }
 
@@ -815,6 +975,16 @@ std::vector<Token> Lexer::scan()
                 unexpected_char.col = col;
 
                 report(unexpected_char);
+
+                tokens.emplace_back(
+                    pos,
+                    start_line,
+                    start_col,
+                    std::string(1, peek()),
+                    TokenType::TOKEN_ERROR
+                );
+
+                consume();
 
                 continue;
         }
