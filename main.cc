@@ -59,6 +59,7 @@ int main(
                         "\x1b[1mUsage\x1b[0m: " << argv[0] << " \x1b[2m[options]\x1b[0m <file>" << "\n\n" <<
                         "\x1b[1mArguments\x1b[0m:" << "\n" <<
                         "   \x1b[32m--version\x1b[0m, \x1b[32m-v\x1b[0m       Get your version of ADAN that's on your machine." << "\n" <<
+                        "   \x1b[32m--test\x1b[0m, \x1b[32m-t\x1b[0m          Run diagnostics for every compiler component." << "\n" <<
                         "   \x1b[32m--help\x1b[0m, \x1b[32m-h\x1b[0m          Display this message." << "\n\n" <<
                         
                         "Support the development of ADAN by starring the " << "\n" <<
