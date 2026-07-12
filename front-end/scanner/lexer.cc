@@ -97,7 +97,7 @@ void Lexer::scan_comments(
             Error err;
 
             err.message = "Never ending multiline comment found";
-            err.severity = SEVERITY_FATAL;
+            err.severity = SEVERITY_ERROR;
             err.line = start_line;
             err.col = start_col;
 
@@ -344,7 +344,7 @@ std::vector<Token> Lexer::scan()
                     Error unterminated_string;
 
                     unterminated_string.message = "Unterminated string literal";
-                    unterminated_string.severity = SEVERITY_FATAL;
+                    unterminated_string.severity = SEVERITY_ERROR;
                     unterminated_string.line = str_start_line;
                     unterminated_string.col = str_start_col;
 
