@@ -26,7 +26,7 @@ void report(
 
     std::cout <<
 
-        pad << " " << "|" << "\x1b[0m"
+        pad << "\x1b[1;36m" << " |" << "\x1b[0m"
 
     << "\n";
 
@@ -64,7 +64,7 @@ void report(
 
             pad << " " << "\x1b[1;36m" << "|" << "\x1b[0m"
 
-        << "\n";
+        << "\n\n";
 
         std::cout <<
 
