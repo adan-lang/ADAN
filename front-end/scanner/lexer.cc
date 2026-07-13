@@ -2,6 +2,8 @@
 
 #include "tokens.hh"
 #include "lexer.hh"
+#include "lexer-errors.hh"
+#include "fsys.hh"
 
 // private
 
@@ -94,14 +96,14 @@ void Lexer::scan_comments(
         {
             abort = true;
 
-            Error err;
+            Error error;
+            error.message = std::string(message(ErrorCode::UnterminatedMultilineComment));
+            error.line = get_line(source, start_line);
+            error.severity = SEVERITY_ERROR;
+            error.line_num = start_line;
+            error.col_num = start_col;
 
-            err.message = "Never ending multiline comment found";
-            err.severity = SEVERITY_ERROR;
-            err.line = start_line;
-            err.col = start_col;
-
-            report(err);
+            report(error);
             return;
         }
 
@@ -283,14 +285,14 @@ std::vector<Token> Lexer::scan()
 
                 else
                 {
-                    Error incomplete_floating_point;
+                    Error error;
+                    error.message = std::string(message(ErrorCode::IncompleteFloat));
+                    error.line = get_line(source, start_line);
+                    error.severity = ErrorSeverity::SEVERITY_ERROR;
+                    error.line_num = start_line;
+                    error.col_num = start_col;
 
-                    incomplete_floating_point.message = "Incomplete floating point value found; meaning you have `<INTEGER>.`, without anything afterwards, found";
-                    incomplete_floating_point.severity = ErrorSeverity::SEVERITY_ERROR;
-                    incomplete_floating_point.line = start_line;
-                    incomplete_floating_point.col = start_col;
-
-                    report(incomplete_floating_point);
+                    report(error);
                 }
             }
 
@@ -341,14 +343,14 @@ std::vector<Token> Lexer::scan()
                 {
                     abort = true;
 
-                    Error unterminated_string;
+                    Error error;
+                    error.message = std::string(message(ErrorCode::UnterminatedString));
+                    error.line = get_line(source, start_line);
+                    error.severity = SEVERITY_ERROR;
+                    error.line_num = str_start_line;
+                    error.col_num = str_start_col;
 
-                    unterminated_string.message = "Unterminated string literal";
-                    unterminated_string.severity = SEVERITY_ERROR;
-                    unterminated_string.line = str_start_line;
-                    unterminated_string.col = str_start_col;
-
-                    report(unterminated_string);
+                    report(error);
                     break;
                 }
 
@@ -369,14 +371,14 @@ std::vector<Token> Lexer::scan()
 
                         default:
                         {
-                            Error invalid_escape;
+                            Error error;
+                            error.message = std::string(message(ErrorCode::InvalidCharacter));
+                            error.line = get_line(source, start_line);
+                            error.severity = SEVERITY_ERROR;
+                            error.line_num = line;
+                            error.col_num = col;
 
-                            invalid_escape.message = "Invalid escape sequence";
-                            invalid_escape.severity = SEVERITY_ERROR;
-                            invalid_escape.line = line;
-                            invalid_escape.col = col;
-
-                            report(invalid_escape);
+                            report(error);
 
                             consume();
                             break;
@@ -967,14 +969,14 @@ std::vector<Token> Lexer::scan()
                 }
 
             default:
-                Error unexpected_char;
+                Error error;
+                error.message = std::string(message(ErrorCode::InvalidCharacter));
+                error.line = get_line(source, start_line);
+                error.severity = ErrorSeverity::SEVERITY_ERROR;
+                error.line_num = line;
+                error.col_num = col;
 
-                unexpected_char.message = "An unexpected character found";
-                unexpected_char.severity = ErrorSeverity::SEVERITY_ERROR;
-                unexpected_char.line = line;
-                unexpected_char.col = col;
-
-                report(unexpected_char);
+                report(error);
 
                 tokens.emplace_back(
                     pos,

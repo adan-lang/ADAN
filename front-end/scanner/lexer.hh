@@ -77,7 +77,7 @@ private:
     bool match(
         char to_match
     );
-    
+
     /**
      * 
      * @category helper

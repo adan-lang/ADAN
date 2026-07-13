@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <string_view>
+#include <string>
 
 #include "fsys.hh"
 
@@ -16,4 +18,33 @@ std::string read_file(
     }
 
     return file_contents;
+}
+
+std::string get_line(
+    std::string_view source,
+    int line_num
+) {
+    int current_line{};
+    size_t start{};
+
+    for (size_t i{}; i < source.size(); ++i)
+    {
+        if (source[i] == '\n')
+        {
+            if (current_line == line_num)
+            {
+                return std::string(source.substr(start, i - start));
+            }
+
+            current_line;
+            start = i + 1;
+        }
+    }
+
+    if (current_line == line_num)
+    {
+        return std::string(source.substr(start));
+    }
+
+    return "";
 }
