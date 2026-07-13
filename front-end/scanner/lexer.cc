@@ -375,8 +375,8 @@ std::vector<Token> Lexer::scan()
                             error.message = std::string(message(ErrorCode::InvalidCharacter));
                             error.line = get_line(source, start_line);
                             error.severity = SEVERITY_ERROR;
-                            error.line_num = line;
-                            error.col_num = col;
+                            error.line_num = start_line;
+                            error.col_num = start_col;
 
                             report(error);
 
@@ -973,8 +973,8 @@ std::vector<Token> Lexer::scan()
                 error.message = std::string(message(ErrorCode::InvalidCharacter));
                 error.line = get_line(source, start_line);
                 error.severity = ErrorSeverity::SEVERITY_ERROR;
-                error.line_num = line;
-                error.col_num = col;
+                error.line_num = start_line;
+                error.col_num = start_col;
 
                 report(error);
 

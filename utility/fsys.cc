@@ -24,7 +24,7 @@ std::string get_line(
     std::string_view source,
     int line_num
 ) {
-    int current_line{};
+    int current_line = 1;
     size_t start{};
 
     for (size_t i{}; i < source.size(); ++i)
@@ -36,7 +36,7 @@ std::string get_line(
                 return std::string(source.substr(start, i - start));
             }
 
-            current_line;
+            current_line++;
             start = i + 1;
         }
     }

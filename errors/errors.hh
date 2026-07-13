@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <optional>
 
 enum ErrorSeverity
 {
@@ -10,11 +11,14 @@ enum ErrorSeverity
 
 struct Error
 {
-    std::string message;      // error message
-    std::string line;         // the entire line causing the issue
-    ErrorSeverity severity;   // how bad the error is
-    int line_num;             // the line number of the line
-    int col_num;              // the column, or character specifically causing the issue
+    std::string code;                    // error code (like "E0003")
+    std::string message;                 // a short title
+    std::string line;                    // the entire line causing the issue
+    ErrorSeverity severity;              // how bad the error is
+    int line_num;
+    int col_start;                       // 1-indexed, inclusive
+    int col_end;                         // 1-indexed, exclusive
+    std::optional<std::string> hint;     // help suggestion, if any
 };
 
 void report(
