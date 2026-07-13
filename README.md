@@ -15,7 +15,7 @@ ADAN is a general purpose programming language built around the idea that low le
 
 It gives you the readability _and_ simplicity of a high level language while still being capable enough for jobs that typically demand something closer to the hardware.
 
-<br>
-<div align="center">
-   <img width="585" height="215" alt="image" src="https://github.com/user-attachments/assets/2f08a4b0-a706-4517-9683-cdec155fa455" />
-</div>
+### Preview Images
+
+<img width="585" height="215" alt="image" src="https://github.com/user-attachments/assets/2f08a4b0-a706-4517-9683-cdec155fa455" />
+<img width="457" height="145" alt="image" src="https://github.com/user-attachments/assets/8e805f03-b976-4c0d-9f0e-e23fc925ae71" />
