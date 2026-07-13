@@ -1,3 +1,5 @@
+#pragma once
+
 #include <array>
 #include <string_view>
 
@@ -19,7 +21,7 @@ struct ErrorInfo
     std::string_view hint;
 };
 
-constexpr std::array<ErrorInfo, static_cast<size_t>(ErrorCode::COUNT)> ErrorTable = {{
+constexpr std::array<ErrorInfo, static_cast<size_t>(ErrorCode::COUNT)> ErrorMessages = {{
     {"E0001", "unterminated multiline comment",     "close the comment with the same number of '#' you opened it with"},
     {"E0002", "incomplete floating point value",    "add a digit after the decimal point, or remove it"},
     {"E0003", "unterminated string literal",        "add a closing '\"'"},
@@ -27,7 +29,7 @@ constexpr std::array<ErrorInfo, static_cast<size_t>(ErrorCode::COUNT)> ErrorTabl
     {"E0005", "unexpected end of file",             ""},
 }};
 
-constexpr std::string_view message(
+constexpr const ErrorInfo& info(
     ErrorCode code
 ) {
     return ErrorMessages[static_cast<size_t>(code)];

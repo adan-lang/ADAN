@@ -7,9 +7,11 @@
 #include <string>
 #include <vector>
 #include <cctype>
+#include <optional>
 
 #include "errors.hh"
 #include "tokens.hh"
+#include "lexer-errors.hh"
 
 typedef struct LexerType
 {
@@ -76,6 +78,21 @@ private:
      */
     bool match(
         char to_match
+    );
+
+    /**
+     * 
+     * @category helper
+     * 
+     * create a new lexer error. although doesn't hault the compiler;
+     *  it will log 1 by 1 on compile time.
+     */
+    void emit_error(
+        ErrorCode code,
+        int line,
+        int col_start,
+        int col_end,
+        std::optional<std::string> hint_override = std::nullopt
     );
 
     /**

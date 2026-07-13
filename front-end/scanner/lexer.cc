@@ -53,6 +53,37 @@ bool Lexer::match(
     return peek() != to_match;
 }
 
+void Lexer::emit_error(
+    ErrorCode code,
+    int err_line,
+    int col_start,
+    int col_end,
+    std::optional<std::string> hint_override
+) {
+    const ErrorInfo& error_info = info(code);
+
+    Error error;
+    error.code = std::string(error_info.code);
+    error.message = std::string(error_info.message);
+    error.line = get_line(source, err_line);
+    error.severity = SEVERITY_ERROR;
+    error.line_num = err_line;
+    error.col_start = col_start;
+    error.col_end = col_end;
+
+    if (hint_override.has_value())
+    {
+        error.hint = hint_override;
+    }
+
+    else if (!error_info.hint.empty())
+    {
+        error.hint = std::string(error_info.hint);
+    }
+
+    report(error);
+}
+
 void Lexer::scan_comments(
     std::vector<Token>& tokens
 ) {
@@ -96,14 +127,13 @@ void Lexer::scan_comments(
         {
             abort = true;
 
-            Error error;
-            error.message = std::string(message(ErrorCode::UnterminatedMultilineComment));
-            error.line = get_line(source, start_line);
-            error.severity = SEVERITY_ERROR;
-            error.line_num = start_line;
-            error.col_num = start_col;
+            emit_error(
+                ErrorCode::UnterminatedMultilineComment,
+                start_line,
+                start_col,
+                start_col + delimiter
+            );
 
-            report(error);
             return;
         }
 
@@ -285,14 +315,12 @@ std::vector<Token> Lexer::scan()
 
                 else
                 {
-                    Error error;
-                    error.message = std::string(message(ErrorCode::IncompleteFloat));
-                    error.line = get_line(source, start_line);
-                    error.severity = ErrorSeverity::SEVERITY_ERROR;
-                    error.line_num = start_line;
-                    error.col_num = start_col;
-
-                    report(error);
+                    emit_error(
+                        ErrorCode::IncompleteFloat,
+                        start_line,
+                        start_col,
+                        col + 1
+                    );
                 }
             }
 
@@ -343,19 +371,21 @@ std::vector<Token> Lexer::scan()
                 {
                     abort = true;
 
-                    Error error;
-                    error.message = std::string(message(ErrorCode::UnterminatedString));
-                    error.line = get_line(source, start_line);
-                    error.severity = SEVERITY_ERROR;
-                    error.line_num = str_start_line;
-                    error.col_num = str_start_col;
+                    emit_error(
+                        ErrorCode::UnterminatedString,
+                        str_start_line,
+                        str_start_col,
+                        str_start_col + 1
+                    );
 
-                    report(error);
                     break;
                 }
 
                 if (peek() == '\\')
                 {
+                    int esc_line = line;
+                    int esc_col = col;
+
                     consume(); // '\'
 
                     switch (peek())
@@ -371,14 +401,13 @@ std::vector<Token> Lexer::scan()
 
                         default:
                         {
-                            Error error;
-                            error.message = std::string(message(ErrorCode::InvalidCharacter));
-                            error.line = get_line(source, start_line);
-                            error.severity = SEVERITY_ERROR;
-                            error.line_num = start_line;
-                            error.col_num = start_col;
-
-                            report(error);
+                            emit_error(
+                                ErrorCode::InvalidCharacter,
+                                esc_line,
+                                esc_col,
+                                col + 1,
+                                "'\\" + std::string(1, peek()) + "' is not a recognized escape sequence"
+                            );
 
                             consume();
                             break;
@@ -969,14 +998,12 @@ std::vector<Token> Lexer::scan()
                 }
 
             default:
-                Error error;
-                error.message = std::string(message(ErrorCode::InvalidCharacter));
-                error.line = get_line(source, start_line);
-                error.severity = ErrorSeverity::SEVERITY_ERROR;
-                error.line_num = start_line;
-                error.col_num = start_col;
-
-                report(error);
+                emit_error(
+                    ErrorCode::InvalidCharacter,
+                    start_line,
+                    start_col,
+                    col + 1
+                );
 
                 tokens.emplace_back(
                     pos,
