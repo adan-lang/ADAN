@@ -20,23 +20,23 @@ void report(
 
     std::cout <<
     
-        pad << "\x1b[1;36m" << " --> " << "\x1b[0m" << error.line_num << ":" << error.col_start
+        pad << "\x1b[1m" << " --> " << "\x1b[0m" << error.line_num << ":" << error.col_start
     
     << "\n";
 
     std::cout <<
 
-        pad << "\x1b[1;36m" << " |" << "\x1b[0m"
+        pad << "\x1b[1m" << " |" << "\x1b[0m"
 
     << "\n";
 
     std::cout <<
 
-        "\x1b[1;36m" << "\x1b[1;36m" << line_num << " | " << "\x1b[0m" << error.line
+        "\x1b[1m" << "\x1b[1m" << line_num << " | " << "\x1b[0m" << error.line
 
     << "\n";
 
-    std::cout << pad << " " << "\x1b[1;36m" << "|" << "\x1b[0m" << " ";
+    std::cout << pad << " " << "\x1b[1m" << "|" << "\x1b[0m" << " ";
 
     for (int i{1}; i < error.col_start; ++i)
     {
@@ -62,13 +62,13 @@ void report(
     {
         std::cout <<
 
-            pad << " " << "\x1b[1;36m" << "|" << "\x1b[0m"
+            pad << " " << "\x1b[1m" << "|" << "\x1b[0m"
 
         << "\n\n";
 
         std::cout <<
 
-            "\x1b[1;32m" << "help" << "\x1b[0m" << ": " << *error.hint
+            "\x1b[1;32m" << "Help" << "\x1b[0m" << ": " << *error.hint
 
         << "\n";
     }

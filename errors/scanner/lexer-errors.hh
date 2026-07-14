@@ -22,11 +22,11 @@ struct ErrorInfo
 };
 
 constexpr std::array<ErrorInfo, static_cast<size_t>(ErrorCode::COUNT)> ErrorMessages = {{
-    {"E0001", "unterminated multiline comment",     "close the comment with the same number of '#' you opened it with"},
-    {"E0002", "incomplete floating point value",    "add a digit after the decimal point, or remove it"},
-    {"E0003", "unterminated string literal",        "add a closing '\"'"},
-    {"E0004", "invalid character",                  ""},
-    {"E0005", "unexpected end of file",             ""},
+    {"E0001", "Unterminated multiline comment",     "Close the comment with the same number of '#' you opened it with"},
+    {"E0002", "Incomplete floating point value",    "Add a digit after the decimal point, or remove it"},
+    {"E0003", "Unterminated string literal",        "Add a closing '\"'"},
+    {"E0004", "Invalid character",                  ""},
+    {"E0005", "Unexpected end of file",             ""},
 }};
 
 constexpr const ErrorInfo& info(
