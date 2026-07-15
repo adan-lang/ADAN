@@ -25,7 +25,7 @@ public:
 
     /**
      * 
-     * inserts into the current (innermost) scope
+     * inserts into the current (innermost) scope.
      */
     bool insert(
         const std::string& name,
@@ -34,7 +34,7 @@ public:
 
     /**
      * 
-     * inserts into the flat global table (`global var`/`global readonly var`)
+     * inserts into the flat global table (`global var` / `global readonly var`).
      */
     bool insert_global(
         const std::string& name,
@@ -44,7 +44,7 @@ public:
     /**
      * 
      * searches the current scope, then walks UP through enclosing scopes,
-     *  if it cannot be found, falls back to the global table
+     *  if it cannot be found, falls back to the global table.
      */
     SymbolInfo* lookup(
         const std::string& name
@@ -52,7 +52,7 @@ public:
 
     /**
      * 
-     * checks ONLY the innermost scope (e.g. for redeclaration issues)
+     * checks ONLY the innermost scope (e.g. for redeclaration issues).
      */
     bool in_current_scope(
         const std::string& name

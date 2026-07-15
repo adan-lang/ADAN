@@ -27,10 +27,20 @@ public:
     std::vector<Type*> param_types; // only meaningful if --> `kind == FUNCTION`
     Type* return_type;              // same for this :P
 
+    /**
+     * 
+     * returns whether or not the current type is equivalent to
+     *  the parameter's type.
+     */
     bool equals(
         const Type& other
     ) const;
 
+    /**
+     * 
+     * converts the type into the string version, useful for
+     *  debugging.
+     */
     std::string make_string() const;
 
     Type();

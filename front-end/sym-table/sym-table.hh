@@ -11,15 +11,28 @@ private:
     std::unordered_map<std::string, SymbolInfo> symbols;
 
 public:
+    /**
+     * 
+     * add new information into the current symbol table.
+     */
     bool insert(
         const std::string& name,
         SymbolInfo info
     );
 
+    /**
+     * 
+     * searches the current scope in the current symbol table.
+     */
     SymbolInfo* lookup(
         const std::string& name
     );
 
+    /**
+     * 
+     * verifies if the specified string is in the current symbol table
+     *  at all.
+     */
     bool contains(
         const std::string& name
     ) const;
