@@ -49,8 +49,13 @@ char Lexer::consume()
 bool Lexer::match(
     char to_match
 ) {
+    if (peek() != to_match)
+    {
+        return false;
+    }
+
     consume();
-    return peek() != to_match;
+    return true;
 }
 
 void Lexer::emit_error(
