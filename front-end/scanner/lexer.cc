@@ -68,6 +68,7 @@ void Lexer::emit_error(
     const ErrorInfo& error_info = info(code);
 
     Error error;
+    
     error.code = std::string(error_info.code);
     error.message = std::string(error_info.message);
     error.line = get_line(source, err_line);
@@ -134,6 +135,7 @@ void Lexer::scan_comments(
 
             emit_error(
                 ErrorCode::UnterminatedMultilineComment,
+                
                 start_line,
                 start_col,
                 start_col + delimiter
