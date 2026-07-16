@@ -14,6 +14,7 @@ enum class TypeKind
     NONE,
     VOID,
     AUTO,
+    ANY,
     FUNCTION,
     ARRAY
 };
@@ -42,6 +43,11 @@ public:
      *  debugging.
      */
     std::string make_string() const;
+
+    static Type* make_function(
+        std::vector<Type*> params,
+        Type* explicit_type = nullptr
+    );
 
     Type();
 

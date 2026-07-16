@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <string_view>
 
 #include "sym-info.hh"
 #include "sym-table.hh"
@@ -16,7 +17,7 @@
 class SymbolTableManager
 {
 private:
-    std::vector<std::unique_ptr<SymbolTable>> scopeStack;
+    std::vector<std::unique_ptr<SymbolTable>> scope_stack;
     SymbolTable globals;
 public:
     void enter_scope();
@@ -28,7 +29,7 @@ public:
      * inserts into the current (innermost) scope.
      */
     bool insert(
-        const std::string& name,
+        std::string_view name,
         SymbolInfo info
     );
 
@@ -37,7 +38,7 @@ public:
      * inserts into the flat global table (`global var` / `global readonly var`).
      */
     bool insert_global(
-        const std::string& name,
+        std::string_view name,
         SymbolInfo info
     );
 
@@ -47,7 +48,7 @@ public:
      *  if it cannot be found, falls back to the global table.
      */
     SymbolInfo* lookup(
-        const std::string& name
+        std::string_view name
     );
 
     /**
@@ -55,7 +56,7 @@ public:
      * checks ONLY the innermost scope (e.g. for redeclaration issues).
      */
     bool in_current_scope(
-        const std::string& name
+        std::string_view name
     ) const;
 
     SymbolTableManager();

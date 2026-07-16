@@ -2,6 +2,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <string_view>
 
 #include "sym-info.hh"
 
@@ -16,7 +17,7 @@ public:
      * add new information into the current symbol table.
      */
     bool insert(
-        const std::string& name,
+        std::string_view name,
         SymbolInfo info
     );
 
@@ -25,7 +26,7 @@ public:
      * searches the current scope in the current symbol table.
      */
     SymbolInfo* lookup(
-        const std::string& name
+        std::string_view name
     );
 
     /**
@@ -34,7 +35,7 @@ public:
      *  at all.
      */
     bool contains(
-        const std::string& name
+        std::string_view name
     ) const;
 
     SymbolTable();
