@@ -1,6 +1,6 @@
 ## Creating and Using Functions
 
-Declaring a function in ADAN will be like the following:
+Declaring a function in ADAN looks like the following:
 
 ```adan
 func example(<Params>): <Type>? {
@@ -8,8 +8,8 @@ func example(<Params>): <Type>? {
 }
 ```
 
-- `<Type>?` Refers to an *optional* type, if no type is provided, one will be inferred by the function's result.
-- - If no type is provided, `: <Type>?` can be fully omitted.
+- `<Type>?` refers to an *optional* type. If no type is provided, one will be inferred from the function's result.
+  - If no type is provided, `: <Type>?` can be fully omitted.
 
 After a function is defined, it is callable using the `<Name>(<Params>);` syntax:
 
@@ -21,9 +21,7 @@ example(); # <-- A function's returned value is given when calling a function.
 var x = example(); # The variable we just defined now has the value `1`.
 ```
 
-The compiler will throw an error if functions are used incorrectly, however. An example of that would be if you're trying to compare the return value of a function with a value in an if statement and the function's return value is a completely different type than the one you are trying to match with.
-
-Here's an example:
+The compiler will throw an error if functions are used incorrectly. For example, comparing the return value of a function against a value of a different type is a compile-time error, not a runtime one.
 
 ```adan
 func myName(): String {
@@ -32,14 +30,14 @@ func myName(): String {
 
 var name = myName(); # Type: String, Value: "Lily"
 
-if name == 18 { ... } # <-- This would throw a compile-time error because of the type mismatch between `name` and `18`. (String vs. Int)
+if name == 18 { ... } # <-- Compile-time error: type mismatch between `name` (String) and `18` (Int).
 ```
 
 ## Parameters
 
-**Parameters** (otherwise called *arguments** when you're *calling* the function), are local variables defined in a function.
+**Parameters** (also called **arguments** when you're *calling* the function) are local variables defined in a function.
 
-It's quite hard to put into words, so here is a visual example:
+It's easier to show than explain, so here's a visual example:
 
 ```adan
 ##
@@ -56,26 +54,24 @@ func isOfAge(age: Number) { # <-- NOTICE: We do not use the `var` keyword here w
 }
 ```
 
-We can have a technically infinite amount of parameters, but that would take FOREVER to do by hand.
+We can have a technically infinite number of parameters, but that would take forever to write out by hand.
 
-- A solution to this is using the `...` keyword. "`...`" is an array given the `Any[]` type.
-- We can iterate over provided arguments by treating "`...`" like a regular array.
-
-Here's an example:
+- The solution to this is the `...` keyword. `...` is an array given the `Any[]` type.
+- You can iterate over provided arguments by treating `...` like a regular array.
 
 ```adan
 func example(...) {
     for param in ... {
-        
+
     }
 }
 ```
 
 > `param` in this case is the *value* of the parameter.
 
-## Single-lined Functions
+## Single-Lined Functions
 
-Similarly to other languages, ADAN functions are able to be compacted into 1 line of code. When compacted, the typical `{ }` syntax can be omitted, it looks like this:
+Similarly to other languages, ADAN functions can be compacted into one line of code. When compacted, the typical `{ }` syntax can be omitted:
 
 ```adan
 # Regular functions:
@@ -89,14 +85,14 @@ func mini() return;
 # Stuff like this is ALSO possible!
 var age = 18;
 
-func is18() if age == 18 return true; else false; # <-- Stacking code upon eachother whilst splitting them with a `;` is supported!
+func is18() if age == 18 return true; else false; # <-- Stacking code with `;` as a separator is supported!
 ```
 
 ## Anonymous Functions (Lambdas)
 
-Anonymous functions are types of functions that don't have names, containing one expression that are ran a single time.
+Anonymous functions are functions that don't have names, containing a single expression that runs once.
 
-ADAN builds off this concept using the `lambda` keyword, with similar syntax for functions:
+ADAN builds off this concept using the `lambda` keyword, with syntax similar to regular functions:
 
 ```adan
 lambda(<Params>) {

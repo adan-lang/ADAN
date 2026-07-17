@@ -32,6 +32,7 @@ typedef enum TokenType
     TOKEN_AND,
     TOKEN_OR,
     TOKEN_ELSE,
+    TOKEN_LAMBDA,
 
     /* Types */
     TOKEN_STRING,

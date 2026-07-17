@@ -23,6 +23,7 @@ std::unordered_map<std::string, TokenType> Keywords = {
     {"and",      TOKEN_AND},
     {"or",       TOKEN_OR},
     {"else",     TOKEN_ELSE},
+    {"lambda",   TOKEN_LAMBDA},
 };
 
 std::unordered_map<std::string, TokenType> Types = {

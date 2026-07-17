@@ -6,7 +6,7 @@ ADAN has two separate systems for bringing external code into your program, each
 
 The `include` keyword takes a file path, reads it, parses it, and injects its contents directly into the current compilation.
 
-```adanz
+```adan
 include "src/utils/parser.adn";
 include "../lib/math.adn";
 ```
@@ -23,5 +23,5 @@ using module std.io;
 using module math;
 ```
 
-- Modules are identified by a logical name, not a file path
-- Files can move freely without breaking any `using module` references
+- Modules are identified by a logical name, not a file path.
+- Files can move freely without breaking any `using module` references. 
