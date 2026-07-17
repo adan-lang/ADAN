@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <iostream>
+#include <algorithm>
 
 #include "errors.hh"
 

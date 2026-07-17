@@ -27,7 +27,7 @@ bool SymbolTableManager::insert(
         return false;
     }
 
-    scope_stack.back()->insert(name, std::move(info));
+    return scope_stack.back()->insert(name, std::move(info));
 }
 
 bool SymbolTableManager::insert_global(

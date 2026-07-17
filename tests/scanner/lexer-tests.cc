@@ -61,6 +61,8 @@ std::string_view token_name(
             return "OR";
         case TOKEN_ELSE:
             return "ELSE";
+        case TOKEN_LAMBDA:
+            return "LAMBDA";
 
         /* Types */
         case TOKEN_STRING:

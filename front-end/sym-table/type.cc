@@ -141,7 +141,7 @@ std::string Type::make_string() const
 
 Type* Type::make_function(
     std::vector<Type*> params,
-    Type* explicit_type = nullptr
+    Type* explicit_type
 ) {
     Type* func = new Type();
 

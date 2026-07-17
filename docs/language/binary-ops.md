@@ -15,6 +15,11 @@ Binary operators are also called Binops for short, which is the name I'll be usi
 - `+`: Addition, LHS and RHS values added together. Works on any `Number` type (`Int` or `Float`).
 - `-`: Subtraction, the *opposite* of addition, you take away instead of combine.
 - `*`: Multiplication, you're adding the LHS value n (RHS) times.
+- `**`: Power, you're multiplying the LHS value by itself n (RHS) times.
+
+    ```adan
+    var a = 2 ** 3; # a is 8
+    ```
 - `/`: Division, you're subtracting the RHS value from the LHS repeatedly, and the number of times you can do that (plus any leftover) is your result.
   - If the LHS divides evenly by the RHS, the result is an `Int`.
   - Otherwise, the result is a `Float`.
@@ -69,6 +74,7 @@ if false and a {
 - `+=`: Addition + Equals, directly equivalent to the expression: `LHS = LHS + RHS`.
 - `-=`: Subtraction + Equals, directly equivalent to the expression: `LHS = LHS - RHS`.
 - `*=`: Multiplication + Equals, directly equivalent to the expression: `LHS = LHS * RHS`.
+- `**=`: Power + Equals, directly equivalent to the expression: `LHS = LHS ** RHS`.
 - `/=`: Division + Equals, directly equivalent to the expression: `LHS = LHS / RHS`.
 - `%=`: Modulo (or Remainder) + Equals, directly equivalent to the expression: `LHS = LHS % RHS`.
 - `//=`: Floor Division + Equals, directly equivalent to the expression: `LHS = LHS // RHS`.
@@ -102,9 +108,12 @@ var d = c ?: expensive(); # expensive() never runs, d is 5
 
 When an expression mixes multiple binops without parenthesis, ADAN resolves them in the following order, from highest to lowest priority, evaluating left-to-right within each tier:
 
-1. Arithmetic (`*`, `/`, `%`, `//`, `+`, `-`)
+1. Arithmetic (`**`, `*`, `/`, `%`, `//`, `+`, `-`)
 2. Comparators (`==`, `!=`, `<=`, `>=`, `<`, `>`)
 3. Logical (`and`, `or`)
+
+> [!NOTE]
+> `**` is listed above `*`/`/` here as the conventional default (exponentiation before multiplication/division). The parser doesn't exist yet to confirm this against, so treat this one ordering as unverified until it's actually implemented.
 
 ```adan
 1 + 2 * 3 == 7 and true # Reads as: ((1 + (2 * 3)) == 7) and true

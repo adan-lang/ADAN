@@ -66,6 +66,8 @@ typedef enum TokenType
     TOKEN_INT_LITERAL,
     TOKEN_FLOAT_LITERAL,
     TOKEN_STRING_LITERAL,
+    TOKEN_TRUE,
+    TOKEN_FALSE,
 
     /* Binary Operators */
     TOKEN_ADD,
@@ -109,5 +111,3 @@ typedef struct Token
 extern std::unordered_map<std::string, TokenType> Keywords;
 
 extern std::unordered_map<std::string, TokenType> Types;
-
-extern std::unordered_map<std::string, TokenType> Symbols;

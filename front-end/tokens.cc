@@ -24,6 +24,8 @@ std::unordered_map<std::string, TokenType> Keywords = {
     {"or",       TOKEN_OR},
     {"else",     TOKEN_ELSE},
     {"lambda",   TOKEN_LAMBDA},
+    {"true",     TOKEN_TRUE},
+    {"false",    TOKEN_FALSE}
 };
 
 std::unordered_map<std::string, TokenType> Types = {
@@ -37,50 +39,4 @@ std::unordered_map<std::string, TokenType> Types = {
     {"None",   TOKEN_NONE},
     {"Void",   TOKEN_VOID},
     {"Auto",   TOKEN_AUTO},
-};
-
-std::unordered_map<std::string, TokenType> Symbols = {
-    /* Symbols */
-    {",",  TOKEN_COMMA},
-    {":",  TOKEN_COLON},
-    {"(",  TOKEN_LPAREN},
-    {")",  TOKEN_RPAREN},
-    {"{",  TOKEN_LBRACE},
-    {"}",  TOKEN_RBRACE},
-    {"[",  TOKEN_LBRACKET},
-    {"]",  TOKEN_RBRACKET},
-    {";",  TOKEN_SEMICOLON},
-    {"\"", TOKEN_QUOTE},
-    {"'",  TOKEN_APOSTROPHE},
-    {".",  TOKEN_PERIOD},
-    {"?",  TOKEN_QUESTION},
-
-    /* Binary Operators */
-    {"+",   TOKEN_ADD},
-    {"-",   TOKEN_SUB},
-    {"*",   TOKEN_MUL},
-    {"**",  TOKEN_POW},
-    {"/",   TOKEN_DIV},
-    {"%",   TOKEN_REMAINDER},
-    {"==",  TOKEN_EQUALS},
-    {"!=",  TOKEN_NOT_EQUALS},
-    {"<",   TOKEN_LESS},
-    {"<=",  TOKEN_LESS_EQUAL},
-    {">",   TOKEN_GREATER},
-    {">=",  TOKEN_GREATER_EQUAL},
-    {"=",   TOKEN_ASSIGN},
-    {"+=",  TOKEN_ADD_ASSIGN},
-    {"-=",  TOKEN_SUB_ASSIGN},
-    {"*=",  TOKEN_MUL_ASSIGN},
-    {"**=", TOKEN_POW_ASSIGN},
-    {"/=",  TOKEN_DIV_ASSIGN},
-    {"%=",  TOKEN_REMAINDER_ASSIGN},
-    {"//",  TOKEN_FLOOR_DIV},
-    {"//=", TOKEN_FLOOR_DIV_ASSIGN},
-    {"?:",  TOKEN_ELVIS},              // Executes y if x fails. Example: var my_variable = <Expression> ?: <Expression2> # <Expression2> never runs if <Expression> succeeds.
-    
-    /* Unary Operators */
-    {"!!", TOKEN_NOT_NULL_ASSERT},   // Tells the compiler this value (unknown to be null at runtime) that it will never be null. Example: <Condition>!!
-    {"!",  TOKEN_NOT},               // Flips the truthiness of a Bool. Example: !true -> false and !!true -> true
-    {"-",  TOKEN_NEGATE},            // Changes the sign to the inverse of the current sign. Example: --2 -> flip -2 -> 2
 };

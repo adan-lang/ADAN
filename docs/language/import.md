@@ -24,4 +24,22 @@ using module math;
 ```
 
 - Modules are identified by a logical name, not a file path.
-- Files can move freely without breaking any `using module` references. 
+- Files can move freely without breaking any `using module` references.
+
+## Accessing Module Members
+
+Once a module is brought in with `using module`, its exported members are reached through the module's *last* path segment, using `.`:
+
+```adan
+using module std.io;
+
+io.log("Hello, world!"); # `std.io` is accessed as just `io`
+```
+
+```adan
+using module math;
+
+math.sqrt(16); # a module with no parent path keeps its full name
+```
+
+Only what the module explicitly marked with `export` is reachable this way. See [Exporting from Modules](./export.md) for how a module controls what it exposes.

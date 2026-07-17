@@ -131,11 +131,23 @@ void Lexer::scan_comments(
     {
         if (peek() == '\0')
         {
+            if (pos == start + delimiter && delimiter % 2 == 0) // fixed logic: if the amt of hashes splits evenly, treat it as an empty comment
+            {
+                tokens.emplace_back(
+                    pos,
+                    start_line,
+                    start_col,
+                    source.substr(start, pos - start),
+                    TokenType::TOKEN_MULTILINE_COMMENT
+                );
+
+                return;
+            }
+
             abort = true;
 
             emit_error(
                 ErrorCode::UnterminatedMultilineComment,
-                
                 start_line,
                 start_col,
                 start_col + delimiter
@@ -224,6 +236,14 @@ std::vector<Token> Lexer::scan()
     {
         if (abort)
         {
+            tokens.emplace_back(
+                pos,
+                line,
+                col,
+                std::string{},
+                TokenType::TOKEN_EOF
+            );
+
             break;
         }
 
@@ -1024,8 +1044,6 @@ std::vector<Token> Lexer::scan()
 
                 continue;
         }
-
-        consume();
     }
 
     return tokens;
