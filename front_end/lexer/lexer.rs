@@ -1,6 +1,6 @@
 use super::tokens::{Token, TokenType};
 
-struct Lexer {
+pub struct Lexer {
     pub source: String,
     pub position: usize,
 }
@@ -21,5 +21,9 @@ impl Lexer {
     fn consume(&self) {}
 
     // public interface for tokenizing a string.
-    pub fn lex(&self) {}
+    pub fn lex(&self) -> Vec<Token> {
+        let tokens: Vec<Token> = vec![];
+
+        tokens
+    }
 }

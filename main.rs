@@ -1,8 +1,13 @@
 mod front_end;
+use front_end::lexer::lexer::Lexer;
 
 fn main() {
-    let source = "5 + 1";
-    let tokens = front_end::lexer::lexer::lex(source);
+    let source = String::from("let x = 5");
 
-    println!("{:?}", tokens);
+    let lexer = Lexer {
+        source,
+        position: 0,
+    };
+
+    println!("{:?}", lexer.lex());
 }
