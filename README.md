@@ -3,7 +3,7 @@
 <div align="left">
    <h3>The ADAN Programming Language</h3>
    <p>
-      Beginner friendly, general purposed language with inferred typing and no manual memory<br>managing, preferring <a href="https://verdagon.dev/blog/generational-references">generational references</a> and <a href="https://verdagon.dev/blog/fearless-ffi">fearless FFI</a>.
+      Beginner friendly, general purposed language with inferred typing and no manual memory managing, preferring <a href="https://verdagon.dev/blog/generational-references">generational references</a> and <a href="https://verdagon.dev/blog/fearless-ffi">fearless FFI</a>.
    </p><br>
    
    <img alt="Version" src="https://img.shields.io/badge/version-1.0.0-blue">

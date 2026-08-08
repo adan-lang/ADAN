@@ -1,18 +1,30 @@
 #[derive(Debug)]
-pub enum Token {
-    // Special
-    Eof,
+pub enum TokenType {
+    TokenEof,
 
-    // Binary Ops
-    Mul,
-    Div,
-    Add,
-    Sub,
+    //  KEYWORDS
+    TokenLet,
 
-    // Symbols
-    LParen,
-    RParen,
+    //  TYPES
+    TokenInt,
+    TokenFloat,
 
-    // Literals
-    Int(i32),
+    //  SYMBOLS
+    TokenEqual,
+    TokenColon,
+    TokenSub,
+    TokenAdd, // also is used for unary negation
+    TokenMul,
+    TokenDiv,
+    TokenMod,
+    TokenLeftParen,
+    TokenRightParen,
+}
+
+#[derive(Debug)]
+pub struct Token {
+    lexeme: String,
+    token_type: TokenType,
+    line: u32,
+    column: u32,
 }
