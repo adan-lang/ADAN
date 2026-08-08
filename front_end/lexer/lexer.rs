@@ -6,8 +6,6 @@ pub struct Lexer {
 }
 
 impl Lexer {
-    // offset as usize to adapt to cpu bit limit for optionally
-    // peeking n characters ahead.
     fn peek(&self, offset: usize) -> Option<u8> {
         self.source.as_bytes().get(self.position + offset).copied()
     }
