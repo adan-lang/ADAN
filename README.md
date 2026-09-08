@@ -10,5 +10,5 @@
    <img alt="Latest Release" src="https://img.shields.io/github/v/release/transicle/adan">
    <img alt="Docs" src="https://img.shields.io/badge/docs-docs.adan.sh-blue">
 </div>
+
 <br>
-<img width="1376" height="1016" alt="image" src="https://github.com/user-attachments/assets/25621e10-ebc4-454c-8652-2f7cacd70f1e" />

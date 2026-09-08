@@ -1,2 +1,6 @@
+build/
+
+# hidden files
+
+.git/
 .vscode/
-target/
