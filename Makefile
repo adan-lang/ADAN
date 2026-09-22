@@ -2,7 +2,7 @@
 
 .PHONY: run build
 
-FILE ?= ./test/hello-world.adn
+FILE ?= ./test/grades-calc.adn
 
 run: build
 	echo "—————————————————————— Program's Output ——————————————————————"

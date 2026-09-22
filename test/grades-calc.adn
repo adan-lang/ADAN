@@ -1,0 +1,50 @@
+; Variables        --> "local <key> = <value>"
+
+; Functions        --> "function <key> -> (<params>) { ... }"            <-- Note, the "-> ()" portion may be omitted if there are no parameters.
+;                  --> "<key> <- (<args>)"                               <-- Note, the "<-" represents passing arguments towards the function, as opposed to
+;                                                                                the function accepting parameters.
+
+; Comments         --> ";", ";--"/"--;"
+
+; For Loops        --> "for <key> = <start>, <goal>, <step> { ... }"     <-- Note, the ", <step>" aspect may be omitted, defaults to +1.
+;                  --> "for <key> in <array> { ... }"
+
+; Returns          --> "<- <value>"                                      <-- Note, "<-" is shared between this and providing arguments to a function call.
+
+; Binary Operators --> ("+", "-", "*", "/", "%", ">", "<", "=" and their "=" variants, i.e., "+=", or "==")
+
+; Unary Operators  --> "#", "++", "--"
+
+; Strings          --> "Hello", 'world!', `${<var>} was interpolated!`   <-- Note, you cannot use " or ' for interpolation.
+
+; Arrays           --> "[<any>, ...]"                                    <-- Note, these arrays are dynamically-sized and are capable of holding any type.
+
+;------------------------------------------------------;
+;--
+
+    A simple grades calculator program showing each
+    of the base features in the language!
+
+    This is just a first real draft <3
+
+--;
+
+local max_grade = 100
+local passing_grade = 60
+
+local grades = [50, 74, 80, 41, 100]
+
+local student_name = "Lily"
+
+function avg -> (grades) { ; Overrides "grades" in the previous scope.
+    local result = 0
+    for grade in grades {
+        result += grade
+    }
+
+    <- result / #grades
+}
+
+if avg <- (grades) >= passing_grade {
+    print(`${student_name} is passing!`)
+}
