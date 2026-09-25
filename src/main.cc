@@ -66,13 +66,14 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    std::string source = read_file(file_path);
+    Lexer lexer(read_file(file_path));
 
-    Lexer lexer(source);
-
-    auto tokens = lexer.lex();
-    for (const auto &token : tokens)
-        std::println("{}", token.to_string());
+    auto next{lexer.next()};
+    while (next.kind != TokenKind::Eof)
+    {
+        std::println("{}, {}, {}", static_cast<std::uint8_t>(next.kind), next.lexeme, next.to_string());
+        next = lexer.next();
+    }
 
     return 0;
 }
