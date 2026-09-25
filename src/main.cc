@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     auto next{lexer.next()};
     while (next.kind != TokenKind::Eof)
     {
-        std::println("{}, {}, {}", static_cast<std::uint8_t>(next.kind), next.lexeme, next.to_string());
+        std::println("{}", next.to_string());
         next = lexer.next();
     }
 
