@@ -1,16 +1,23 @@
 #!/bin/bash
 
-README="$(dirname "$0")/../README.md"
+SCRIPT_DIR="$(cd -- "$(dirname -- "$0")" && pwd)"
+README="$SCRIPT_DIR/../README.md"
+MAIN="$SCRIPT_DIR/../src/main.cc"
 
-current=$(grep -oP '(?<=version-)[^-"]+' "$README" | head -1)
-echo "Current version: $current"
+readme_current=$(grep -oP '(?<=badge/version-)[0-9]+\.[0-9]+\.[0-9]+' "$README" | head -1)
+compiler_current=$(grep -oP '(?<=COMPILER_VERSION = "version-)[0-9]+\.[0-9]+\.[0-9]+' "$MAIN" | head -1)
+
+echo "Current README version: $readme_current"
+echo "Current compiler version: $compiler_current"
 
 read -rp "Bump to: " new_version
 
-if [[ -z "$new_version" ]]; then
-    echo "No version provided. Aborting."
+if [[ ! "$new_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    echo "Invalid version. Use major.minor.patch. Aborting."
     exit 1
 fi
 
-sed -i "s/version-${current}-/version-${new_version}-/" "$README"
-echo "Version bumped: $current -> $new_version"
+sed -i -E "s|(badge/version-)[0-9]+\.[0-9]+\.[0-9]+(-blue)|\1${new_version}\2|" "$README"
+sed -i -E "s|(COMPILER_VERSION = \"version-)[0-9]+\.[0-9]+\.[0-9]+(\";)|\1${new_version}\2|" "$MAIN"
+
+echo "Version bumped to $new_version"
