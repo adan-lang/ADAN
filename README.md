@@ -11,4 +11,8 @@
    <img alt="Docs" src="https://img.shields.io/badge/docs-docs.adan.sh-blue">
 </div>
 
-<br>
+<br><br>
+
+<div align="center">
+   <img width="382" height="429" alt="image" src="https://github.com/user-attachments/assets/c95f1dd9-adad-4f3f-8835-073420d3c9c1" />
+</div>
