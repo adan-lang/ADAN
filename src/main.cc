@@ -7,7 +7,7 @@
 #include "lexer.hh"
 #include "tools.hh"
 
-static const std::string COMPILER_VERSION = "version-1.0.0";
+static const std::string COMPILER_VERSION = "version-1.0.1";
 
 static inline void show_main_message()
 {

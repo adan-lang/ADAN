@@ -6,7 +6,7 @@
       Beginner friendly, general purposed language with inferred typing and no manual memory managing, preferring <a href="https://verdagon.dev/blog/generational-references">generational references</a> and <a href="https://verdagon.dev/blog/fearless-ffi">fearless FFI</a>.
    </p><br>
    
-   <img alt="Version" src="https://img.shields.io/badge/version-1.0.2-blue">
+   <img alt="Version" src="https://img.shields.io/badge/version-1.0.1-blue">
    <img alt="Latest Release" src="https://img.shields.io/github/v/release/transicle/adan">
    <img alt="Docs" src="https://img.shields.io/badge/docs-docs.adan.sh-blue">
 </div>
