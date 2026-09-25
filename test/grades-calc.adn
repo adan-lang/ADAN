@@ -17,7 +17,8 @@
 
 ; Strings          --> "Hello", 'world!', `${<var>} was interpolated!`   <-- Note, you cannot use " or ' for interpolation.
 
-; Arrays           --> "[<any>, ...]"                                    <-- Note, these arrays are dynamically-sized and are capable of holding any type.
+; Arrays           --> "[<value>, ...]"                                  <-- Dynamically-sized, homogeneous. The element type is inferred from
+;                                                                            the literals provided and all subsequent elements must match.
 
 ;------------------------------------------------------;
 ;--
