@@ -104,11 +104,6 @@ Token Lexer::next()
 
     case '$':
         advance();
-        if (peek() == '{')
-        {
-            advance();
-            return Token{TokenKind::Interpolate, "${"};
-        }
         return Token{TokenKind::Dollar, "$"};
 
     case '(':
@@ -135,13 +130,13 @@ Token Lexer::next()
         advance();
         return Token{TokenKind::RBrace, "}"};
 
-    case '"':
-        advance();
-        return Token{TokenKind::Quote, "\""};
+        // case '"':
+        //     advance();
+        //     return Token{TokenKind::Quote, "\""};
 
-    case '\'':
-        advance();
-        return Token{TokenKind::Apostrophe, "'"};
+        // case '\'':
+        //     advance();
+        //     return Token{TokenKind::Apostrophe, "'"};
 
     case '.':
         if (peek(1) == '.' && peek(2) == '.')
@@ -153,9 +148,9 @@ Token Lexer::next()
         }
         break;
 
-    case '`':
-        advance();
-        return Token{TokenKind::Tick, "`"};
+        // case '`':
+        //     advance();
+        //     return Token{TokenKind::Tick, "`"};
 
     case ',':
         advance();
@@ -188,6 +183,28 @@ Token Lexer::next()
 
             const std::string value{source.substr(start, position - start)};
             return Token{is_float ? TokenKind::Float : TokenKind::Int, value};
+        }
+
+        if (curr == '"')
+        {
+            const auto start{position};
+
+            while (!is_eof())
+            {
+                advance();
+
+                if (peek() == '"')
+                {
+                    advance();
+                    break;
+                }
+            }
+        }
+        else if (curr == '\'')
+        {
+        }
+        else if (curr == '`')
+        {
         }
 
         for (const auto &[key, value] : keywords)

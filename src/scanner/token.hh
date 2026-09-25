@@ -52,7 +52,6 @@ enum class TokenKind : std::uint8_t
     EqualEqual,     // ==
     GreaterEqual,   // >=
     LessEqual,      // <=
-    Interpolate,    // ${
 
     // Keywords
     Local,
@@ -196,9 +195,6 @@ struct Token
             break;
         case TokenKind::LessEqual:
             kind_str = "LessEqual";
-            break;
-        case TokenKind::Interpolate:
-            kind_str = "Interpolate";
             break;
         case TokenKind::Local:
             kind_str = "Local";
