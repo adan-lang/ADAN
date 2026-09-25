@@ -13,7 +13,7 @@
 
 ; Binary Operators --> ("+", "-", "*", "/", "%", ">", "<", "=" and their "=" variants, i.e., "+=", or "==")
 
-; Unary Operators  --> "#", "++", "--"
+; Unary Operators  --> "#", "++", "--", "$"
 
 ; Strings          --> "Hello", 'world!', `${<var>} was interpolated!`   <-- Note, you cannot use " or ' for interpolation.
 
