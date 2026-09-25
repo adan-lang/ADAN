@@ -223,6 +223,6 @@ struct Token
             break;
         }
 
-        return "Token { kind: " + kind_str + ", lexeme: \"" + lexeme + "\" }";
+        return "Token { kind: \033[1;32m" + kind_str + "\033[0m, lexeme: \033[1;33m\"" + lexeme + "\"\033[0m }";
     }
 };
