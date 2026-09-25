@@ -22,7 +22,7 @@ enum class TokenKind : std::uint8_t
     Divide,      // /
     Modulo,      // %
     GreaterThan, // >
-    LessThan,    //
+    LessThan,    // <
     Equal,       // =
     SemiColon,   // ;
     Hashtag,     // #
