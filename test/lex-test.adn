@@ -1,3 +1,6 @@
-local a = 'Hello"'
+local x = 1
+local y = 2
 
-local b = 1
+local user = "Lily"
+
+local z = `z is ${x + y + `${3}`} and the test is for ${user}`
