@@ -1,6 +1,13 @@
-local x = 1
-local y = 2
-
-local user = "Lily"
-
-local z = `z is ${x + y + `${3}`} and the test is for ${user}`
+local a = `hello`
+local b = `hello ${name}`
+local c = `${x} + ${y} = ${x + y}`
+local d = `nested ${`${x}`}`
+local e = `deep ${`${`${42}`}`}`
+local f = `${x + y + `${3}`} and ${`${user}`}`
+local g = `before ${x} middle ${y} after`
+local h = `${`inner ${x} text`} outer`
+local i = `a ${x} b ${y} c ${z} d ${w} e`
+local j = ``
+local k = `no interpolation just text`
+local l = `${x}${y}${z}`
+local m = `start ${`mid ${`deep ${42}`} mid`} end`
