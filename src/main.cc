@@ -66,7 +66,8 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    Lexer lexer(read_file(file_path));
+    const std::string source{read_file(file_path)};
+    Lexer lexer(source);
 
     auto next{lexer.next()};
     while (next.kind != TokenKind::Eof)
