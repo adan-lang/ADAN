@@ -24,6 +24,7 @@ public:
     {
         if (!pending_tokens.empty())
         {
+            // std::println("draining pending: size {}", pending_tokens.size());
             auto token = pending_tokens.front();
             pending_tokens.pop();
             return token;
