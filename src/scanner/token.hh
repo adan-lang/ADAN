@@ -14,6 +14,9 @@ enum class TokenKind : std::uint8_t
     Float,
     String,
     Bool,
+    TemplateString,   // Raw string segment
+    InterpolateStart, // ${
+    InterpolateEnd,   // }
 
     // Symbols
     Plus,        // +
@@ -93,6 +96,15 @@ struct Token
             break;
         case TokenKind::Bool:
             kind_str = "Bool";
+            break;
+        case TokenKind::TemplateString:
+            kind_str = "TemplateString";
+            break;
+        case TokenKind::InterpolateStart:
+            kind_str = "InterpolateStart";
+            break;
+        case TokenKind::InterpolateEnd:
+            kind_str = "InterpolateEnd";
             break;
         case TokenKind::Plus:
             kind_str = "Plus";
