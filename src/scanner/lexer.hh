@@ -3,6 +3,7 @@
 #include "token.hh"
 
 #include <cctype>
+#include <queue>
 #include <unordered_map>
 
 const std::unordered_map<TokenKind, std::string_view> keywords = {
@@ -19,11 +20,24 @@ class Lexer
 public:
     explicit Lexer(std::string_view source) : source{source} {}
 
-    Token next();
+    Token next()
+    {
+        if (!pending_tokens.empty())
+        {
+            auto token = pending_tokens.front();
+            pending_tokens.pop();
+            return token;
+        }
+
+        return lex();
+    }
 
 private:
     std::string_view source{};
     std::size_t position{};
+    std::queue<Token> pending_tokens{};
+
+    Token lex();
 
     void advance()
     {
@@ -33,7 +47,7 @@ private:
 
     char peek(int offset = 0) const
     {
-        return is_eof() ? '\0' : source[position + offset];
+        return (position + offset >= source.length()) ? '\0' : source[position + offset];
     }
 
     void skip_spaces()
