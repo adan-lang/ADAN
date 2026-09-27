@@ -1,3 +1,5 @@
+#include <print>
+
 #include "lexer.hh"
 
 Token Lexer::next()
@@ -146,7 +148,8 @@ Token Lexer::next()
             advance();
             return Token{TokenKind::Ellipsis, "..."};
         }
-        break;
+        advance();
+        return Token{TokenKind::Eof, ""};
 
         // case '`':
         //     advance();
@@ -185,26 +188,28 @@ Token Lexer::next()
             return Token{is_float ? TokenKind::Float : TokenKind::Int, value};
         }
 
-        if (curr == '"')
+        // @todo add support for escape sequences
+        // @todo add support for interpolated strings
+        if (curr == '"' || curr == '\'')
         {
             const auto start{position};
+            const char delim{curr};
 
-            while (!is_eof())
+            advance();
+
+            while (!is_eof() && peek() != delim)
             {
                 advance();
-
-                if (peek() == '"')
-                {
-                    advance();
-                    break;
-                }
             }
-        }
-        else if (curr == '\'')
-        {
-        }
-        else if (curr == '`')
-        {
+
+            if (is_eof())
+                // @todo @important make fancy debug shit later
+                std::println("Unterminated string literal");
+
+            const std::string contents{source.substr(start + 1, position - start - 1)};
+            advance();
+
+            return Token{TokenKind::String, contents};
         }
 
         for (const auto &[key, value] : keywords)
