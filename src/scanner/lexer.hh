@@ -95,6 +95,31 @@ private:
         }
     }
 
+    char unescape(char c)
+    {
+        switch (c)
+        {
+        case 'n':
+            return '\n';
+        case 't':
+            return '\t';
+        case 'r':
+            return '\r';
+        case '\\':
+            return '\\';
+        case '"':
+            return '"';
+        case '\'':
+            return '\'';
+        case '`':
+            return '`';
+        case '0':
+            return '\0';
+        default:
+            return c;
+        }
+    }
+
     bool is_eof() const
     {
         return position >= source.length();
