@@ -20,25 +20,11 @@ class Lexer
 public:
     explicit Lexer(std::string_view source) : source{source} {}
 
-    Token next()
-    {
-        if (!pending_tokens.empty())
-        {
-            // std::println("draining pending: size {}", pending_tokens.size());
-            auto token = pending_tokens.front();
-            pending_tokens.pop();
-            return token;
-        }
-
-        return lex();
-    }
+    Token next();
 
 private:
     std::string_view source{};
     std::size_t position{};
-    std::queue<Token> pending_tokens{};
-
-    Token lex();
 
     void advance()
     {
