@@ -1,13 +1,24 @@
+;--
+
+    "?" in documentation refers to optionality, stuff labeled with "?"
+    may be omitted and will be set to their default values.
+
+--;
+
 ; Variables        --> "local <key> = <value>"
 
 ; Functions        --> "function <key> -> (<params>) { ... }"            <-- Note, the "-> ()" portion may be omitted if there are no parameters.
 ;                  --> "<key> <- (<args>)"                               <-- Note, the "<-" represents passing arguments towards the function, as opposed to
 ;                                                                                the function accepting parameters.
 
-; Comments         --> ";", ";--"/"--;"
+; Comments         --> ";", ";--" / "--;"
 
-; For Loops        --> "for <key> = <start>, <goal>, <step> { ... }"     <-- Note, the ", <step>" aspect may be omitted, defaults to +1.
+; For Loops        --> "for <key> = <start>, <goal>, <step>? { ... }"    <-- Note, the ", <step>" aspect may be omitted, defaults to +1.
 ;                  --> "for <key> in <array> { ... }"
+
+; While Loops      --> "while <conditional>? { ... }"                    <-- Note, the loop will run indefinitely the conditional is omitted.
+
+; If Statements    --> "if <conditional>? { ... }"                       <-- Note, if the conditional is omitted, the statement will default to true.
 
 ; Returns          --> "<- <value>"                                      <-- Note, "<-" is shared between this and providing arguments to a function call.
 
@@ -17,8 +28,8 @@
 
 ; Strings          --> "Hello", 'world!', `${<var>} was interpolated!`   <-- Note, you cannot use " or ' for interpolation.
 
-; Arrays           --> "[<value>, ...]"                                  <-- Dynamically-sized, homogeneous. The element type is inferred from
-;                                                                            the literals provided and all subsequent elements must match.
+; Arrays           --> "[<value>, ...]"                                  <-- Note, arrays are dynamically-sized and homogeneous. The element type is inferred
+;                                                                            from the literals provided and all subsequent elements must match.
 
 ;------------------------------------------------------;
 ;--
