@@ -100,21 +100,25 @@ private:
         switch (c)
         {
         case 'n':
-            return '\n';
+            return '\n'; // newline
         case 't':
-            return '\t';
+            return '\t'; // horizontal tab
         case 'r':
-            return '\r';
+            return '\r'; // carriage return
         case '\\':
-            return '\\';
+            return '\\'; // backslash
         case '"':
-            return '"';
+            return '"'; // double quote
         case '\'':
-            return '\'';
+            return '\''; // single quote
         case '`':
-            return '`';
+            return '`'; // backtick
         case '0':
-            return '\0';
+            return '\0'; // null
+        case 'b':
+            return '\b'; // backspace
+        case 'v':
+            return '\v'; // vertical tab
         default:
             return c;
         }
