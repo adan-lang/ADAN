@@ -188,25 +188,33 @@ Token Lexer::lex()
             return Token{is_float ? TokenKind::Float : TokenKind::Int, value};
         }
 
-        // @todo add support for escape sequences
         if (curr == '"' || curr == '\'')
         {
-            const auto start{position};
             const char delim{curr};
-
             advance();
+
+            std::string contents;
 
             while (!is_eof() && peek() != delim)
             {
-                advance();
+                if (peek() == '\\')
+                {
+                    advance();
+                    contents += unescape(peek());
+                    advance();
+                }
+                else
+                {
+                    contents += peek();
+                    advance();
+                }
             }
 
             if (is_eof())
-                // @todo @important make fancy debug shit later
+                // @todo @important HEY LILY!! do this sometime soon please!
                 std::println("Unterminated string literal");
-
-            const std::string contents{source.substr(start + 1, position - start - 1)};
-            advance();
+            else
+                advance();
 
             return Token{TokenKind::String, contents};
         }
@@ -220,6 +228,14 @@ Token Lexer::lex()
 
             while (!is_eof() && !stack.empty())
             {
+                if (peek() == '\\' && stack.back() == '`')
+                {
+                    advance();
+                    segment += unescape(peek());
+                    advance();
+                    continue;
+                }
+
                 const char c{peek()};
 
                 if (c == '`')
@@ -246,6 +262,13 @@ Token Lexer::lex()
 
                         while (!is_eof() && !local_stack.empty())
                         {
+                            if (peek() == '\\')
+                            {
+                                advance();
+                                advance();
+                                continue;
+                            }
+
                             if (peek() == '`')
                             {
                                 if (local_stack.back() == '`')
