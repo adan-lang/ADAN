@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 
 enum class TokenKind : std::uint8_t
 {
@@ -68,6 +69,115 @@ enum class TokenKind : std::uint8_t
     Print,
 };
 
+constexpr std::string_view token_kind_name(const TokenKind kind)
+{
+    switch (kind)
+    {
+    case TokenKind::Ident:
+        return "Ident";
+    case TokenKind::Eof:
+        return "Eof";
+    case TokenKind::Int:
+        return "Int";
+    case TokenKind::Float:
+        return "Float";
+    case TokenKind::String:
+        return "String";
+    case TokenKind::Bool:
+        return "Bool";
+    case TokenKind::TemplateString:
+        return "TemplateString";
+    case TokenKind::InterpolateStart:
+        return "InterpolateStart";
+    case TokenKind::InterpolateEnd:
+        return "InterpolateEnd";
+    case TokenKind::Plus:
+        return "Plus";
+    case TokenKind::Minus:
+        return "Minus";
+    case TokenKind::Multiply:
+        return "Multiply";
+    case TokenKind::Divide:
+        return "Divide";
+    case TokenKind::Modulo:
+        return "Modulo";
+    case TokenKind::GreaterThan:
+        return "GreaterThan";
+    case TokenKind::LessThan:
+        return "LessThan";
+    case TokenKind::Equal:
+        return "Equal";
+    case TokenKind::SemiColon:
+        return "SemiColon";
+    case TokenKind::Hashtag:
+        return "Hashtag";
+    case TokenKind::Dollar:
+        return "Dollar";
+    case TokenKind::LParen:
+        return "LParen";
+    case TokenKind::RParen:
+        return "RParen";
+    case TokenKind::LBracket:
+        return "LBracket";
+    case TokenKind::RBracket:
+        return "RBracket";
+    case TokenKind::LBrace:
+        return "LBrace";
+    case TokenKind::RBrace:
+        return "RBrace";
+    case TokenKind::Quote:
+        return "Quote";
+    case TokenKind::Apostrophe:
+        return "Apostrophe";
+    case TokenKind::Ellipsis:
+        return "Ellipsis";
+    case TokenKind::Tick:
+        return "Tick";
+    case TokenKind::Comma:
+        return "Comma";
+    case TokenKind::Arrow:
+        return "Arrow";
+    case TokenKind::BackArrow:
+        return "BackArrow";
+    case TokenKind::Increment:
+        return "Increment";
+    case TokenKind::Decrement:
+        return "Decrement";
+    case TokenKind::PlusAssign:
+        return "PlusAssign";
+    case TokenKind::MinusAssign:
+        return "MinusAssign";
+    case TokenKind::MultiplyAssign:
+        return "MultiplyAssign";
+    case TokenKind::DivideAssign:
+        return "DivideAssign";
+    case TokenKind::ModuloAssign:
+        return "ModuloAssign";
+    case TokenKind::EqualEqual:
+        return "EqualEqual";
+    case TokenKind::GreaterEqual:
+        return "GreaterEqual";
+    case TokenKind::LessEqual:
+        return "LessEqual";
+    case TokenKind::Local:
+        return "Local";
+    case TokenKind::Function:
+        return "Function";
+    case TokenKind::If:
+        return "If";
+    case TokenKind::While:
+        return "While";
+    case TokenKind::For:
+        return "For";
+    case TokenKind::In:
+        return "In";
+    case TokenKind::Print:
+        return "Print";
+    }
+
+    return "Unknown";
+}
+
 struct Token
 {
     TokenKind kind;
@@ -75,162 +185,6 @@ struct Token
 
     std::string to_string() const
     {
-        std::string kind_str;
-
-        switch (kind)
-        {
-        case TokenKind::Ident:
-            kind_str = "Ident";
-            break;
-        case TokenKind::Eof:
-            kind_str = "Eof";
-            break;
-        case TokenKind::Int:
-            kind_str = "Int";
-            break;
-        case TokenKind::Float:
-            kind_str = "Float";
-            break;
-        case TokenKind::String:
-            kind_str = "String";
-            break;
-        case TokenKind::Bool:
-            kind_str = "Bool";
-            break;
-        case TokenKind::TemplateString:
-            kind_str = "TemplateString";
-            break;
-        case TokenKind::InterpolateStart:
-            kind_str = "InterpolateStart";
-            break;
-        case TokenKind::InterpolateEnd:
-            kind_str = "InterpolateEnd";
-            break;
-        case TokenKind::Plus:
-            kind_str = "Plus";
-            break;
-        case TokenKind::Minus:
-            kind_str = "Minus";
-            break;
-        case TokenKind::Multiply:
-            kind_str = "Multiply";
-            break;
-        case TokenKind::Divide:
-            kind_str = "Divide";
-            break;
-        case TokenKind::Modulo:
-            kind_str = "Modulo";
-            break;
-        case TokenKind::GreaterThan:
-            kind_str = "GreaterThan";
-            break;
-        case TokenKind::LessThan:
-            kind_str = "LessThan";
-            break;
-        case TokenKind::Equal:
-            kind_str = "Equal";
-            break;
-        case TokenKind::SemiColon:
-            kind_str = "SemiColon";
-            break;
-        case TokenKind::Hashtag:
-            kind_str = "Hashtag";
-            break;
-        case TokenKind::Dollar:
-            kind_str = "Dollar";
-            break;
-        case TokenKind::LParen:
-            kind_str = "LParen";
-            break;
-        case TokenKind::RParen:
-            kind_str = "RParen";
-            break;
-        case TokenKind::LBracket:
-            kind_str = "LBracket";
-            break;
-        case TokenKind::RBracket:
-            kind_str = "RBracket";
-            break;
-        case TokenKind::LBrace:
-            kind_str = "LBrace";
-            break;
-        case TokenKind::RBrace:
-            kind_str = "RBrace";
-            break;
-        case TokenKind::Quote:
-            kind_str = "Quote";
-            break;
-        case TokenKind::Apostrophe:
-            kind_str = "Apostrophe";
-            break;
-        case TokenKind::Ellipsis:
-            kind_str = "Ellipsis";
-            break;
-        case TokenKind::Tick:
-            kind_str = "Tick";
-            break;
-        case TokenKind::Comma:
-            kind_str = "Comma";
-            break;
-        case TokenKind::Arrow:
-            kind_str = "Arrow";
-            break;
-        case TokenKind::BackArrow:
-            kind_str = "BackArrow";
-            break;
-        case TokenKind::Increment:
-            kind_str = "Increment";
-            break;
-        case TokenKind::Decrement:
-            kind_str = "Decrement";
-            break;
-        case TokenKind::PlusAssign:
-            kind_str = "PlusAssign";
-            break;
-        case TokenKind::MinusAssign:
-            kind_str = "MinusAssign";
-            break;
-        case TokenKind::MultiplyAssign:
-            kind_str = "MultiplyAssign";
-            break;
-        case TokenKind::DivideAssign:
-            kind_str = "DivideAssign";
-            break;
-        case TokenKind::ModuloAssign:
-            kind_str = "ModuloAssign";
-            break;
-        case TokenKind::EqualEqual:
-            kind_str = "EqualEqual";
-            break;
-        case TokenKind::GreaterEqual:
-            kind_str = "GreaterEqual";
-            break;
-        case TokenKind::LessEqual:
-            kind_str = "LessEqual";
-            break;
-        case TokenKind::Local:
-            kind_str = "Local";
-            break;
-        case TokenKind::Function:
-            kind_str = "Function";
-            break;
-        case TokenKind::If:
-            kind_str = "If";
-            break;
-        case TokenKind::While:
-            kind_str = "While";
-            break;
-        case TokenKind::For:
-            kind_str = "For";
-            break;
-        case TokenKind::In:
-            kind_str = "In";
-            break;
-        case TokenKind::Print:
-            kind_str = "Print";
-            break;
-        }
-
-        return "Token { kind: \033[1;32m" + kind_str + "\033[0m, lexeme: \033[1;33m\"" + lexeme + "\"\033[0m }";
+        return "Token { kind: \033[1;32m" + std::string(token_kind_name(kind)) + "\033[0m, lexeme: \033[1;33m\"" + lexeme + "\"\033[0m }";
     }
 };
