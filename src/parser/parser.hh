@@ -48,5 +48,33 @@ private:
 
     std::unique_ptr<Expr> parse_additive() {}
     std::unique_ptr<Expr> parse_multiplicative() {}
-    std::unique_ptr<Expr> parse_primary() {}
+    std::unique_ptr<Expr> parse_primary()
+    {
+        switch (current_token.kind)
+        {
+        case TokenKind::Int:
+        {
+            int64_t value{};
+            auto [ptr, ec] = std::from_chars(
+                current_token.lexeme.data(),
+                current_token.lexeme.data() + current_token.lexeme.size(),
+                value);
+
+            if (ec != std::errc())
+            {
+                // @todo @important do some fancy error bullshit later
+                throw std::runtime_error("Failed to parse integer literal");
+            }
+
+            advance();
+
+            return std::make_unique<IntLiteral>(value);
+        }
+
+        default:
+            // @todo @important do some fancy error bullshit later
+            throw std::runtime_error(std::format("Expected primary, got {}",
+                                                 token_kind_name(current_token.kind)));
+        }
+    }
 };
