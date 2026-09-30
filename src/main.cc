@@ -1,11 +1,10 @@
 #include <print>
 #include <string>
-#include <fstream>
-#include <sstream>
-#include <cstdlib>
 
 #include "lexer.hh"
+#include "parser.hh"
 #include "tools.hh"
+#include "parser-output.hh"
 
 static const std::string COMPILER_VERSION = "version-1.0.3";
 
@@ -36,7 +35,6 @@ int main(int argc, char *argv[])
     bool show_version = false;
     bool test_lexer = false;
     bool test_parser = false;
-    bool test_ast = false;
 
     std::string file_path;
 
@@ -52,16 +50,9 @@ int main(int argc, char *argv[])
             test_lexer = true;
         else if (arg == "--parse-test" || arg == "-pt")
             test_parser = true;
-        else if (arg == "--ast-test" || arg == "-at")
-            test_ast = true;
         else
             file_path = arg;
     }
-
-    const std::string source{read_file(file_path)};
-    Lexer lexer(source);
-
-    auto next{lexer.next()};
 
     if (show_help)
     {
@@ -81,11 +72,27 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    while (next.kind != TokenKind::Eof)
+    const std::string source{read_file(file_path)};
+
+    if (test_lexer)
     {
-        if (test_lexer)
+        Lexer lexer(source);
+        auto next = lexer.next();
+
+        while (next.kind != TokenKind::Eof)
+        {
             std::println("{}", next.to_string());
-        next = lexer.next();
+            next = lexer.next();
+        }
+    }
+
+    if (test_parser)
+    {
+        Parser parser(source);
+        const auto expressions = parser.parse();
+
+        if (test_parser)
+            std::println("{}", format_parser_output(expressions));
     }
 
     return 0;
