@@ -58,4 +58,12 @@ private:
     std::unique_ptr<Expr> parse_primary();
 
     std::unique_ptr<Stmt> parse_stmt();
+    std::unique_ptr<Stmt> parse_return();
+    std::unique_ptr<Stmt> parse_local();
+    std::unique_ptr<Stmt> parse_function();
+    std::unique_ptr<Stmt> parse_if();
+    std::unique_ptr<Stmt> parse_for();
+    std::unique_ptr<Stmt> parse_while();
+
+    Block parse_block();
 };
