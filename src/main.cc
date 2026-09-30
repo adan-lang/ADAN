@@ -34,6 +34,10 @@ int main(int argc, char *argv[])
 {
     bool show_help = false;
     bool show_version = false;
+    bool test_lexer = false;
+    bool test_parser = false;
+    bool test_ast = false;
+
     std::string file_path;
 
     for (int i = 1; i < argc; i++)
@@ -44,9 +48,20 @@ int main(int argc, char *argv[])
             show_help = true;
         else if (arg == "--version" || arg == "-v")
             show_version = true;
+        else if (arg == "--lex-test" || arg == "-lt")
+            test_lexer = true;
+        else if (arg == "--parse-test" || arg == "-pt")
+            test_parser = true;
+        else if (arg == "--ast-test" || arg == "-at")
+            test_ast = true;
         else
             file_path = arg;
     }
+
+    const std::string source{read_file(file_path)};
+    Lexer lexer(source);
+
+    auto next{lexer.next()};
 
     if (show_help)
     {
@@ -66,13 +81,10 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    const std::string source{read_file(file_path)};
-    Lexer lexer(source);
-
-    auto next{lexer.next()};
     while (next.kind != TokenKind::Eof)
     {
-        std::println("{}", next.to_string());
+        if (test_lexer)
+            std::println("{}", next.to_string());
         next = lexer.next();
     }
 
