@@ -2,20 +2,11 @@
 
 #include "parser.hh"
 
+// expressions
+
 std::unique_ptr<Expr> Parser::parse_expr()
 {
     return parse_additive();
-}
-
-std::unique_ptr<Stmt> Parser::parse_stmt()
-{
-    switch (current_token.kind)
-    {
-        // @todo @important make cases for stmts
-
-    default:
-        return std::make_unique<ExprStmt>(parse_expr());
-    }
 }
 
 std::unique_ptr<Expr> Parser::parse_additive()
@@ -101,6 +92,7 @@ std::unique_ptr<Expr> Parser::parse_primary()
         advance();
         auto expression = parse_expr();
         expect(TokenKind::RParen);
+
         return expression;
     }
 
@@ -109,4 +101,34 @@ std::unique_ptr<Expr> Parser::parse_primary()
         throw std::runtime_error(std::format("Expected primary, got {}",
                                              token_kind_name(current_token.kind)));
     }
+}
+
+// statements
+
+std::unique_ptr<Stmt> Parser::parse_stmt()
+{
+    switch (current_token.kind)
+    {
+        // @todo @important make cases for stmts
+
+    case TokenKind::BackArrow:
+        return parse_return();
+    default:
+        return std::make_unique<ExprStmt>(parse_expr());
+    }
+}
+
+std::unique_ptr<Stmt> Parser::parse_return()
+{
+    expect(TokenKind::BackArrow);
+
+    auto expression = parse_expr();
+    return std::make_unique<ReturnStmt>(std::move(expression));
+}
+
+std::unique_ptr<Stmt> Parser::parse_local()
+{
+    expect(TokenKind::Local);
+
+    std::string name =
 }
