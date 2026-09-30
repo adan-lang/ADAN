@@ -53,8 +53,9 @@ private:
     }
 
     std::unique_ptr<Expr> parse_expr();
-    std::unique_ptr<Stmt> parse_stmt();
     std::unique_ptr<Expr> parse_additive();
     std::unique_ptr<Expr> parse_multiplicative();
     std::unique_ptr<Expr> parse_primary();
+
+    std::unique_ptr<Stmt> parse_stmt();
 };
