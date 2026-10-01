@@ -18,7 +18,7 @@ const std::unordered_map<TokenKind, std::string_view> keywords = {
 class Lexer
 {
 public:
-    explicit Lexer(std::string_view source) : source{source} {}
+    explicit Lexer(std::string_view source_text) : source{source_text} {}
 
     Token next()
     {
