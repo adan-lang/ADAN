@@ -1,3 +1,8 @@
+// made using AI
+
+// this file was made using Generative AI! the contents of the file
+//  you're viewing is used for visualizing the AST and nothing more.
+
 #pragma once
 
 #include <format>
@@ -141,69 +146,200 @@ inline std::string format_expression(const Expr &expression)
     return "<Unknown Expression>";
 }
 
-inline std::string format_statement(const Stmt &statement);
-
-inline std::string format_block(const Block &block)
+inline std::string tree_child_prefix(const std::string &prefix, const bool is_last)
 {
-    std::string result = "{";
-    for (const auto &statement : block.stmts)
-        result += " " + format_statement(*statement) + ";";
-    return result + " }";
+    return prefix + (is_last ? "    " : "|   ");
 }
 
-inline std::string format_statement(const Stmt &statement)
+inline void append_tree_line(std::string &output,
+                             const std::string &prefix,
+                             const bool is_last,
+                             const std::string &label)
+{
+    output += "\n" + prefix + (is_last ? "`-- " : "|-- ") + label;
+}
+
+inline void append_expression_tree(std::string &output,
+                                   const Expr &expression,
+                                   const std::string &prefix,
+                                   const bool is_last);
+
+inline void append_expression_branch(std::string &output,
+                                     const std::string &prefix,
+                                     const bool is_last,
+                                     const std::string &label,
+                                     const Expr &expression)
+{
+    append_tree_line(output, prefix, is_last, label);
+    append_expression_tree(output, expression, tree_child_prefix(prefix, is_last), true);
+}
+
+inline void append_expression_tree(std::string &output,
+                                   const Expr &expression,
+                                   const std::string &prefix,
+                                   const bool is_last)
+{
+    if (const auto *literal = dynamic_cast<const IntLiteral *>(&expression))
+        append_tree_line(output, prefix, is_last, std::format("IntLiteral: {}", literal->value));
+    else if (const auto *literal = dynamic_cast<const FloatLiteral *>(&expression))
+        append_tree_line(output, prefix, is_last, std::format("FloatLiteral: {}", literal->value));
+    else if (const auto *literal = dynamic_cast<const BoolLiteral *>(&expression))
+        append_tree_line(output, prefix, is_last,
+                         literal->value ? "BoolLiteral: true" : "BoolLiteral: false");
+    else if (const auto *literal = dynamic_cast<const StringLiteral *>(&expression))
+        append_tree_line(output, prefix, is_last, std::format("StringLiteral: \"{}\"", literal->value));
+    else if (const auto *identifier = dynamic_cast<const Identifier *>(&expression))
+        append_tree_line(output, prefix, is_last, std::format("Identifier: {}", identifier->name));
+    else if (const auto *binary = dynamic_cast<const BinaryExpr *>(&expression))
+    {
+        append_tree_line(output, prefix, is_last,
+                         std::format("BinaryExpr: {}", binary_operator_name(binary->op)));
+        const auto children = tree_child_prefix(prefix, is_last);
+        append_expression_branch(output, children, false, "Left", *binary->lhs);
+        append_expression_branch(output, children, true, "Right", *binary->rhs);
+    }
+    else if (const auto *unary = dynamic_cast<const UnaryExpr *>(&expression))
+    {
+        append_tree_line(output, prefix, is_last,
+                         std::format("UnaryExpr: {}{}", unary_operator_name(unary->op),
+                                     unary->postfix ? " (postfix)" : " (prefix)"));
+        append_expression_branch(output, tree_child_prefix(prefix, is_last), true,
+                                 "Operand", *unary->operand);
+    }
+    else if (const auto *array = dynamic_cast<const ArrayLiteral *>(&expression))
+    {
+        append_tree_line(output, prefix, is_last, "ArrayLiteral");
+        const auto children = tree_child_prefix(prefix, is_last);
+        for (std::size_t index = 0; index < array->elements.size(); ++index)
+            append_expression_branch(output, children, index + 1 == array->elements.size(),
+                                     std::format("Element {}", index), *array->elements[index]);
+    }
+    else if (const auto *call = dynamic_cast<const CallExpr *>(&expression))
+    {
+        append_tree_line(output, prefix, is_last, std::format("CallExpr: {}", call->callee));
+        const auto children = tree_child_prefix(prefix, is_last);
+        for (std::size_t index = 0; index < call->args.size(); ++index)
+            append_expression_branch(output, children, index + 1 == call->args.size(),
+                                     std::format("Argument {}", index + 1), *call->args[index]);
+    }
+    else if (const auto *interpolated = dynamic_cast<const InterpolatedString *>(&expression))
+    {
+        append_tree_line(output, prefix, is_last, "InterpolatedString");
+        const auto children = tree_child_prefix(prefix, is_last);
+        for (std::size_t index = 0; index < interpolated->parts.size(); ++index)
+        {
+            const bool part_is_last = index + 1 == interpolated->parts.size();
+            const auto &part = interpolated->parts[index];
+            if (const auto *text = std::get_if<std::string>(&part))
+                append_tree_line(output, children, part_is_last, std::format("Text: \"{}\"", *text));
+            else
+                append_expression_branch(output, children, part_is_last, "Interpolation",
+                                         **std::get_if<std::unique_ptr<Expr>>(&part));
+        }
+    }
+    else
+        append_tree_line(output, prefix, is_last, "Unknown Expression");
+}
+
+inline void append_statement_tree(std::string &output,
+                                  const Stmt &statement,
+                                  const std::string &prefix,
+                                  const bool is_last);
+
+inline void append_block_tree(std::string &output,
+                              const Block &block,
+                              const std::string &prefix,
+                              const bool is_last)
+{
+    append_tree_line(output, prefix, is_last, "Block");
+    const auto children = tree_child_prefix(prefix, is_last);
+    for (std::size_t index = 0; index < block.stmts.size(); ++index)
+        append_statement_tree(output, *block.stmts[index], children,
+                              index + 1 == block.stmts.size());
+}
+
+inline void append_block_branch(std::string &output,
+                                const std::string &prefix,
+                                const bool is_last,
+                                const std::string &label,
+                                const Block &block)
+{
+    append_tree_line(output, prefix, is_last, label);
+    append_block_tree(output, block, tree_child_prefix(prefix, is_last), true);
+}
+
+inline void append_statement_tree(std::string &output,
+                                  const Stmt &statement,
+                                  const std::string &prefix,
+                                  const bool is_last)
 {
     if (const auto *local = dynamic_cast<const LocalDecl *>(&statement))
     {
+        append_tree_line(output, prefix, is_last, std::format("LocalDecl: {}", local->name));
         if (local->init)
-            return std::format("local {} = {}", local->name, format_expression(*local->init));
-        return std::format("local {}", local->name);
+            append_expression_branch(output, tree_child_prefix(prefix, is_last), true,
+                                     "Initializer", *local->init);
     }
-
-    if (const auto *return_stmt = dynamic_cast<const ReturnStmt *>(&statement))
-        return std::format("<- {}", format_expression(*return_stmt->value));
-
-    if (const auto *expression_stmt = dynamic_cast<const ExprStmt *>(&statement))
-        return format_expression(*expression_stmt->expr);
-
-    if (const auto *function = dynamic_cast<const FuncDecl *>(&statement))
+    else if (const auto *return_stmt = dynamic_cast<const ReturnStmt *>(&statement))
     {
-        std::string result = std::format("function {} -> (", function->name);
-        for (std::size_t index = 0; index < function->params.size(); ++index)
-        {
-            if (index != 0)
-                result += ", ";
-            result += function->params[index];
-        }
-        return result + ") " + format_block(function->body);
+        append_tree_line(output, prefix, is_last, "ReturnStmt");
+        append_expression_branch(output, tree_child_prefix(prefix, is_last), true,
+                                 "Value", *return_stmt->value);
     }
-
-    if (const auto *if_stmt = dynamic_cast<const IfStmt *>(&statement))
-        return std::format("if {} {}", format_expression(*if_stmt->condition),
-                           format_block(if_stmt->body));
-
-    if (const auto *for_in = dynamic_cast<const ForInStmt *>(&statement))
-        return std::format("for {} in {} {}", for_in->var,
-                           format_expression(*for_in->iterable), format_block(for_in->body));
-
-    if (const auto *numeric_for = dynamic_cast<const NumericForStmt *>(&statement))
-        return std::format("for {} = {}, {}, {} {}", numeric_for->name,
-                           format_expression(*numeric_for->start),
-                           format_expression(*numeric_for->stop),
-                           format_expression(*numeric_for->step), format_block(numeric_for->body));
-
-    if (const auto *while_stmt = dynamic_cast<const WhileStmt *>(&statement))
-        return std::format("while {} {}", format_expression(*while_stmt->condition),
-                           format_block(while_stmt->body));
-
-    return "<Unknown Statement>";
+    else if (const auto *expression_stmt = dynamic_cast<const ExprStmt *>(&statement))
+    {
+        append_tree_line(output, prefix, is_last, "ExprStmt");
+        append_expression_branch(output, tree_child_prefix(prefix, is_last), true,
+                                 "Expression", *expression_stmt->expr);
+    }
+    else if (const auto *function = dynamic_cast<const FuncDecl *>(&statement))
+    {
+        append_tree_line(output, prefix, is_last, std::format("FuncDecl: {}", function->name));
+        const auto children = tree_child_prefix(prefix, is_last);
+        const std::size_t child_count = function->params.size() + 1;
+        for (std::size_t index = 0; index < function->params.size(); ++index)
+            append_tree_line(output, children, index + 1 == child_count,
+                             std::format("Parameter: {}", function->params[index]));
+        append_block_branch(output, children, true, "Body", function->body);
+    }
+    else if (const auto *if_stmt = dynamic_cast<const IfStmt *>(&statement))
+    {
+        append_tree_line(output, prefix, is_last, "IfStmt");
+        const auto children = tree_child_prefix(prefix, is_last);
+        append_expression_branch(output, children, false, "Condition", *if_stmt->condition);
+        append_block_branch(output, children, true, "Body", if_stmt->body);
+    }
+    else if (const auto *for_in = dynamic_cast<const ForInStmt *>(&statement))
+    {
+        append_tree_line(output, prefix, is_last, std::format("ForInStmt: {}", for_in->var));
+        const auto children = tree_child_prefix(prefix, is_last);
+        append_expression_branch(output, children, false, "Iterable", *for_in->iterable);
+        append_block_branch(output, children, true, "Body", for_in->body);
+    }
+    else if (const auto *numeric_for = dynamic_cast<const NumericForStmt *>(&statement))
+    {
+        append_tree_line(output, prefix, is_last, std::format("NumericForStmt: {}", numeric_for->name));
+        const auto children = tree_child_prefix(prefix, is_last);
+        append_expression_branch(output, children, false, "Start", *numeric_for->start);
+        append_expression_branch(output, children, false, "Stop", *numeric_for->stop);
+        append_expression_branch(output, children, false, "Step", *numeric_for->step);
+        append_block_branch(output, children, true, "Body", numeric_for->body);
+    }
+    else if (const auto *while_stmt = dynamic_cast<const WhileStmt *>(&statement))
+    {
+        append_tree_line(output, prefix, is_last, "WhileStmt");
+        const auto children = tree_child_prefix(prefix, is_last);
+        append_expression_branch(output, children, false, "Condition", *while_stmt->condition);
+        append_block_branch(output, children, true, "Body", while_stmt->body);
+    }
+    else
+        append_tree_line(output, prefix, is_last, "Unknown Statement");
 }
 
 inline std::string format_parser_output(const std::vector<std::unique_ptr<Stmt>> &statements)
 {
-    std::string result = "Parser output:";
+    std::string result = "Program";
     for (std::size_t index = 0; index < statements.size(); ++index)
-        result += std::format("\n  {}: {}", index + 1, format_statement(*statements[index]));
-
+        append_statement_tree(result, *statements[index], "", index + 1 == statements.size());
     return result;
 }
