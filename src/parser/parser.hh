@@ -58,6 +58,8 @@ private:
     std::unique_ptr<Expr> parse_additive();
     std::unique_ptr<Expr> parse_multiplicative();
     std::unique_ptr<Expr> parse_primary();
+    std::unique_ptr<Expr> parse_array_literal();
+    std::unique_ptr<Expr> parse_template_string();
 
     std::unique_ptr<Stmt> parse_stmt();
     std::unique_ptr<Stmt> parse_return();
