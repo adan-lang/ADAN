@@ -89,10 +89,10 @@ int main(int argc, char *argv[])
     if (test_parser)
     {
         Parser parser(source);
-        const auto expressions = parser.parse();
+        const auto statements = parser.parse();
 
         if (test_parser)
-            std::println("{}", format_parser_output(expressions));
+            std::println("{}", format_parser_output(statements));
     }
 
     return 0;
