@@ -15,13 +15,13 @@ public:
         current_token = lexer.next();
     }
 
-    std::vector<std::unique_ptr<Expr>> parse()
+    std::vector<std::unique_ptr<Stmt>> parse()
     {
-        std::vector<std::unique_ptr<Expr>> expressions;
+        std::vector<std::unique_ptr<Stmt>> statements;
         while (current_token.kind != TokenKind::Eof)
-            expressions.push_back(parse_expr());
+            statements.push_back(parse_stmt());
 
-        return expressions;
+        return statements;
     }
 
 private:
