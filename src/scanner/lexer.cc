@@ -412,7 +412,11 @@ Token Lexer::lex()
             while (!is_eof() && std::isalnum(source[position]) || source[position] == '_')
                 advance();
 
-            return Token{TokenKind::Ident, std::string(source.substr(start, position - start))};
+            std::string value{source.substr(start, position - start)};
+            if (value == "true" || value == "false")
+                return Token{TokenKind::Bool, std::move(value)};
+
+            return Token{TokenKind::Ident, std::move(value)};
         }
 
         return Token{TokenKind::Eof, ""};
