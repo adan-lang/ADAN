@@ -141,11 +141,69 @@ inline std::string format_expression(const Expr &expression)
     return "<Unknown Expression>";
 }
 
-inline std::string format_parser_output(const std::vector<std::unique_ptr<Expr>> &expressions)
+inline std::string format_statement(const Stmt &statement);
+
+inline std::string format_block(const Block &block)
+{
+    std::string result = "{";
+    for (const auto &statement : block.stmts)
+        result += " " + format_statement(*statement) + ";";
+    return result + " }";
+}
+
+inline std::string format_statement(const Stmt &statement)
+{
+    if (const auto *local = dynamic_cast<const LocalDecl *>(&statement))
+    {
+        if (local->init)
+            return std::format("local {} = {}", local->name, format_expression(*local->init));
+        return std::format("local {}", local->name);
+    }
+
+    if (const auto *return_stmt = dynamic_cast<const ReturnStmt *>(&statement))
+        return std::format("<- {}", format_expression(*return_stmt->value));
+
+    if (const auto *expression_stmt = dynamic_cast<const ExprStmt *>(&statement))
+        return format_expression(*expression_stmt->expr);
+
+    if (const auto *function = dynamic_cast<const FuncDecl *>(&statement))
+    {
+        std::string result = std::format("function {} -> (", function->name);
+        for (std::size_t index = 0; index < function->params.size(); ++index)
+        {
+            if (index != 0)
+                result += ", ";
+            result += function->params[index];
+        }
+        return result + ") " + format_block(function->body);
+    }
+
+    if (const auto *if_stmt = dynamic_cast<const IfStmt *>(&statement))
+        return std::format("if {} {}", format_expression(*if_stmt->condition),
+                           format_block(if_stmt->body));
+
+    if (const auto *for_in = dynamic_cast<const ForInStmt *>(&statement))
+        return std::format("for {} in {} {}", for_in->var,
+                           format_expression(*for_in->iterable), format_block(for_in->body));
+
+    if (const auto *numeric_for = dynamic_cast<const NumericForStmt *>(&statement))
+        return std::format("for {} = {}, {}, {} {}", numeric_for->name,
+                           format_expression(*numeric_for->start),
+                           format_expression(*numeric_for->stop),
+                           format_expression(*numeric_for->step), format_block(numeric_for->body));
+
+    if (const auto *while_stmt = dynamic_cast<const WhileStmt *>(&statement))
+        return std::format("while {} {}", format_expression(*while_stmt->condition),
+                           format_block(while_stmt->body));
+
+    return "<Unknown Statement>";
+}
+
+inline std::string format_parser_output(const std::vector<std::unique_ptr<Stmt>> &statements)
 {
     std::string result = "Parser output:";
-    for (std::size_t index = 0; index < expressions.size(); ++index)
-        result += std::format("\n  {}: {}", index + 1, format_expression(*expressions[index]));
+    for (std::size_t index = 0; index < statements.size(); ++index)
+        result += std::format("\n  {}: {}", index + 1, format_statement(*statements[index]));
 
     return result;
 }
