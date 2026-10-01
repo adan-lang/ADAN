@@ -2,6 +2,10 @@
 
 #include "parser.hh"
 
+Block Parser::parse_block()
+{
+}
+
 // expressions
 
 std::unique_ptr<Expr> Parser::parse_expr()
@@ -113,22 +117,107 @@ std::unique_ptr<Stmt> Parser::parse_stmt()
 
     case TokenKind::BackArrow:
         return parse_return();
+    case TokenKind::Local:
+        return parse_local();
     default:
         return std::make_unique<ExprStmt>(parse_expr());
     }
 }
 
+// <- <value>
 std::unique_ptr<Stmt> Parser::parse_return()
 {
     expect(TokenKind::BackArrow);
-
     auto expression = parse_expr();
+
     return std::make_unique<ReturnStmt>(std::move(expression));
 }
 
+// local <key> = <value>?
 std::unique_ptr<Stmt> Parser::parse_local()
 {
-    expect(TokenKind::Local);
+    auto name_token = expect(TokenKind::Local);
+    auto name = std::move(name_token.lexeme);
 
-    std::string name =
+    std::unique_ptr<Expr> init;
+    if (matches(TokenKind::Equal))
+    {
+        advance();
+        init = parse_expr();
+    }
+
+    return std::make_unique<LocalDecl>(std::move(name),
+                                       std::move(init));
+}
+
+// function <key> (-> (<params>, ...))? <block>
+std::unique_ptr<Stmt> Parser::parse_function()
+{
+    expect(TokenKind::Function);
+
+    auto name_token = expect(TokenKind::Ident);
+    auto name = std::move(name_token);
+
+    std::vector<std::string> params;
+    if (matches(TokenKind::Arrow))
+    {
+        advance();
+        expect(TokenKind::LParen);
+
+        while (!matches(TokenKind::RParen))
+        {
+            auto param = expect(TokenKind::Ident);
+            params.emplace_back(param);
+
+            if (!matches(TokenKind::Comma))
+                break;
+
+            advance();
+        }
+
+        expect(TokenKind::RParen);
+    }
+
+    Block block = parse_block();
+    return std::make_unique<FuncDecl>(std::move(name),
+                                      std::move(params),
+                                      std::move(block));
+}
+
+// if (<conditional>)? <block>
+std::unique_ptr<Stmt> Parser::parse_if()
+{
+    expect(TokenKind::If);
+
+    std::unique_ptr<Expr> condition = parse_expr();
+    if (matches(TokenKind::LBrace))
+        condition = std::make_unique<BoolLiteral>(true);
+    else
+        condition = parse_expr();
+
+    Block body = parse_block();
+    return std::make_unique<IfStmt>(std::move(condition),
+                                    std::move(body));
+}
+
+// for <key>   =    <start>  <goal>, (<step>)?
+// for <name> in <iterable> <block>
+std::unique_ptr<Stmt> Parser::parse_for()
+{
+}
+
+// while (<conditional>)? <block>
+std::unique_ptr<Stmt> Parser::parse_while()
+{
+    expect(TokenKind::While);
+
+    std::unique_ptr<Expr> condition;
+    if (matches(TokenKind::LBrace))
+        condition = std::make_unique<BoolLiteral>(true);
+    else
+        condition = parse_expr();
+
+    Block body = parse_block();
+    return std::make_unique<WhileStmt>(std::move(condition),
+                                       std::move(body));
 }
