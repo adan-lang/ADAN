@@ -3,16 +3,11 @@
 <div align="left">
    <h3>The ADAN Programming Language</h3>
    <p>
-      Beginner friendly, general purposed language with inferred typing and no manual memory managing, preferring <a href="https://verdagon.dev/blog/generational-references">generational references</a> and <a href="https://verdagon.dev/blog/fearless-ffi">fearless FFI</a>.
-   </p><br>
+      Beginner friendly, general purposed language with inferred typing<br>
+      and no manual memory managing.
+   </p>
    
    <img alt="Version" src="https://img.shields.io/badge/version-1.0.3-blue">
    <img alt="Latest Release" src="https://img.shields.io/github/v/release/transicle/adan">
    <img alt="Docs" src="https://img.shields.io/badge/docs-docs.adan.sh-blue">
-</div>
-
-<br><br>
-
-<div align="center">
-   <img width="382" height="429" alt="image" src="https://github.com/user-attachments/assets/c95f1dd9-adad-4f3f-8835-073420d3c9c1" />
 </div>
