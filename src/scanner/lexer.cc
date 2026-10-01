@@ -25,6 +25,11 @@ Token Lexer::lex()
 
     case '-':
         advance();
+        if (peek() == '>')
+        {
+            advance();
+            return Token{TokenKind::Arrow, "->"};
+        }
         if (peek() == '-')
         {
             advance();
