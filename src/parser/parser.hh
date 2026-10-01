@@ -52,6 +52,8 @@ private:
         return ((current_token.kind == types) || ...);
     }
 
+    Block parse_block();
+
     std::unique_ptr<Expr> parse_expr();
     std::unique_ptr<Expr> parse_additive();
     std::unique_ptr<Expr> parse_multiplicative();
@@ -64,6 +66,4 @@ private:
     std::unique_ptr<Stmt> parse_if();
     std::unique_ptr<Stmt> parse_for();
     std::unique_ptr<Stmt> parse_while();
-
-    Block parse_block();
 };
