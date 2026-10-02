@@ -1,6 +1,6 @@
 .SILENT:
 
-.PHONY: run build
+.PHONY: run build test-parser test-lexer
 
 FILE ?= ./test/grades-calc.adn
 
@@ -39,3 +39,13 @@ build:
 	@printf "Finishing ADAN build...                            	\033[1;33m[\033[39m3/3\033[33m]\033[0m\n"
 	
 	@printf "\n\033[1;32mADAN build success!\033[0m\n\n"
+
+test-lexer: build
+	echo "—————————————————————— Program's Output ——————————————————————"
+	echo
+	./build/ADAN -lt ./test/grades-calc.adn
+
+test-parser: build
+	echo "—————————————————————— Program's Output ——————————————————————"
+	echo
+	./build/ADAN -pt ./test/grades-calc.adn
