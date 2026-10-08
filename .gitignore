@@ -4,3 +4,4 @@ build/
 
 .git/
 .vscode/
+.idea/
