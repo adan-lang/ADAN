@@ -6,7 +6,7 @@
 #include "tools.hh"
 #include "parser-output.hh"
 
-static const std::string COMPILER_VERSION = "version-1.0.4";
+static constexpr std::string COMPILER_VERSION = "version-1.0.4";
 
 static inline void show_main_message()
 {
@@ -29,7 +29,7 @@ static inline void show_main_message()
         "\n");
 }
 
-int main(int argc, char *argv[])
+int main(const int argc, char *argv[])
 {
     bool show_help = false;
     bool show_version = false;
@@ -40,9 +40,7 @@ int main(int argc, char *argv[])
 
     for (int i = 1; i < argc; i++)
     {
-        std::string arg = argv[i];
-
-        if (arg == "--help" || arg == "-h")
+        if (std::string arg = argv[i]; arg == "--help" || arg == "-h")
             show_help = true;
         else if (arg == "--version" || arg == "-v")
             show_version = true;
