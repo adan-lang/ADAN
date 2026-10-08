@@ -46,7 +46,7 @@ private:
             position++;
     }
 
-    char peek(int offset = 0) const
+    [[nodiscard]] char peek(const std::size_t offset = 0) const
     {
         return (position + offset >= source.length()) ? '\0' : source[position + offset];
     }
@@ -95,7 +95,7 @@ private:
         }
     }
 
-    char unescape(char c)
+    static char unescape(const char c)
     {
         switch (c)
         {
@@ -124,7 +124,7 @@ private:
         }
     }
 
-    bool is_eof() const
+    [[nodiscard]] bool is_eof() const
     {
         return position >= source.length();
     }
