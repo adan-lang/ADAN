@@ -7,7 +7,6 @@
 
 #include <format>
 #include <string>
-#include <string_view>
 
 #include "ast.hh"
 
@@ -162,7 +161,7 @@ inline void append_tree_line(std::string &output,
 inline void append_expression_tree(std::string &output,
                                    const Expr &expression,
                                    const std::string &prefix,
-                                   const bool is_last);
+                                   bool is_last);
 
 inline void append_expression_branch(std::string &output,
                                      const std::string &prefix,
@@ -181,13 +180,13 @@ inline void append_expression_tree(std::string &output,
 {
     if (const auto *literal = dynamic_cast<const IntLiteral *>(&expression))
         append_tree_line(output, prefix, is_last, std::format("IntLiteral: {}", literal->value));
-    else if (const auto *literal = dynamic_cast<const FloatLiteral *>(&expression))
-        append_tree_line(output, prefix, is_last, std::format("FloatLiteral: {}", literal->value));
-    else if (const auto *literal = dynamic_cast<const BoolLiteral *>(&expression))
+    else if (const auto *float_literal = dynamic_cast<const FloatLiteral *>(&expression))
+        append_tree_line(output, prefix, is_last, std::format("FloatLiteral: {}", float_literal->value));
+    else if (const auto *bool_literal = dynamic_cast<const BoolLiteral *>(&expression))
         append_tree_line(output, prefix, is_last,
-                         literal->value ? "BoolLiteral: true" : "BoolLiteral: false");
-    else if (const auto *literal = dynamic_cast<const StringLiteral *>(&expression))
-        append_tree_line(output, prefix, is_last, std::format("StringLiteral: \"{}\"", literal->value));
+                         bool_literal->value ? "BoolLiteral: true" : "BoolLiteral: false");
+    else if (const auto *string_literal = dynamic_cast<const StringLiteral *>(&expression))
+        append_tree_line(output, prefix, is_last, std::format("StringLiteral: \"{}\"", string_literal->value));
     else if (const auto *identifier = dynamic_cast<const Identifier *>(&expression))
         append_tree_line(output, prefix, is_last, std::format("Identifier: {}", identifier->name));
     else if (const auto *binary = dynamic_cast<const BinaryExpr *>(&expression))
@@ -244,7 +243,7 @@ inline void append_expression_tree(std::string &output,
 inline void append_statement_tree(std::string &output,
                                   const Stmt &statement,
                                   const std::string &prefix,
-                                  const bool is_last);
+                                  bool is_last);
 
 inline void append_block_tree(std::string &output,
                               const Block &block,
