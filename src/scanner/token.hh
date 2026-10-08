@@ -183,7 +183,7 @@ struct Token
     TokenKind kind;
     std::string lexeme;
 
-    std::string to_string() const
+    [[nodiscard]] std::string to_string() const
     {
         return "Token { kind: \033[1;32m" + std::string(token_kind_name(kind)) + "\033[0m, lexeme: \033[1;33m\"" + lexeme + "\"\033[0m }";
     }
