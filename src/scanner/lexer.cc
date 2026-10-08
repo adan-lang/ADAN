@@ -410,7 +410,7 @@ Token Lexer::lex()
         if (std::isalnum(curr) || curr == '_')
         {
             const auto start{position};
-            while (!is_eof() && std::isalnum(source[position]) || source[position] == '_')
+            while (!is_eof() && (std::isalnum(source[position]) || source[position] == '_'))
                 advance();
 
             std::string value{source.substr(start, position - start)};
