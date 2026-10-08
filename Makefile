@@ -3,11 +3,12 @@
 .PHONY: run build test-parser test-lexer
 
 FILE ?= ./test/grades-calc.adn
+BUILD_DIR ?= ./build
 
 run: build
 	echo "—————————————————————— Program's Output ——————————————————————"
 	echo
-	./build/ADAN $(FILE); \
+	$(BUILD_DIR)/ADAN $(FILE); \
 	EXIT_CODE=$$?; \
 	if [ $$EXIT_CODE -ne 0 ]; then \
 	    echo; \
@@ -20,7 +21,7 @@ build:
 	
 	@printf "\nClearing existing build...                         	\033[1;33m[\033[39m1/3\033[33m]\033[0m\n"
 	
-	cmake -S . -B ./build -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=Release > /tmp/adan_build.log 2>&1 \
+	cmake -S . -B $(BUILD_DIR) -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Release > /tmp/adan_build.log 2>&1 \
 	    || { printf "\n\033[1;31mADAN build failed!\033[0m\n"; \
 	         echo ; echo "————————————————————————— Error Logs —————————————————————————"; \
 	         cat /tmp/adan_build.log; \
@@ -29,7 +30,7 @@ build:
 	
 	@printf "Re-compiling ADAN...                               	\033[1;33m[\033[39m2/3\033[33m]\033[0m\n"
 	
-	cmake --build ./build > /tmp/adan_build.log 2>&1 \
+	cmake --build $(BUILD_DIR) > /tmp/adan_build.log 2>&1 \
 	    || { printf "\n\033[1;31mADAN build failed!\033[0m\n"; \
 	         echo ; echo "————————————————————————— Error Logs —————————————————————————" ; echo; \
 	         cat /tmp/adan_build.log; \
@@ -43,9 +44,9 @@ build:
 test-lexer: build
 	echo "—————————————————————— Program's Output ——————————————————————"
 	echo
-	./build/ADAN -lt ./test/grades-calc.adn
+	$(BUILD_DIR)/ADAN -lt ./test/grades-calc.adn
 
 test-parser: build
 	echo "—————————————————————— Program's Output ——————————————————————"
 	echo
-	./build/ADAN -pt ./test/grades-calc.adn
+	$(BUILD_DIR)/ADAN -pt ./test/grades-calc.adn

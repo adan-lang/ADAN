@@ -1,11 +1,16 @@
 cmake_minimum_required(VERSION 3.25)
 
+if(NOT DEFINED CMAKE_CXX_COMPILER AND NOT DEFINED ENV{CXX})
+    find_program(ADAN_CLANGXX NAMES clang++ REQUIRED)
+    set(CMAKE_CXX_COMPILER "${ADAN_CLANGXX}" CACHE FILEPATH "C++ compiler")
+endif()
+
 project(ADAN VERSION 1.0.0 LANGUAGES CXX)
 
-if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    message(FATAL_ERROR "This project requires GCC. "
+if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    message(FATAL_ERROR "This project requires Clang. "
         "Detected: ${CMAKE_CXX_COMPILER_ID}. "
-        "Re-run CMake with -DCMAKE_CXX_COMPILER=g++")
+        "Re-run CMake with -DCMAKE_CXX_COMPILER=clang++")
 endif()
 
 set(CMAKE_CXX_STANDARD 23)
