@@ -217,7 +217,7 @@ Token Lexer::lex()
             }
 
             if (is_eof())
-                // @todo @important HEY LILY!! do this sometime soon please!
+                // @todo @important Design a diagnostics system for debugging during lexical analysis
                 std::println("Unterminated string literal");
             else
                 advance();
@@ -384,7 +384,7 @@ Token Lexer::lex()
             }
 
             if (is_eof())
-                // @todo @important do fancy shit later
+                // @todo @important Design a diagnostics system for debugging during lexical analysis
                 std::println("Unterminated template literal");
             else
                 advance();

@@ -37,7 +37,7 @@ private:
     {
         if (current_token.kind != kind)
         {
-            // @todo @important do some fancy error bullshit later
+            // @todo @important Design a diagnostics system for debugging during parsing
             throw std::runtime_error(std::format("Expected {}, got {}",
                                                  token_kind_name(kind),
                                                  token_kind_name(current_token.kind)));

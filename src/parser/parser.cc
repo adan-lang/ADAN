@@ -11,7 +11,7 @@ Block Parser::parse_block()
     {
         if (matches(TokenKind::Eof))
         {
-            // @todo @important write error diagnostic shit!! @transicle @transicle @transicle
+            // @todo @important Design a diagnostics system for debugging during parsing
             throw std::runtime_error("Unterminated block: Expected '}'");
         }
 
@@ -241,7 +241,7 @@ std::unique_ptr<Expr> Parser::parse_primary()
 
         if (ec != std::errc())
         {
-            // @todo @important do some fancy error bullshit later
+            // @todo @important Design a diagnostics system for debugging during parsing
             throw std::runtime_error("Failed to parse integer literal");
         }
 
@@ -259,7 +259,7 @@ std::unique_ptr<Expr> Parser::parse_primary()
 
         if (ec != std::errc())
         {
-            // @todo @important do some fancy error bullshit later
+            // @todo @important Design a diagnostics system for debugging during parsing
             throw std::runtime_error("Failed to parse floating-point literal");
         }
 
@@ -323,7 +323,7 @@ std::unique_ptr<Expr> Parser::parse_primary()
     }
 
     default:
-        // @todo @important do some fancy error bullshit later
+        // @todo @important Design a diagnostics system for debugging during parsing
         throw std::runtime_error(std::format("Expected primary, got {}",
                                              token_kind_name(current_token.kind)));
     }
@@ -335,8 +335,6 @@ std::unique_ptr<Stmt> Parser::parse_stmt()
 {
     switch (current_token.kind)
     {
-        // @todo @important make cases for stmts
-
     case TokenKind::BackArrow:
         return parse_return();
     case TokenKind::Local:
@@ -473,7 +471,7 @@ std::unique_ptr<Stmt> Parser::parse_for()
                                                 std::move(body));
     }
 
-    // @todo @important fix fix fix make error diagnostic class shit
+    // @todo @important Design a diagnostics system for debugging during parsing
     throw std::runtime_error("Expected 'in' or '=' after for-loop variable");
 }
 
