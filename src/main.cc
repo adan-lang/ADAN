@@ -6,7 +6,7 @@
 #include "tools.hh"
 #include "parser-output.hh"
 
-static constexpr std::string COMPILER_VERSION = "version-1.0.4";
+static constexpr std::string COMPILER_VERSION = "version-1.0.6";
 
 static inline void show_main_message()
 {
