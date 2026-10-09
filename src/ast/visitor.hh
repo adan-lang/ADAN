@@ -24,4 +24,6 @@ struct ASTVisitor
     virtual void visit(NumericForStmt &node) = 0;
     virtual void visit(ForInStmt &node) = 0;
     virtual void visit(WhileStmt &node) = 0;
+
+    virtual void visit(Block &) = 0;
 };
