@@ -29,4 +29,6 @@ public:
     void visit(NumericForStmt &) override;
     void visit(ForInStmt &) override;
     void visit(WhileStmt &) override;
+
+    void visit(Block &) override;
 };
