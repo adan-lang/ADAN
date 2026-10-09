@@ -49,3 +49,43 @@ void UnaryExpr::accept(ASTVisitor &visitor)
 {
     visitor.visit(*this);
 }
+
+void ReturnStmt::accept(ASTVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void ExprStmt::accept(ASTVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void LocalDecl::accept(ASTVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void FuncDecl::accept(ASTVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void IfStmt::accept(ASTVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void NumericForStmt::accept(ASTVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void ForInStmt::accept(ASTVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
+void WhileStmt::accept(ASTVisitor &visitor)
+{
+    visitor.visit(*this);
+}
