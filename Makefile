@@ -6,10 +6,15 @@ FILE ?= ./test/grades-calc.adn
 BUILD_DIR ?= ./build
 
 run: build
-	echo "—————————————————————— Program's Output ——————————————————————"
-	echo
-	$(BUILD_DIR)/ADAN $(FILE); \
+	@output_file=$$(mktemp) || { printf "Failed to create temporary output file\n" >&2; exit 1; }; \
+	$(BUILD_DIR)/ADAN $(FILE) > "$$output_file"; \
 	EXIT_CODE=$$?; \
+	if [ -s "$$output_file" ]; then \
+	    echo "—————————————————————— Program's Output ——————————————————————"; \
+	    echo; \
+	    cat "$$output_file"; \
+	fi; \
+	rm -f "$$output_file"; \
 	if [ $$EXIT_CODE -ne 0 ]; then \
 	    echo; \
 	    printf "\033[1;31mADAN exited with code $$EXIT_CODE\033[0m\n"; \
