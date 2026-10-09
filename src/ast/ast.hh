@@ -143,7 +143,7 @@ struct UnaryExpr : Expr
     void accept(ASTVisitor &visitor) override;
 };
 
-struct Stmt
+struct Stmt : ASTNode
 {
     virtual ~Stmt() = default;
 };
@@ -160,6 +160,7 @@ struct ReturnStmt : Stmt
 
     explicit ReturnStmt(std::unique_ptr<Expr> value)
         : value{std::move(value)} {}
+    void accept(ASTVisitor &visitor) override;
 };
 
 // an expression used as a statement: calls, `x += 1`, `x++`
@@ -169,6 +170,7 @@ struct ExprStmt : Stmt
 
     explicit ExprStmt(std::unique_ptr<Expr> expr)
         : expr{std::move(expr)} {}
+    void accept(ASTVisitor &visitor) override;
 };
 
 // local <key> = <value>?
@@ -180,6 +182,7 @@ struct LocalDecl : Stmt
     LocalDecl(std::string name, std::unique_ptr<Expr> init)
         : name{std::move(name)},
           init{std::move(init)} {}
+    void accept(ASTVisitor &visitor) override;
 };
 
 // function <key> (-> (<params>, ...))? <block>
@@ -196,6 +199,7 @@ struct FuncDecl : Stmt
         : name{std::move(name)},
           params{std::move(params)},
           body{std::move(body)} {}
+    void accept(ASTVisitor &visitor) override;
 };
 
 // if (<conditional>)? <block>
@@ -209,6 +213,7 @@ struct IfStmt : Stmt
            Block body)
         : condition{std::move(condition)},
           body{std::move(body)} {}
+    void accept(ASTVisitor &visitor) override;
 };
 
 // for <key> = <start>, <goal>, (<step>)?
@@ -229,6 +234,7 @@ struct NumericForStmt : Stmt
           stop{std::move(stop)},
           step{std::move(step)},
           body{std::move(body)} {}
+    void accept(ASTVisitor &visitor) override;
 };
 
 // for <name> in <iterable> <block>
@@ -242,6 +248,7 @@ struct ForInStmt : Stmt
         : var{std::move(var)},
           iterable{std::move(iterable)},
           body{std::move(body)} {}
+    void accept(ASTVisitor &visitor) override;
 };
 
 // while (<conditional>)? <block>
@@ -255,4 +262,5 @@ struct WhileStmt : Stmt
               Block body)
         : condition{std::move(condition)},
           body{std::move(body)} {}
+    void accept(ASTVisitor &visitor) override;
 };
