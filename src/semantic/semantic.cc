@@ -2,6 +2,7 @@
 
 void SemanticAnalyzer::visit(IntLiteral &)
 {
+    last_expr_type = "int";
 }
 
 void SemanticAnalyzer::visit(FloatLiteral &)
@@ -70,4 +71,12 @@ void SemanticAnalyzer::visit(ForInStmt &)
 
 void SemanticAnalyzer::visit(WhileStmt &)
 {
+}
+
+void SemanticAnalyzer::visit(Block &block)
+{
+    table.enter_scope();
+    for (auto &stmt : block.stmts)
+        stmt->accept(*this);
+    table.exit_scope();
 }
