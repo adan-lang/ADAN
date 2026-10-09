@@ -30,5 +30,5 @@ public:
     void visit(ForInStmt &) override;
     void visit(WhileStmt &) override;
 
-    void visit(Block &) override;
+    void visit(Block &block) override;
 };

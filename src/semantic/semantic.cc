@@ -1,3 +1,5 @@
+#include <format>
+
 #include "semantic.hh"
 
 void SemanticAnalyzer::visit(IntLiteral &)
@@ -21,8 +23,13 @@ void SemanticAnalyzer::visit(InterpolatedString &)
 {
 }
 
-void SemanticAnalyzer::visit(Identifier &)
+void SemanticAnalyzer::visit(Identifier &expr)
 {
+    Symbol *symbol = table.lookup(expr.name);
+    if (!symbol)
+        // @todo @important Design a diagnostics system for debugging during semantic analysis
+        throw std::runtime_error(std::format("Use of undeclared variable \"{}\"", expr.name));
+    last_expr_type = symbol->type;
 }
 
 void SemanticAnalyzer::visit(ArrayLiteral &)
