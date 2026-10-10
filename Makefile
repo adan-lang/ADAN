@@ -40,6 +40,7 @@ build:
 	         echo ; echo "————————————————————————— Error Logs —————————————————————————" ; echo; \
 	         cat /tmp/adan_build.log; \
 	         echo ; echo "———————————————————————————————————————————————————————————————"; \
+			 echo \
 	         exit 1; }
 	
 	@printf "Finishing ADAN build...                            	\033[1;33m[\033[39m3/3\033[33m]\033[0m\n"
