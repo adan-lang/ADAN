@@ -2,9 +2,11 @@
 
 #include <string>
 
+#include "type.hh"
+
 struct Symbol
 {
     std::string name;
-    std::string type;
+    TypePtr type;
     bool initialized;
 };
