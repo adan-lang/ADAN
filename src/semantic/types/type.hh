@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include <cstdint>
+#include <string>
 
 struct Type;
 using TypePtr = std::shared_ptr<Type>;
@@ -28,7 +29,9 @@ struct Type
     std::vector<TypePtr> params;
 
     int id = 0;
+
     TypePtr link;
+    TypePtr result;
 
     explicit Type(TypeKind type_kind) : kind{type_kind} {}
 };
