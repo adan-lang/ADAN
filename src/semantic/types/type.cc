@@ -1,3 +1,5 @@
+#include <format>
+
 #include "type.hh"
 
 TypePtr make_int()
@@ -61,32 +63,33 @@ std::string type_to_string(const TypePtr &type)
     switch (resolved->kind)
     {
     case TypeKind::Int:
-        return "int";
+        return "\033[1;35mInt\033[0m";
     case TypeKind::Float:
-        return "float";
+        return "\033[1;35mFloat\033[0m";
     case TypeKind::Bool:
-        return "bool";
+        return "\033[1;35mBool\033[0m";
     case TypeKind::String:
-        return "string";
+        return "\033[1;35mString\033[0m";
     case TypeKind::Array:
-        return "array of " + type_to_string(resolved->element);
+        return std::format("\033[1;35mArray\033[0m \033[1;33mof\033[0m \033[1;33m\"\033[0m{}\033[1;33m\"\033[0m",
+                           type_to_string(resolved->element));
     case TypeKind::Function:
     {
-        std::string text = "(";
+        std::string text = "\033[1;33m(\033[0m";
         for (std::size_t i = 0; i < resolved->params.size(); ++i)
         {
             if (i != 0)
-                text += ", ";
+                text += "\033[1;33m,\033[0m ";
             text += type_to_string(resolved->params[i]);
         }
 
-        text += ") -> ";
+        text += "\033[1;33m) ->\033[0m ";
         text += type_to_string(resolved->result);
         return text;
     }
     case TypeKind::Var:
-        return "t" + std::to_string(resolved->id);
+        return "\033[1;36mt" + std::to_string(resolved->id) + "\033[0m";
     }
 
-    return "unknown";
+    return "\033[1;31mUnknown\033[0m";
 }
