@@ -4,11 +4,12 @@
 
 #include "visitor.hh"
 #include "symbol_table.hh"
+#include "type.hh"
 
 class SemanticAnalyzer : public ASTVisitor
 {
     SymbolTable table;
-    std::string last_expr_type;
+    TypePtr last_expr_type;
 
 public:
     void visit(IntLiteral &) override;
@@ -16,9 +17,9 @@ public:
     void visit(BoolLiteral &) override;
     void visit(StringLiteral &) override;
     void visit(InterpolatedString &) override;
-    void visit(Identifier &) override;
+    void visit(Identifier &expr) override;
     void visit(ArrayLiteral &) override;
-    void visit(CallExpr &) override;
+    void visit(CallExpr &expr) override;
     void visit(BinaryExpr &) override;
     void visit(UnaryExpr &) override;
     void visit(ReturnStmt &) override;
