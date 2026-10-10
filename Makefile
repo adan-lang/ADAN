@@ -50,8 +50,10 @@ test-lexer: build
 	echo "—————————————————————— Program's Output ——————————————————————"
 	echo
 	$(BUILD_DIR)/ADAN -lt ./test/grades-calc.adn
+	echo
 
 test-parser: build
 	echo "—————————————————————— Program's Output ——————————————————————"
 	echo
 	$(BUILD_DIR)/ADAN -pt ./test/grades-calc.adn
+	echo
