@@ -23,8 +23,7 @@ struct Type
 {
     TypeKind kind;
 
-    // Some things need extra information, like arrays, functions,
-    //  and variables.
+    // Some things need extra information, like arrays, functions, and variables.
     TypePtr element;
     std::vector<TypePtr> params;
 
