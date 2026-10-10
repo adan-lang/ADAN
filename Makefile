@@ -1,6 +1,6 @@
 .SILENT:
 
-.PHONY: run build test-parser test-lexer
+.PHONY: run build test-parser test-lexer test-semantic
 
 FILE ?= ./test/grades-calc.adn
 BUILD_DIR ?= ./build
@@ -56,4 +56,10 @@ test-parser: build
 	echo "—————————————————————— Program's Output ——————————————————————"
 	echo
 	$(BUILD_DIR)/ADAN -pt ./test/grades-calc.adn
+	echo
+
+test-semantic: build
+	echo "—————————————————————— Program's Output ——————————————————————"
+	echo
+	$(BUILD_DIR)/ADAN -st ./test/grades-calc.adn
 	echo

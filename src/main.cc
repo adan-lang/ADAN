@@ -3,6 +3,7 @@
 
 #include "lexer.hh"
 #include "parser.hh"
+#include "semantic.hh"
 #include "tools.hh"
 #include "parser-output.hh"
 
@@ -17,6 +18,9 @@ static inline void show_main_message()
         "\033[1mArguments:\033[0m\n"
         "    \033[32m--version\033[0m, \033[32m-v\033[0m     Get your version of ADAN that's on your machine.\n"
         "    \033[32m--help\033[0m, \033[32m-h\033[0m        Display this message.\n"
+        "    \033[32m--lex-test\033[0m, \033[32m-lt\033[0m     Display lexer tokens for a source file.\n"
+        "    \033[32m--parse-test\033[0m, \033[32m-pt\033[0m   Display the parsed AST for a source file.\n"
+        "    \033[32m--semantic-test\033[0m, \033[32m-st\033[0m Run semantic analysis on a source file.\n"
         "\n"
         "ADAN is in BETA and is a passion project of mine.\n"
         "\n"
@@ -35,6 +39,7 @@ int main(const int argc, char *argv[])
     bool show_version = false;
     bool test_lexer = false;
     bool test_parser = false;
+    bool test_semantic = false;
 
     std::string file_path;
 
@@ -48,6 +53,8 @@ int main(const int argc, char *argv[])
             test_lexer = true;
         else if (arg == "--parse-test" || arg == "-pt")
             test_parser = true;
+        else if (arg == "--semantic-test" || arg == "-st")
+            test_semantic = true;
         else
             file_path = arg;
     }
@@ -84,13 +91,24 @@ int main(const int argc, char *argv[])
         }
     }
 
-    if (test_parser)
+    if (test_parser || test_semantic)
     {
         Parser parser(source);
-        const auto statements = parser.parse();
+        auto statements = parser.parse();
 
         if (test_parser)
             std::println("{}", format_parser_output(statements));
+
+        if (test_semantic)
+        {
+            Block program;
+            program.stmts = std::move(statements);
+
+            SemanticAnalyzer analyzer;
+            analyzer.visit(program);
+
+            std::println("\033[1;33mSemantic analyzer testing case WILL be done soon..\033[0m");
+        }
     }
 
     return 0;
