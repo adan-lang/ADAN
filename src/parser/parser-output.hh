@@ -155,7 +155,7 @@ inline void append_tree_line(std::string &output,
                              const bool is_last,
                              const std::string &label)
 {
-    output += "\n" + prefix + (is_last ? "`-- " : "|-- ") + label;
+    output += "\n" + prefix + (is_last ? "`-- " : "|-- ") + "\033[1;33m" + label + "\033[0m";
 }
 
 inline void append_expression_tree(std::string &output,
@@ -179,20 +179,30 @@ inline void append_expression_tree(std::string &output,
                                    const bool is_last)
 {
     if (const auto *literal = dynamic_cast<const IntLiteral *>(&expression))
-        append_tree_line(output, prefix, is_last, std::format("IntLiteral: {}", literal->value));
+        append_tree_line(output, prefix, is_last,
+                         std::format("\033[1;35mIntLiteral\033[0m: \033[1;32m{}\033[0m",
+                                     literal->value));
     else if (const auto *float_literal = dynamic_cast<const FloatLiteral *>(&expression))
-        append_tree_line(output, prefix, is_last, std::format("FloatLiteral: {}", float_literal->value));
+        append_tree_line(output, prefix, is_last,
+                         std::format("\033[1;35mFloatLiteral\033[0m: \033[1;32m{}\033[0m",
+                                     float_literal->value));
     else if (const auto *bool_literal = dynamic_cast<const BoolLiteral *>(&expression))
         append_tree_line(output, prefix, is_last,
-                         bool_literal->value ? "BoolLiteral: true" : "BoolLiteral: false");
+                         std::format("\033[1;35mBoolLiteral\033[0m: \033[1;32m{}\033[0m",
+                                     bool_literal->value ? "true" : "false"));
     else if (const auto *string_literal = dynamic_cast<const StringLiteral *>(&expression))
-        append_tree_line(output, prefix, is_last, std::format("StringLiteral: \"{}\"", string_literal->value));
+        append_tree_line(output, prefix, is_last,
+                         std::format("\033[1;35mStringLiteral\033[0m: \033[1;32m\"{}\"\033[0m",
+                                     string_literal->value));
     else if (const auto *identifier = dynamic_cast<const Identifier *>(&expression))
-        append_tree_line(output, prefix, is_last, std::format("Identifier: {}", identifier->name));
+        append_tree_line(output, prefix, is_last,
+                         std::format("\033[1;35mIdentifier\033[0m: \033[1;36m{}\033[0m",
+                                     identifier->name));
     else if (const auto *binary = dynamic_cast<const BinaryExpr *>(&expression))
     {
         append_tree_line(output, prefix, is_last,
-                         std::format("BinaryExpr: {}", binary_operator_name(binary->op)));
+                         std::format("\033[1;35mBinaryExpr\033[0m: \033[1;36m{}\033[0m",
+                                     binary_operator_name(binary->op)));
         const auto children = tree_child_prefix(prefix, is_last);
         append_expression_branch(output, children, false, "Left", *binary->lhs);
         append_expression_branch(output, children, true, "Right", *binary->rhs);
@@ -200,14 +210,15 @@ inline void append_expression_tree(std::string &output,
     else if (const auto *unary = dynamic_cast<const UnaryExpr *>(&expression))
     {
         append_tree_line(output, prefix, is_last,
-                         std::format("UnaryExpr: {}{}", unary_operator_name(unary->op),
+                         std::format("\033[1;35mUnaryExpr\033[0m: \033[1;36m{}\033[0m\033[1;33m{}\033[0m",
+                                     unary_operator_name(unary->op),
                                      unary->postfix ? " (postfix)" : " (prefix)"));
         append_expression_branch(output, tree_child_prefix(prefix, is_last), true,
                                  "Operand", *unary->operand);
     }
     else if (const auto *array = dynamic_cast<const ArrayLiteral *>(&expression))
     {
-        append_tree_line(output, prefix, is_last, "ArrayLiteral");
+        append_tree_line(output, prefix, is_last, "\033[1;35mArrayLiteral\033[0m");
         const auto children = tree_child_prefix(prefix, is_last);
         for (std::size_t index = 0; index < array->elements.size(); ++index)
             append_expression_branch(output, children, index + 1 == array->elements.size(),
@@ -215,7 +226,9 @@ inline void append_expression_tree(std::string &output,
     }
     else if (const auto *call = dynamic_cast<const CallExpr *>(&expression))
     {
-        append_tree_line(output, prefix, is_last, std::format("CallExpr: {}", call->callee));
+        append_tree_line(output, prefix, is_last,
+                         std::format("\033[1;35mCallExpr\033[0m: \033[1;36m{}\033[0m",
+                                     call->callee));
         const auto children = tree_child_prefix(prefix, is_last);
         for (std::size_t index = 0; index < call->args.size(); ++index)
             append_expression_branch(output, children, index + 1 == call->args.size(),
@@ -223,21 +236,23 @@ inline void append_expression_tree(std::string &output,
     }
     else if (const auto *interpolated = dynamic_cast<const InterpolatedString *>(&expression))
     {
-        append_tree_line(output, prefix, is_last, "InterpolatedString");
+        append_tree_line(output, prefix, is_last, "\033[1;35mInterpolatedString\033[0m");
         const auto children = tree_child_prefix(prefix, is_last);
         for (std::size_t index = 0; index < interpolated->parts.size(); ++index)
         {
             const bool part_is_last = index + 1 == interpolated->parts.size();
             const auto &part = interpolated->parts[index];
             if (const auto *text = std::get_if<std::string>(&part))
-                append_tree_line(output, children, part_is_last, std::format("Text: \"{}\"", *text));
+                append_tree_line(output, children, part_is_last,
+                                 std::format("\033[1;35mText\033[0m: \033[1;32m\"{}\"\033[0m",
+                                             *text));
             else
                 append_expression_branch(output, children, part_is_last, "Interpolation",
                                          **std::get_if<std::unique_ptr<Expr>>(&part));
         }
     }
     else
-        append_tree_line(output, prefix, is_last, "Unknown Expression");
+        append_tree_line(output, prefix, is_last, "\033[1;31mUnknown Expression\033[0m");
 }
 
 inline void append_statement_tree(std::string &output,
@@ -250,7 +265,7 @@ inline void append_block_tree(std::string &output,
                               const std::string &prefix,
                               const bool is_last)
 {
-    append_tree_line(output, prefix, is_last, "Block");
+    append_tree_line(output, prefix, is_last, "\033[1;35mBlock\033[0m");
     const auto children = tree_child_prefix(prefix, is_last);
     for (std::size_t index = 0; index < block.stmts.size(); ++index)
         append_statement_tree(output, *block.stmts[index], children,
@@ -274,50 +289,59 @@ inline void append_statement_tree(std::string &output,
 {
     if (const auto *local = dynamic_cast<const LocalDecl *>(&statement))
     {
-        append_tree_line(output, prefix, is_last, std::format("LocalDecl: {}", local->name));
+        append_tree_line(output, prefix, is_last,
+                         std::format("\033[1;35mLocalDecl\033[0m: \033[1;36m{}\033[0m",
+                                     local->name));
         if (local->init)
             append_expression_branch(output, tree_child_prefix(prefix, is_last), true,
                                      "Initializer", *local->init);
     }
     else if (const auto *return_stmt = dynamic_cast<const ReturnStmt *>(&statement))
     {
-        append_tree_line(output, prefix, is_last, "ReturnStmt");
+        append_tree_line(output, prefix, is_last, "\033[1;35mReturnStmt\033[0m");
         append_expression_branch(output, tree_child_prefix(prefix, is_last), true,
                                  "Value", *return_stmt->value);
     }
     else if (const auto *expression_stmt = dynamic_cast<const ExprStmt *>(&statement))
     {
-        append_tree_line(output, prefix, is_last, "ExprStmt");
+        append_tree_line(output, prefix, is_last, "\033[1;35mExprStmt\033[0m");
         append_expression_branch(output, tree_child_prefix(prefix, is_last), true,
                                  "Expression", *expression_stmt->expr);
     }
     else if (const auto *function = dynamic_cast<const FuncDecl *>(&statement))
     {
-        append_tree_line(output, prefix, is_last, std::format("FuncDecl: {}", function->name));
+        append_tree_line(output, prefix, is_last,
+                         std::format("\033[1;35mFuncDecl\033[0m: \033[1;36m{}\033[0m",
+                                     function->name));
         const auto children = tree_child_prefix(prefix, is_last);
         const std::size_t child_count = function->params.size() + 1;
         for (std::size_t index = 0; index < function->params.size(); ++index)
             append_tree_line(output, children, index + 1 == child_count,
-                             std::format("Parameter: {}", function->params[index]));
+                             std::format("\033[1;35mParameter\033[0m: \033[1;36m{}\033[0m",
+                                         function->params[index]));
         append_block_branch(output, children, true, "Body", function->body);
     }
     else if (const auto *if_stmt = dynamic_cast<const IfStmt *>(&statement))
     {
-        append_tree_line(output, prefix, is_last, "IfStmt");
+        append_tree_line(output, prefix, is_last, "\033[1;35mIfStmt\033[0m");
         const auto children = tree_child_prefix(prefix, is_last);
         append_expression_branch(output, children, false, "Condition", *if_stmt->condition);
         append_block_branch(output, children, true, "Body", if_stmt->body);
     }
     else if (const auto *for_in = dynamic_cast<const ForInStmt *>(&statement))
     {
-        append_tree_line(output, prefix, is_last, std::format("ForInStmt: {}", for_in->var));
+        append_tree_line(output, prefix, is_last,
+                         std::format("\033[1;35mForInStmt\033[0m: \033[1;36m{}\033[0m",
+                                     for_in->var));
         const auto children = tree_child_prefix(prefix, is_last);
         append_expression_branch(output, children, false, "Iterable", *for_in->iterable);
         append_block_branch(output, children, true, "Body", for_in->body);
     }
     else if (const auto *numeric_for = dynamic_cast<const NumericForStmt *>(&statement))
     {
-        append_tree_line(output, prefix, is_last, std::format("NumericForStmt: {}", numeric_for->name));
+        append_tree_line(output, prefix, is_last,
+                         std::format("\033[1;35mNumericForStmt\033[0m: \033[1;36m{}\033[0m",
+                                     numeric_for->name));
         const auto children = tree_child_prefix(prefix, is_last);
         append_expression_branch(output, children, false, "Start", *numeric_for->start);
         append_expression_branch(output, children, false, "Stop", *numeric_for->stop);
@@ -326,18 +350,18 @@ inline void append_statement_tree(std::string &output,
     }
     else if (const auto *while_stmt = dynamic_cast<const WhileStmt *>(&statement))
     {
-        append_tree_line(output, prefix, is_last, "WhileStmt");
+        append_tree_line(output, prefix, is_last, "\033[1;35mWhileStmt\033[0m");
         const auto children = tree_child_prefix(prefix, is_last);
         append_expression_branch(output, children, false, "Condition", *while_stmt->condition);
         append_block_branch(output, children, true, "Body", while_stmt->body);
     }
     else
-        append_tree_line(output, prefix, is_last, "Unknown Statement");
+        append_tree_line(output, prefix, is_last, "\033[1;31mUnknown Statement\033[0m");
 }
 
 inline std::string format_parser_output(const std::vector<std::unique_ptr<Stmt>> &statements)
 {
-    std::string result = "Program";
+    std::string result = "\033[1;36mProgram\033[0m";
     for (std::size_t index = 0; index < statements.size(); ++index)
         append_statement_tree(result, *statements[index], "", index + 1 == statements.size());
     return result;
