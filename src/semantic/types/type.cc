@@ -22,6 +22,11 @@ TypePtr make_string()
     return std::make_shared<Type>(TypeKind::String);
 }
 
+TypePtr make_void()
+{
+    return std::make_shared<Type>(TypeKind::Void);
+}
+
 TypePtr make_array(TypePtr element)
 {
     auto array_type = std::make_shared<Type>(TypeKind::Array);
@@ -70,6 +75,8 @@ std::string type_to_string(const TypePtr &type)
         return "\033[1;35mBool\033[0m";
     case TypeKind::String:
         return "\033[1;35mString\033[0m";
+    case TypeKind::Void:
+        return "\033[1;35mVoid\033[0m";
     case TypeKind::Array:
         return std::format("\033[1;35mArray\033[0m \033[1;33mof\033[0m \033[1;33m\"\033[0m{}\033[1;33m\"\033[0m",
                            type_to_string(resolved->element));

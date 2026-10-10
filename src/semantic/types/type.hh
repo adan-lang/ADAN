@@ -16,6 +16,7 @@ enum class TypeKind : uint8_t
     String,
     Array,
     Function,
+    Void,
     Var,
 };
 
@@ -38,6 +39,7 @@ TypePtr make_int();
 TypePtr make_float();
 TypePtr make_bool();
 TypePtr make_string();
+TypePtr make_void();
 TypePtr make_array(TypePtr element);
 TypePtr make_function(std::vector<TypePtr> params, TypePtr result);
 TypePtr make_var();
