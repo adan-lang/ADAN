@@ -4,6 +4,9 @@
 #include <vector>
 #include <cstdint>
 
+struct Type;
+using TypePtr = std::shared_ptr<Type>;
+
 enum class TypeKind : uint8_t
 {
     Int,
@@ -21,11 +24,22 @@ struct Type
 
     // Some things need extra information, like arrays, functions,
     //  and variables.
-    std::shared_ptr<Type> element;
-    std::vector<std::shared_ptr<Type>> params;
+    TypePtr element;
+    std::vector<TypePtr> params;
 
     int id = 0;
-    std::shared_ptr<Type> link;
+    TypePtr link;
 
     explicit Type(TypeKind type_kind) : kind{type_kind} {}
 };
+
+TypePtr make_int();
+TypePtr make_float();
+TypePtr make_bool();
+TypePtr make_string();
+TypePtr make_array(TypePtr element);
+TypePtr make_function(std::vector<TypePtr> params, TypePtr result);
+TypePtr make_var();
+
+TypePtr prune(const TypePtr &type);
+std::string type_to_string(const TypePtr &type);
