@@ -23,11 +23,10 @@ struct Type
 {
     TypeKind kind;
 
-    // Some things need extra information, like arrays, functions, and variables.
     TypePtr element;
     std::vector<TypePtr> params;
 
-    int id = 0;
+    int id{};
 
     TypePtr link;
     TypePtr result;
