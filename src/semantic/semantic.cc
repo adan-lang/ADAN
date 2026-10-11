@@ -305,11 +305,13 @@ void SemanticAnalyzer::visit(ReturnStmt &stmt)
     stmt.value->accept(*this);
     TypePtr return_type = last_expr_type;
 
-    // @todo @important Do this shit when I wake up
+    // @todo @important After the other statements are complete (for the most part), work on this!!
+    // @brief This is gonna be a little bit annoying to get working.
 }
 
-void SemanticAnalyzer::visit(ExprStmt &)
+void SemanticAnalyzer::visit(ExprStmt &stmt)
 {
+    stmt.expr->accept(*this);
 }
 
 void SemanticAnalyzer::visit(LocalDecl &)
