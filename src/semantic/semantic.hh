@@ -20,8 +20,8 @@ public:
     void visit(Identifier &expr) override;
     void visit(ArrayLiteral &expr) override;
     void visit(CallExpr &expr) override;
-    void visit(BinaryExpr &) override;
-    void visit(UnaryExpr &) override;
+    void visit(BinaryExpr &expr) override;
+    void visit(UnaryExpr &expr) override;
     void visit(ReturnStmt &) override;
     void visit(ExprStmt &) override;
     void visit(LocalDecl &) override;
