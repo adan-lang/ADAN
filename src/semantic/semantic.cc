@@ -36,9 +36,34 @@ void SemanticAnalyzer::visit(Identifier &expr)
     last_expr_type = symbol->type;
 }
 
-void SemanticAnalyzer::visit(ArrayLiteral &)
+void SemanticAnalyzer::visit(ArrayLiteral &expr)
 {
-    last_expr_type = make_array(); // @todo do soon
+    // @todo When the analyzer is improved, make it so it uses unification instead
+    if (expr.elements.size() != 0)
+    {
+        TypePtr array_type;
+        for (std::size_t i = 0; i < expr.elements.size(); ++i)
+        {
+            expr.elements[i]->accept(*this);
+            TypePtr current_type = last_expr_type;
+
+            if (!array_type)
+            {
+                array_type = current_type;
+            }
+            else if (prune(current_type)->kind != prune(array_type)->kind)
+                // @todo @important Design a diagnostics system for debugging during semantic analysis
+                throw std::runtime_error(std::format("There's a type mismatch between the array's expected type: \"{}\" and the type specified, which is: \"{}\"",
+                                                     type_to_string(prune(current_type)),
+                                                     type_to_string(prune(array_type))));
+        }
+
+        last_expr_type = make_array(array_type);
+    }
+    else
+    {
+        last_expr_type = make_array(make_var());
+    }
 }
 
 void SemanticAnalyzer::visit(CallExpr &expr)

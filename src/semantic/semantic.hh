@@ -18,7 +18,7 @@ public:
     void visit(StringLiteral &) override;
     void visit(InterpolatedString &) override;
     void visit(Identifier &expr) override;
-    void visit(ArrayLiteral &) override;
+    void visit(ArrayLiteral &expr) override;
     void visit(CallExpr &expr) override;
     void visit(BinaryExpr &) override;
     void visit(UnaryExpr &) override;
