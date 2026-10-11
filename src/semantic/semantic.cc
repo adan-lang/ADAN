@@ -296,12 +296,16 @@ void SemanticAnalyzer::visit(UnaryExpr &expr)
     }
     case UnaryOp::Dollar:
         // @todo @important Design a diagnostics system for debugging during semantic analysis
-        throw std::runtime_error("You're trying to use '$', but its type behavior hasn't been defined yet.");
+        throw std::runtime_error("You're trying to use \"$\", but its type behavior hasn't been defined yet.");
     }
 }
 
-void SemanticAnalyzer::visit(ReturnStmt &)
+void SemanticAnalyzer::visit(ReturnStmt &stmt)
 {
+    stmt.value->accept(*this);
+    TypePtr return_type = last_expr_type;
+
+    // @todo @important Do this shit when I wake up
 }
 
 void SemanticAnalyzer::visit(ExprStmt &)

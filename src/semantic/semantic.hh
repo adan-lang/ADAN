@@ -22,7 +22,7 @@ public:
     void visit(CallExpr &expr) override;
     void visit(BinaryExpr &expr) override;
     void visit(UnaryExpr &expr) override;
-    void visit(ReturnStmt &) override;
+    void visit(ReturnStmt &stmt) override;
     void visit(ExprStmt &) override;
     void visit(LocalDecl &) override;
     void visit(FuncDecl &) override;
