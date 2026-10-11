@@ -23,13 +23,13 @@ public:
     void visit(BinaryExpr &expr) override;
     void visit(UnaryExpr &expr) override;
     void visit(ReturnStmt &stmt) override;
-    void visit(ExprStmt &) override;
-    void visit(LocalDecl &) override;
-    void visit(FuncDecl &) override;
-    void visit(IfStmt &) override;
-    void visit(NumericForStmt &) override;
-    void visit(ForInStmt &) override;
-    void visit(WhileStmt &) override;
+    void visit(ExprStmt &stmt) override;
+    void visit(LocalDecl &stmt) override;
+    void visit(FuncDecl &stmt) override;
+    void visit(IfStmt &stmt) override;
+    void visit(NumericForStmt &stmt) override;
+    void visit(ForInStmt &stmt) override;
+    void visit(WhileStmt &stmt) override;
 
     void visit(Block &block) override;
 };
