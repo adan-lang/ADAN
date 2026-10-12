@@ -314,27 +314,48 @@ void SemanticAnalyzer::visit(ExprStmt &stmt)
     stmt.expr->accept(*this);
 }
 
-void SemanticAnalyzer::visit(LocalDecl &)
+void SemanticAnalyzer::visit(LocalDecl &stmt)
+{
+    TypePtr local_value_type;
+    bool initialized{};
+
+    if (stmt.init)
+    {
+        stmt.init->accept(*this);
+        local_value_type = last_expr_type;
+        initialized = true;
+    }
+    else
+    {
+        local_value_type = make_var();
+    }
+
+    Symbol variable{
+        stmt.name,
+        local_value_type,
+        initialized,
+    };
+
+    table.declare(variable);
+}
+
+void SemanticAnalyzer::visit(FuncDecl &stmt)
 {
 }
 
-void SemanticAnalyzer::visit(FuncDecl &)
+void SemanticAnalyzer::visit(IfStmt &stmt)
 {
 }
 
-void SemanticAnalyzer::visit(IfStmt &)
+void SemanticAnalyzer::visit(NumericForStmt &stmt)
 {
 }
 
-void SemanticAnalyzer::visit(NumericForStmt &)
+void SemanticAnalyzer::visit(ForInStmt &stmt)
 {
 }
 
-void SemanticAnalyzer::visit(ForInStmt &)
-{
-}
-
-void SemanticAnalyzer::visit(WhileStmt &)
+void SemanticAnalyzer::visit(WhileStmt &stmt)
 {
 }
 
