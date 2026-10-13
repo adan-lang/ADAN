@@ -341,6 +341,18 @@ void SemanticAnalyzer::visit(LocalDecl &stmt)
 
 void SemanticAnalyzer::visit(FuncDecl &stmt)
 {
+    std::vector<TypePtr> parameter_types;
+    for (std::size_t i = 0; i < stmt.params.size(); ++i)
+        parameter_types.push_back(make_var());
+
+    TypePtr result_type = make_var();
+    TypePtr function_type = make_function(parameter_types, result_type);
+
+    // @todo Declare the function *before* visiting its body
+    // @todo Set up the function scope
+    // @todo Visit the function body
+    // @todo Leave the scope
+    // @todo Resolve return inference later
 }
 
 void SemanticAnalyzer::visit(IfStmt &stmt)
