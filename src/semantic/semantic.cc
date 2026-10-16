@@ -348,11 +348,30 @@ void SemanticAnalyzer::visit(FuncDecl &stmt)
     TypePtr result_type = make_var();
     TypePtr function_type = make_function(parameter_types, result_type);
 
-    // @todo Declare the function *before* visiting its body
-    // @todo Set up the function scope
-    // @todo Visit the function body
-    // @todo Leave the scope
-    // @todo Resolve return inference later
+    Symbol function{
+        stmt.name,
+        function_type,
+        true,
+    };
+
+    table.declare(function);
+
+    for (std::size_t i = 0; i < parameter_types.size(); ++i)
+    {
+        Symbol param{
+            stmt.params[i],
+            parameter_types[i],
+            true,
+        };
+
+        table.declare(param);
+    }
+
+    table.enter_scope();
+
+    // @todo
+
+    table.exit_scope();
 }
 
 void SemanticAnalyzer::visit(IfStmt &stmt)
