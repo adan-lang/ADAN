@@ -371,6 +371,8 @@ void SemanticAnalyzer::visit(FuncDecl &stmt)
 
     // @todo
 
+    
+
     table.exit_scope();
 }
 
