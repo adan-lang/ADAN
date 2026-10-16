@@ -66,7 +66,7 @@ TypePtr prune(const TypePtr &type)
 }
 
 // ...
-
+// made using AI
 std::string type_to_string(const TypePtr &type)
 {
     const TypePtr resolved = prune(type);
