@@ -35,6 +35,12 @@ struct Type
     explicit Type(TypeKind type_kind) : kind{type_kind} {}
 };
 
+template <typename T>
+static inline TypePtr make_type(T)
+{
+    return std::make_shared<Type>(T);
+}
+
 TypePtr make_int();
 TypePtr make_float();
 TypePtr make_bool();
