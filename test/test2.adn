@@ -1,3 +1,5 @@
-function a { ; var type
-    <- 1 ; a becomes int
+function a -> (b, c) {
+    print(`Hello, my name is ${b} and I am ${c} years old.`)
 }
+
+a <- ("Lily", 17)
