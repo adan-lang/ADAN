@@ -1,3 +1,5 @@
+#include <format>
+
 #include "symbol-table.hh"
 
 void SymbolTable::enter_scope()
