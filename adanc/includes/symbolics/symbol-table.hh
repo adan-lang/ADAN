@@ -16,12 +16,10 @@ struct Symbol
 
 class SymbolTable
 {
+protected:
     std::stack<std::unordered_map<std::string_view, Symbol>> scopes;
 
 public:
-    void enter_scope();
-    void exit_scope();
-
     void declare(const Symbol &symbol);
 
     Symbol *lookup(std::string_view name);

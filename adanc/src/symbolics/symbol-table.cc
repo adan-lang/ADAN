@@ -2,16 +2,6 @@
 
 #include "symbol-table.hh"
 
-void SymbolTable::enter_scope()
-{
-    scopes.push({});
-}
-
-void SymbolTable::exit_scope()
-{
-    scopes.pop();
-}
-
 void SymbolTable::declare(const Symbol &symbol)
 {
     auto &scope = scopes.top();
