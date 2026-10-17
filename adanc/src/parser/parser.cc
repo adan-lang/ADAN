@@ -1,3 +1,4 @@
+#include <fast_float/fast_float.h>
 #include <charconv>
 #include <format>
 
@@ -253,7 +254,7 @@ std::unique_ptr<Expr> Parser::parse_primary()
     case TokenKind::Float:
     {
         double value{};
-        auto [ptr, ec] = std::from_chars(
+        auto [ptr, ec] = fast_float::from_chars(
             current_token.lexeme.data(),
             current_token.lexeme.data() + current_token.lexeme.size(),
             value);
