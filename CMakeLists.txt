@@ -1,17 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 
-if(NOT DEFINED CMAKE_CXX_COMPILER AND NOT DEFINED ENV{CXX})
-    find_program(ADAN_CLANGXX NAMES clang++ REQUIRED)
-    set(CMAKE_CXX_COMPILER "${ADAN_CLANGXX}" CACHE FILEPATH "C++ compiler")
-endif()
-
 project(ADAN VERSION 1.0.0 LANGUAGES CXX)
-
-if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    message(FATAL_ERROR "This project requires Clang. "
-        "Detected: ${CMAKE_CXX_COMPILER_ID}. "
-        "Re-run CMake with -DCMAKE_CXX_COMPILER=clang++")
-endif()
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -19,12 +8,12 @@ set(CMAKE_CXX_EXTENSIONS OFF)          # -std=c++23, not -std=gnu++23
 
 file(GLOB_RECURSE PROJECT_HEADERS
     CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hh"
+    "${CMAKE_CURRENT_SOURCE_DIR}/adanc/includes/*.hh"
 )
 
 file(GLOB_RECURSE PROJECT_SOURCES
     CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/adanc/src/*.cc"
 )
 
 set(PROJECT_INCLUDE_DIRS "")
@@ -45,16 +34,24 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${PROJECT_INCLUDE_DIRS}
 )
 
-target_compile_options(${PROJECT_NAME} PRIVATE
-    -Wall
-    -Wextra
-    -Wpedantic
-    -Wshadow
-    -Wconversion
-    $<$<CONFIG:Debug>:   -g -O0 -fsanitize=address,undefined>
-    $<$<CONFIG:Release>: -O3 -DNDEBUG -march=native>
-)
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Wshadow
+        -Wconversion
+        $<$<CONFIG:Debug>:   -g -O0 -fsanitize=address,undefined>
+        $<$<CONFIG:Release>: -O3 -DNDEBUG -march=native>
+    )
 
-target_link_options(${PROJECT_NAME} PRIVATE
-    $<$<CONFIG:Debug>: -fsanitize=address,undefined>
-)
+    target_link_options(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Debug>: -fsanitize=address,undefined>
+    )
+elseif(MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        /W4
+        $<$<CONFIG:Debug>:   /Od /fsanitize=address>
+        $<$<CONFIG:Release>: /O2>
+    )
+endif()

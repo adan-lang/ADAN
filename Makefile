@@ -1,6 +1,6 @@
 .SILENT:
 
-.PHONY: run build test-parser test-lexer test-semantic
+.PHONY: run build test-semantic
 
 FILE ?= ./test/grades-calc.adn
 BUILD_DIR ?= ./build
@@ -46,18 +46,6 @@ build:
 	@printf "Finishing ADAN build...                            	\033[1;33m[\033[39m3/3\033[33m]\033[0m\n"
 	
 	@printf "\n\033[1;32mADAN build success!\033[0m\n\n"
-
-test-lexer: build
-	echo "—————————————————————— Program's Output ——————————————————————"
-	echo
-	$(BUILD_DIR)/ADAN -lt ./test/grades-calc.adn
-	echo
-
-test-parser: build
-	echo "—————————————————————— Program's Output ——————————————————————"
-	echo
-	$(BUILD_DIR)/ADAN -pt ./test/grades-calc.adn
-	echo
 
 test-semantic: build
 	echo "—————————————————————— Program's Output ——————————————————————"
