@@ -16,9 +16,6 @@ static inline void show_main_message()
         "\033[1mArguments:\033[0m\n"
         "    \033[32m--version\033[0m, \033[32m-v\033[0m     Get your version of ADAN that's on your machine.\n"
         "    \033[32m--help\033[0m, \033[32m-h\033[0m        Display this message.\n"
-        "    \033[32m--lex-test\033[0m, \033[32m-lt\033[0m     Display lexer tokens for a source file.\n"
-        "    \033[32m--parse-test\033[0m, \033[32m-pt\033[0m   Display the parsed AST for a source file.\n"
-        "    \033[32m--semantic-test\033[0m, \033[32m-st\033[0m Run semantic analysis on a source file.\n"
         "\n"
         "ADAN is in BETA and is a passion project of mine.\n"
         "\n"
@@ -35,7 +32,6 @@ int main(const int argc, char *argv[])
 {
     bool show_help = false;
     bool show_version = false;
-    bool test_semantic = false;
 
     std::string file_path;
 
@@ -45,8 +41,6 @@ int main(const int argc, char *argv[])
             show_help = true;
         else if (arg == "--version" || arg == "-v")
             show_version = true;
-        else if (arg == "--semantic-test" || arg == "-st")
-            test_semantic = true;
         else
             file_path = arg;
     }
@@ -69,7 +63,13 @@ int main(const int argc, char *argv[])
         return 1;
     }
 
-    const std::string source{read_file(file_path)};
+    const std::string_view source{read_file(file_path)};
+
+    Parser parser(source);
+    auto statements = parser.parse();
+    
+    Block program;
+    program.stmts = std::move(statements);
 
     // @todo Use the stuff
 
