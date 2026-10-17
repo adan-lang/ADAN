@@ -1,8 +1,5 @@
 #pragma once
 
-// @todo Please rewrite this (or at least revise this) to improve quality
-
-#include <cstdint>
 #include <memory>
 #include <vector>
 #include <string>
@@ -58,6 +55,7 @@ struct InterpolatedString : Expr
 
     explicit InterpolatedString(std::vector<Part> parts)
         : parts{std::move(parts)} {}
+        
     void accept(ASTVisitor &visitor) override;
 };
 
@@ -68,17 +66,16 @@ struct Identifier : Expr
     void accept(ASTVisitor &visitor) override;
 };
 
-// [<value>, ...]
 struct ArrayLiteral : Expr
 {
     std::vector<std::unique_ptr<Expr>> elements;
 
     explicit ArrayLiteral(std::vector<std::unique_ptr<Expr>> elements)
         : elements{std::move(elements)} {}
+
     void accept(ASTVisitor &visitor) override;
 };
 
-// <key> <- (<args>)
 struct CallExpr : Expr
 {
     std::string callee;
@@ -87,6 +84,7 @@ struct CallExpr : Expr
     CallExpr(std::string callee, std::vector<std::unique_ptr<Expr>> args)
         : callee{std::move(callee)},
           args{std::move(args)} {}
+
     void accept(ASTVisitor &visitor) override;
 };
 
@@ -129,19 +127,21 @@ struct BinaryExpr : Expr
         : op{op},
           lhs{std::move(lhs)},
           rhs{std::move(rhs)} {}
+
     void accept(ASTVisitor &visitor) override;
 };
 
 struct UnaryExpr : Expr
 {
     UnaryOp op{};
-    bool postfix = false; // @details postfix is for increment/decrement for X++/X--
+    bool postfix = false;
     std::unique_ptr<Expr> operand;
 
     UnaryExpr(UnaryOp op, std::unique_ptr<Expr> operand, bool postfix = false)
         : op{op},
           postfix{postfix},
           operand{std::move(operand)} {}
+
     void accept(ASTVisitor &visitor) override;
 };
 
@@ -155,27 +155,26 @@ struct Block
     std::vector<std::unique_ptr<Stmt>> stmts;
 };
 
-// <- <value>
 struct ReturnStmt : Stmt
 {
-    std::unique_ptr<Expr> value; // @important never gonna be null
+    std::unique_ptr<Expr> value;
 
     explicit ReturnStmt(std::unique_ptr<Expr> value)
         : value{std::move(value)} {}
+
     void accept(ASTVisitor &visitor) override;
 };
 
-// an expression used as a statement: calls, `x += 1`, `x++`
 struct ExprStmt : Stmt
 {
     std::unique_ptr<Expr> expr;
 
     explicit ExprStmt(std::unique_ptr<Expr> expr)
         : expr{std::move(expr)} {}
+
     void accept(ASTVisitor &visitor) override;
 };
 
-// local <key> = <value>?
 struct LocalDecl : Stmt
 {
     std::string name;
@@ -184,11 +183,10 @@ struct LocalDecl : Stmt
     LocalDecl(std::string name, std::unique_ptr<Expr> init)
         : name{std::move(name)},
           init{std::move(init)} {}
+
     void accept(ASTVisitor &visitor) override;
 };
 
-// function <key> (-> (<params>, ...))? <block>
-// function <key>  -> (<params>)        { ... }
 struct FuncDecl : Stmt
 {
     std::string name;
@@ -201,11 +199,10 @@ struct FuncDecl : Stmt
         : name{std::move(name)},
           params{std::move(params)},
           body{std::move(body)} {}
+
     void accept(ASTVisitor &visitor) override;
 };
 
-// if (<conditional>)? <block>
-// if  <conditional>   { ... }
 struct IfStmt : Stmt
 {
     std::unique_ptr<Expr> condition;
@@ -215,10 +212,10 @@ struct IfStmt : Stmt
            Block body)
         : condition{std::move(condition)},
           body{std::move(body)} {}
+
     void accept(ASTVisitor &visitor) override;
 };
 
-// for <key> = <start>, <goal>, (<step>)?
 struct NumericForStmt : Stmt
 {
     std::string name;
@@ -236,10 +233,10 @@ struct NumericForStmt : Stmt
           stop{std::move(stop)},
           step{std::move(step)},
           body{std::move(body)} {}
+
     void accept(ASTVisitor &visitor) override;
 };
 
-// for <name> in <iterable> <block>
 struct ForInStmt : Stmt
 {
     std::string var;
@@ -250,11 +247,10 @@ struct ForInStmt : Stmt
         : var{std::move(var)},
           iterable{std::move(iterable)},
           body{std::move(body)} {}
+
     void accept(ASTVisitor &visitor) override;
 };
 
-// while (<conditional>)? <block>
-// while  <conditional>   { ... }
 struct WhileStmt : Stmt
 {
     std::unique_ptr<Expr> condition;
@@ -264,5 +260,6 @@ struct WhileStmt : Stmt
               Block body)
         : condition{std::move(condition)},
           body{std::move(body)} {}
+
     void accept(ASTVisitor &visitor) override;
 };
