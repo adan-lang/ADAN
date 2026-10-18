@@ -8,5 +8,7 @@ public:
     void enter_scope();
     void exit_scope();
 
+    bool in_global_scope() const;
+
     void print_scope();
 };

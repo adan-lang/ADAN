@@ -10,10 +10,15 @@ void ScopeManager::enter_scope()
 
 void ScopeManager::exit_scope()
 {
-    if (scopes.size() > 0)
+    if (!in_global_scope())
         scopes.pop();
     else
-        throw std::runtime_error(std::format("Cannot go below scope 0"));
+        throw std::runtime_error(std::format("Cannot go below the global scope"));
+}
+
+bool ScopeManager::in_global_scope() const
+{
+    return scopes.size() == 0;
 }
 
 void ScopeManager::print_scope()

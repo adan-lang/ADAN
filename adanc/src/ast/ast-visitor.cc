@@ -1,7 +1,8 @@
-#include "visitor.hh"
+#include "ast-visitor.hh"
 
 void IntLiteral::accept(ASTVisitor &visitor)
 {
+    // @note "*this" is an IntLiteral lvalue, so `.visit(IntLiteral&)` is the function that gets called
     visitor.visit(*this);
 }
 
