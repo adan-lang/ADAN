@@ -5,11 +5,11 @@
 void SymbolTable::declare(const Symbol &symbol)
 {
     auto &scope = scopes.top();
-    if (lookup(symbol.name))
-    {
-        // @todo @important Design a diagnostics system for debugging during semantic analysis
-        throw std::runtime_error(std::format("Redeclaration of \"{}\"", symbol.name));
-    }
+    // if (lookup(symbol.name))
+    // {
+    //     // @todo @important Design a diagnostics system for debugging during semantic analysis
+    //     throw std::runtime_error(std::format("Redeclaration of \"{}\"", symbol.name));
+    // }
 
     scope[symbol.name] = symbol;
 }
