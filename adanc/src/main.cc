@@ -4,6 +4,8 @@
 #include "scanner.hh"
 #include "parser.hh"
 #include "tools.hh"
+#include "declaration-collector.hh"
+#include "scope-manager.hh"
 
 static constexpr std::string COMPILER_VERSION = "version-1.0.8";
 
@@ -71,7 +73,16 @@ int main(const int argc, char *argv[])
     Block program;
     program.stmts = std::move(statements);
 
-    // @todo Use the stuff
+    LocalDecl local{
+        "myvar",
+        std::make_unique<IntLiteral>(32),
+    };
+
+    ScopeManager symbol_table;
+    symbol_table.enter_scope();
+
+    DeclarationCollector collector{symbol_table};
+    local.accept(collector);
 
     return 0;
 }
