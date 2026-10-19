@@ -6,7 +6,7 @@
 #include <utility>
 #include <variant>
 
-struct ASTVisitor;
+class ASTVisitor;
 
 struct ASTNode
 {
@@ -25,7 +25,7 @@ struct IntLiteral : Expr
     explicit IntLiteral(const int64_t v) : value{v} {}
     void accept(ASTVisitor &visitor) override;
 };
-
+    
 struct FloatLiteral : Expr
 {
     double value{};
