@@ -4,7 +4,10 @@
 
 void DeclarationCollector::visit(LocalDecl &stmt)
 {
-    std::println("Testing");
+    symbol_table.declare(Symbol{
+        stmt.name,
+        make_var(),
+    });
 }
 
 void DeclarationCollector::visit(FuncDecl &stmt)
