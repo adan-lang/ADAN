@@ -1,27 +1,31 @@
 #pragma once
 
+#include <print>
+
 #include "ast.hh"
 
 class ASTVisitor
 {
 public:
-    virtual void visit(IntLiteral &node);
-    virtual void visit(FloatLiteral &node);
-    virtual void visit(BoolLiteral &node);
-    virtual void visit(StringLiteral &node);
-    virtual void visit(InterpolatedString &node);
-    virtual void visit(Identifier &node);
-    virtual void visit(ArrayLiteral &node);
-    virtual void visit(CallExpr &node);
-    virtual void visit(BinaryExpr &node);
-    virtual void visit(UnaryExpr &node);
-    virtual void visit(ReturnStmt &node);
-    virtual void visit(ExprStmt &node);
-    virtual void visit(LocalDecl &node);
-    virtual void visit(FuncDecl &node);
-    virtual void visit(IfStmt &node);
-    virtual void visit(NumericForStmt &node);
-    virtual void visit(ForInStmt &node);
-    virtual void visit(WhileStmt &node);
-    virtual void visit(Block &);
+    virtual ~ASTVisitor() = default;
+
+    virtual void visit(IntLiteral &node) = 0;
+    virtual void visit(FloatLiteral &node) = 0;
+    virtual void visit(BoolLiteral &node) = 0;
+    virtual void visit(StringLiteral &node) = 0;
+    virtual void visit(InterpolatedString &node) = 0;
+    virtual void visit(Identifier &node) = 0;
+    virtual void visit(ArrayLiteral &node) = 0;
+    virtual void visit(CallExpr &node) = 0;
+    virtual void visit(BinaryExpr &node) = 0;
+    virtual void visit(UnaryExpr &node) = 0;
+    virtual void visit(ReturnStmt &node) = 0;
+    virtual void visit(ExprStmt &node) = 0;
+    virtual void visit(LocalDecl &node) = 0;
+    virtual void visit(FuncDecl &node) = 0;
+    virtual void visit(IfStmt &node) = 0;
+    virtual void visit(NumericForStmt &node) = 0;
+    virtual void visit(ForInStmt &node) = 0;
+    virtual void visit(WhileStmt &node) = 0;
+    virtual void visit(Block &) = 0;
 };
