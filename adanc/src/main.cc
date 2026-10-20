@@ -84,5 +84,7 @@ int main(const int argc, char *argv[])
     DeclarationCollector collector{symbol_table};
     local.accept(collector);
 
+    symbol_table.print_symbols();
+
     return 0;
 }
