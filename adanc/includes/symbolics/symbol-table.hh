@@ -37,7 +37,7 @@ public:
 
     Symbol *lookup(std::string_view name);
 
-    inline void print_scopes()
+    inline void print_symbols()
     {
         for (auto item = scopes.c.rbegin(); item != scopes.c.rend(); ++item)
         {
