@@ -11,8 +11,6 @@ void DeclarationCollector::visit(LocalDecl &stmt)
         stmt.name,
         make_var(),
     });
-
-    symbol_table.print_scopes();
 }
 
 void DeclarationCollector::visit(FuncDecl &stmt)
