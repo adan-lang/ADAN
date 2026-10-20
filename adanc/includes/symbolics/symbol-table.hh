@@ -7,6 +7,7 @@
 #include <print>
 
 #include "types.hh"
+#include "type-helpers.hh"
 
 // @note Possibly in the future consider `basic::Maybe` if adding support for anonymous functions
 struct Symbol
@@ -16,7 +17,7 @@ struct Symbol
 
     std::string to_string() const
     {
-        return std::format("Symbol(Name: {}, Type: {})", name, type);
+        return std::format("Symbol(Name: {}, Type: {})", name, type_to_string(type));
     }
 };
 
