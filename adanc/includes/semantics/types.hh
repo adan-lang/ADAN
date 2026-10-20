@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include <vector>
 #include <string>
 
@@ -50,5 +49,3 @@ TypePtr make_function(std::vector<TypePtr> params, TypePtr result);
 TypePtr make_var();
 
 TypePtr prune(const TypePtr &type);
-
-std::string type_to_string(const TypePtr &type);
