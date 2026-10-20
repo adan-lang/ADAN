@@ -5,20 +5,20 @@
 
 void ScopeManager::enter_scope()
 {
-    scopes.push({});
+    scopes.emplace_back();
 }
 
 void ScopeManager::exit_scope()
 {
     if (!in_global_scope())
-        scopes.pop();
+        scopes.pop_back();
     else
         throw std::runtime_error(std::format("Cannot go below the global scope"));
 }
 
 bool ScopeManager::in_global_scope() const
 {
-    return scopes.size() == 0;
+    return scopes.empty();
 }
 
 void ScopeManager::print_scope()

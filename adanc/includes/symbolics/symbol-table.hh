@@ -1,9 +1,10 @@
 #pragma once
 
 #include <unordered_map>
-#include <stack>
 #include <stdexcept>
 #include <string>
+#include <string_view>
+#include <vector>
 #include <print>
 
 #include "types.hh"
@@ -21,25 +22,22 @@ struct Symbol
     }
 };
 
-template <typename T, typename Container = std::deque<T>>
-struct _stack : std::stack<T, Container>
-{
-    using std::stack<T, Container>::c;
-};
+using Scope = std::unordered_map<std::string, Symbol>;
 
 class SymbolTable
 {
 protected:
-    _stack<std::unordered_map<std::string_view, Symbol>> scopes;
+    std::vector<Scope> scopes;
 
 public:
     void declare(const Symbol &symbol);
 
     Symbol *lookup(std::string_view name);
 
+    // @todo Remember to remove this after everything is finished
     inline void print_symbols()
     {
-        for (auto item = scopes.c.rbegin(); item != scopes.c.rend(); ++item)
+        for (auto item = scopes.rbegin(); item != scopes.rend(); ++item)
         {
             const auto& curr = *item;
             for (const auto& [name, symbol] : curr)
