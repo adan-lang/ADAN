@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-find ./src -type f \( -name '*.cc' -o -name '*.hh' \) -print0 |
+find ./adanc/src ./adanc/includes -type f \( -name '*.cc' -o -name '*.hh' \) -print0 |
 	xargs -0 wc -l |
 	awk '
 		$2 != "total" { lines += $1 }
