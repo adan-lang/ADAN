@@ -69,7 +69,7 @@ int main(const int argc, char *argv[])
 
     Parser parser(source);
     auto statements = parser.parse();
-    
+
     Block program;
     program.stmts = std::move(statements);
 
