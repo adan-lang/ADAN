@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <string>
 
 struct Type;
 using TypePtr = std::shared_ptr<Type>;
