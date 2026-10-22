@@ -25,6 +25,14 @@ endforeach()
 
 list(REMOVE_DUPLICATES PROJECT_INCLUDE_DIRS)
 
+include(FetchContent)
+FetchContent_Declare(
+  fast_float
+  GIT_REPOSITORY https://github.com/fastfloat/fast_float.git
+  GIT_TAG tags/v8.3.0
+  GIT_SHALLOW TRUE)
+FetchContent_MakeAvailable(fast_float)
+
 add_executable(${PROJECT_NAME}
     ${PROJECT_SOURCES}
     ${PROJECT_HEADERS}
@@ -33,6 +41,8 @@ add_executable(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${PROJECT_INCLUDE_DIRS}
 )
+
+target_link_libraries(${PROJECT_NAME} PRIVATE fast_float)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
     target_compile_options(${PROJECT_NAME} PRIVATE
