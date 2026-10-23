@@ -60,5 +60,5 @@ function avg -> (grades) { ; Overrides "grades" in the previous scope.
 }
 
 if avg <- (grades) >= passing_grade {
-    print(`${student_name} is passing!`)
+    print <- (`${student_name} is passing!`)
 }
