@@ -25,7 +25,7 @@ struct IntLiteral : Expr
     explicit IntLiteral(const int64_t v) : value{v} {}
     void accept(ASTVisitor &visitor) override;
 };
-    
+
 struct FloatLiteral : Expr
 {
     double value{};
@@ -55,7 +55,7 @@ struct InterpolatedString : Expr
 
     explicit InterpolatedString(std::vector<Part> parts)
         : parts{std::move(parts)} {}
-        
+
     void accept(ASTVisitor &visitor) override;
 };
 
@@ -72,6 +72,18 @@ struct ArrayLiteral : Expr
 
     explicit ArrayLiteral(std::vector<std::unique_ptr<Expr>> elements)
         : elements{std::move(elements)} {}
+
+    void accept(ASTVisitor &visitor) override;
+};
+
+struct ArrayIndex : Expr
+{
+    std::unique_ptr<Expr> array;
+    std::unique_ptr<Expr> index;
+
+    ArrayIndex(std::unique_ptr<Expr> array, std::unique_ptr<Expr> index)
+        : array{std::move(array)},
+          index{std::move(index)} {}
 
     void accept(ASTVisitor &visitor) override;
 };

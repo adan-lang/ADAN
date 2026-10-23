@@ -17,6 +17,7 @@ public:
     virtual void visit(InterpolatedString &node) {};
     virtual void visit(Identifier &node) {};
     virtual void visit(ArrayLiteral &node) {};
+    virtual void visit(ArrayIndex &node) {};
     virtual void visit(CallExpr &node) {};
     virtual void visit(BinaryExpr &node) {};
     virtual void visit(UnaryExpr &node) {};

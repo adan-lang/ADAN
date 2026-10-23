@@ -36,6 +36,11 @@ void ArrayLiteral::accept(ASTVisitor &visitor)
     visitor.visit(*this);
 }
 
+void ArrayIndex::accept(ASTVisitor &visitor)
+{
+    visitor.visit(*this);
+}
+
 void CallExpr::accept(ASTVisitor &visitor)
 {
     visitor.visit(*this);
