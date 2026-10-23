@@ -318,6 +318,7 @@ std::unique_ptr<Expr> Parser::parse_primary()
     case TokenKind::LParen:
     {
         advance();
+        if (!matches(TokenKind::RParen) || )
         auto expression = parse_expr();
         expect(TokenKind::RParen);
 

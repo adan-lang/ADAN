@@ -1,7 +1,7 @@
-local size = [160, 160] // width and height
+local size = [160, 160] ; width and height
 
 function area -> (width, height) {
     <- width * height
 }
 
-print(area(size[1], size[2])) // should be 25,600
+print(area(size[1], size[2])) ; should be 25,600
