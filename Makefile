@@ -59,8 +59,3 @@ build:
 	fi; \
 	printf "\033[1;33m[3/3]\033[0m Finishing build...\n"; \
 	printf "\n\033[1;32mADAN build success!\033[0m\n\n"
-
-test-semantic: build
-	@printf "—————————————————————— Program's Output ——————————————————————\n\n"
-	@$(BUILD_DIR)/ADAN -st ./test/grades-calc.adn
-	@printf "\n"
