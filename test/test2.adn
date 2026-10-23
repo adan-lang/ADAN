@@ -1,7 +1,9 @@
 local size = [12, 12]
 
 function area -> (w, h) {
+    local l = 2
+
     <- w * h
 }
 
-print(area <- (size[1], size[2]))
+print <- (area <- (size[1], size[2]))
