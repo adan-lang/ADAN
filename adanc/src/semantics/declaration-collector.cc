@@ -21,7 +21,16 @@ void DeclarationCollector::visit(FuncDecl &stmt)
 
     if (!symbol_table.lookup(stmt.name))
     {
+        std::vector<TypePtr> params;
+        for (std::size_t i = 0; i < stmt.params.size(); ++i)
+        {
+            params.emplace_back(string_to_type(stmt.params[i]));
+        }
 
+        symbol_table.declare(Symbol{
+            stmt.name,
+            make_function(params, make_var()),
+        });
     }
     else
     {
