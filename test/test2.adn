@@ -1,5 +1,7 @@
-function a -> (b, c) {
-    print(`Hello, my name is ${b} and I am ${c} years old.`)
+local size = [160, 160] // width and height
+
+function area -> (width, height) {
+    <- width * height
 }
 
-a <- ("Lily", 17)
+print(area(size[1], size[2])) // should be 25,600
