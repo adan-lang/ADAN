@@ -30,6 +30,8 @@
 
 ; Arrays           --> "[<value>, ...]"                                  <-- Note, arrays are dynamically-sized and homogeneous. The element type is inferred
 ;                                                                            from the literals provided and all subsequent elements must match.
+;
+; Accessing Arrays --> "<array>[<index>]"                                <-- Note, index for arrays begin at 1 instead of 0.
 
 ;------------------------------------------------------;
 ;--
