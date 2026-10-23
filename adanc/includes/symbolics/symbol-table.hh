@@ -39,8 +39,8 @@ public:
     {
         for (auto item = scopes.rbegin(); item != scopes.rend(); ++item)
         {
-            const auto& curr = *item;
-            for (const auto& [name, symbol] : curr)
+            const auto &curr = *item;
+            for (const auto &[name, symbol] : curr)
             {
                 std::println("Key: {}, Symbol: {}", name, symbol.to_string());
             }
