@@ -65,7 +65,7 @@ int main(const int argc, char *argv[])
         return 1;
     }
 
-    const std::string_view source{read_file(file_path)};
+    const std::string source{read_file(file_path)};
 
     Parser parser(source);
     auto statements = parser.parse();
@@ -73,16 +73,14 @@ int main(const int argc, char *argv[])
     Block program;
     program.stmts = std::move(statements);
 
-    LocalDecl local{
-        "myvar",
-        std::make_unique<IntLiteral>(32),
-    };
-
     ScopeManager symbol_table;
     symbol_table.enter_scope();
 
     DeclarationCollector collector{symbol_table};
-    local.accept(collector);
+    for (std::size_t i = 0; i < program.stmts.size(); ++i)
+    {
+        program.stmts[i]->accept(collector);
+    }
 
     symbol_table.print_symbols();
 
