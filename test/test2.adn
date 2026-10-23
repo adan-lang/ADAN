@@ -1,9 +1,7 @@
-local size = [160, 160] ; width and height
+local size = [12, 12]
 
-function area -> (width, height) {
-    <- width * height
+function area -> (w, h) {
+    <- w * h
 }
 
-print(area(size[1], size[2])) ; should be 25,600
-;         ^
-; expected RParen, got LParen
+print(area <- (size[1], size[2]))
