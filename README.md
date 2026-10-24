@@ -9,7 +9,7 @@
    
    <img alt="Version" src="https://img.shields.io/badge/version-1.1.3-blue">
    <img alt="Latest Release" src="https://img.shields.io/github/v/release/transicle/adan">
-   <img alt="Docs" src="https://img.shields.io/badge/docs-docs.adan.sh-blue">
+   <a href="https://docs.adan.sh"><img alt="Docs" src="https://img.shields.io/badge/docs-docs.adan.sh-blue"></a>
 </div>
 
 <br>
