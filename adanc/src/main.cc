@@ -7,7 +7,7 @@
 #include "declaration-collector.hh"
 #include "scope-manager.hh"
 
-static constexpr std::string COMPILER_VERSION = "version-1.1.0";
+static constexpr std::string COMPILER_VERSION = "version-1.1.2";
 
 static inline void show_main_message()
 {
