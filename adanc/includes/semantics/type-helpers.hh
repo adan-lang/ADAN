@@ -2,23 +2,24 @@
 
 #include <string>
 #include <memory>
+
 #include "types.hh"
 
-inline TypePtr string_to_type(std::string type)
-{
-    if (type == "Int")
-        return make_int();
-    if (type == "Float")
-        return make_float();
-    if (type == "Bool")
-        return make_bool();
-    if (type == "String")
-        return make_string();
-    if (type == "Void")
-        return make_void();
+// inline TypePtr string_to_type(std::string type)
+// {
+//     if (type == "Int")
+//         return make_int();
+//     if (type == "Float")
+//         return make_float();
+//     if (type == "Bool")
+//         return make_bool();
+//     if (type == "String")
+//         return make_string();
+//     if (type == "Void")
+//         return make_void();
 
-    return make_var();
-}
+//     return make_var();
+// }
 
 inline std::string type_to_string(const TypePtr &type)
 {
