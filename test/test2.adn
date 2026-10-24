@@ -1,8 +1,6 @@
 local size = [12, 12]
 
 function area -> (w, h) {
-    local l = 2
-
     <- w * h
 }
 
