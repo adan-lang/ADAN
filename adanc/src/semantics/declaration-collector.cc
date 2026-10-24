@@ -15,14 +15,10 @@ void DeclarationCollector::visit(LocalDecl &stmt)
 
 void DeclarationCollector::visit(FuncDecl &stmt)
 {
-    // function a { ... }
-    // function b -> () { ... }
-    // function c -> (d, e) { ... }
-
     if (!symbol_table.lookup(stmt.name))
     {
         std::vector<TypePtr> params;
-        for (std::size_t i = 0; i < stmt.params.size(); ++i)
+        for (std::size_t i{}; i < stmt.params.size(); ++i)
         {
             params.emplace_back(string_to_type(stmt.params[i]));
         }
@@ -31,6 +27,11 @@ void DeclarationCollector::visit(FuncDecl &stmt)
             stmt.name,
             make_function(params, make_var()),
         });
+
+        for (const auto &body_stmt : stmt.body.stmts)
+        {
+            body_stmt->accept(*this);
+        }
     }
     else
     {
