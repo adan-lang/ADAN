@@ -77,7 +77,7 @@ int main(const int argc, char *argv[])
     symbol_table.enter_scope();
 
     DeclarationCollector collector{symbol_table};
-    for (std::size_t i = 0; i < program.stmts.size(); ++i)
+    for (std::size_t i{}; i < program.stmts.size(); ++i)
     {
         program.stmts[i]->accept(collector);
     }
