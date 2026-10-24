@@ -17,7 +17,6 @@ void DeclarationCollector::visit(FuncDecl &stmt)
 {
     if (!symbol_table.lookup(stmt.name))
     {
-
         std::vector<TypePtr> params;
         for (std::size_t i{}; i < stmt.params.size(); ++i)
         {
