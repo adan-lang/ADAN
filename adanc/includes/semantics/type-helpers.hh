@@ -42,7 +42,7 @@ inline std::string type_to_string(const TypePtr &type)
     case TypeKind::Function:
     {
         std::string text = "\033[1;33m(\033[0m";
-        for (std::size_t i = 0; i < resolved->params.size(); ++i)
+        for (std::size_t i{}; i < resolved->params.size(); ++i)
         {
             if (i != 0)
                 text += "\033[1;33m,\033[0m ";
