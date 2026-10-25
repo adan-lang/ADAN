@@ -1,0 +1,7 @@
+local array = [1, 2, 3, a, b, c]
+
+; print <- (array[random <- (1, 10)])
+
+for element in array {
+    print <- (`${element}`)
+}
