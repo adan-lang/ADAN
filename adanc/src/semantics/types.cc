@@ -1,6 +1,7 @@
 #include <format>
+#include <stdexcept>
 
-#include "types.hh"
+#include "type-helpers.hh"
 
 TypePtr make_int()
 {
@@ -51,7 +52,7 @@ TypePtr make_var()
 }
 
 /**
- * 
+ *
  * @brief `prune` works for Var and recursively calls itself until it reaches the end, then returns the type
  */
 TypePtr prune(const TypePtr &type)
@@ -63,4 +64,46 @@ TypePtr prune(const TypePtr &type)
     }
 
     return type;
+}
+
+void unify(TypePtr a, TypePtr b)
+{
+    auto lhs = prune(a);
+    auto rhs = prune(b);
+
+    if (lhs == rhs)
+        return;
+
+    if (lhs->kind == TypeKind::Var)
+    {
+        lhs->link = rhs;
+        return;
+    }
+
+    if (rhs->kind == TypeKind::Var)
+    {
+        rhs->link = lhs;
+        return;
+    }
+
+    if (lhs->kind != rhs->kind)
+        // @todo @important Design a diagnostics system for debugging during semantic analysis
+        throw std::runtime_error(std::format("There was a mismatch between: (left) {} and (right) {}", type_to_string(lhs), type_to_string(rhs)));
+
+    switch (lhs->kind)
+    {
+    case TypeKind::Int:
+    case TypeKind::Float:
+    case TypeKind::Bool:
+    case TypeKind::String:
+    case TypeKind::Void:
+        return;
+
+    // @todo Work on these when you get type inference
+    case TypeKind::Array:
+        unify(lhs->element, rhs->element);
+
+    case TypeKind::Function:
+        return;
+    }
 }
