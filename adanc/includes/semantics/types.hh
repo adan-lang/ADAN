@@ -49,3 +49,5 @@ TypePtr make_function(std::vector<TypePtr> params, TypePtr result);
 TypePtr make_var();
 
 TypePtr prune(const TypePtr &type);
+
+void unify(TypePtr a, TypePtr b);
