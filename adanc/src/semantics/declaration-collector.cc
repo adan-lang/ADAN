@@ -1,6 +1,7 @@
+#include <cstddef>
 #include <vector>
 #include <format>
-#include <print>
+#include <stdexcept>
 
 #include "declaration-collector.hh"
 #include "type-helpers.hh"

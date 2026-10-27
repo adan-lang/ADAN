@@ -1,6 +1,12 @@
 #include <fast_float/fast_float.h>
+#include <cstdint>
 #include <format>
-#include <print>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <system_error>
+#include <utility>
+#include <vector>
 
 #include "parser.hh"
 #include "tokens.hh"

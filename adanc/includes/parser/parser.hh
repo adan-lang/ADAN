@@ -1,7 +1,10 @@
 #pragma once
 
 #include <format>
+#include <memory>
 #include <stdexcept>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 #include "ast.hh"

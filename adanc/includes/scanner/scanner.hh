@@ -1,7 +1,9 @@
 #pragma once
 
 #include <cctype>
+#include <cstddef>
 #include <queue>
+#include <string_view>
 #include <unordered_map>
 
 #include "tokens.hh"

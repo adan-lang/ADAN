@@ -1,5 +1,8 @@
+#include <cctype>
 #include <print>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "scanner.hh"
 

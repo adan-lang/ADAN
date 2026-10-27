@@ -1,5 +1,7 @@
 #include <format>
 #include <stdexcept>
+#include <utility>
+#include <vector>
 
 #include "type-helpers.hh"
 

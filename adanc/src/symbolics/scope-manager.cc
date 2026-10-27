@@ -1,5 +1,5 @@
 #include <print>
-#include <format>
+#include <stdexcept>
 
 #include "scope-manager.hh"
 

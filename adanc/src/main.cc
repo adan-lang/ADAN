@@ -1,7 +1,8 @@
+#include <cstddef>
 #include <print>
 #include <string>
+#include <utility>
 
-#include "scanner.hh"
 #include "parser.hh"
 #include "tools.hh"
 #include "declaration-collector.hh"
