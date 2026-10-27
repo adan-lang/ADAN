@@ -9,6 +9,7 @@
 
 #include "ast.hh"
 #include "scanner.hh"
+#include "scanner-helpers.hh"
 
 class Parser
 {

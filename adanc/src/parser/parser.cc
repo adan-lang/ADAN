@@ -10,6 +10,7 @@
 
 #include "parser.hh"
 #include "tokens.hh"
+#include "scanner-helpers.hh"
 
 Block Parser::parse_block()
 {
