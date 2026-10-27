@@ -10,7 +10,7 @@ public:
     virtual ~ASTVisitor() = default;
 
     // @todo As you implement a func, change from {} to = 0
-    virtual void visit(IntLiteral &node) {};
+    virtual void visit(IntLiteral &node) = 0;
     virtual void visit(FloatLiteral &node) {};
     virtual void visit(BoolLiteral &node) {};
     virtual void visit(StringLiteral &node) {};
@@ -29,5 +29,5 @@ public:
     virtual void visit(NumericForStmt &node) {};
     virtual void visit(ForInStmt &node) {};
     virtual void visit(WhileStmt &node) {};
-    virtual void visit(Block &) {};
+    virtual void visit(Block &node) {};
 };
