@@ -8,7 +8,7 @@ class DeclarationCollector : public ASTVisitor
     ScopeManager &symbol_table;
 
 public:
-    explicit DeclarationCollector(ScopeManager &symbol_table) : symbol_table(symbol_table) {}
+    explicit DeclarationCollector(ScopeManager &symbols) : symbol_table(symbols) {}
 
     void visit(LocalDecl &stmt) override;
     void visit(FuncDecl &stmt) override;
