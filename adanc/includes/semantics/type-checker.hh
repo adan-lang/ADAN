@@ -17,7 +17,12 @@ public:
     void check(Stmt &stmt);
     void check(Block &block);
 
+    // Visitors
+
     void visit(IntLiteral &node) override;
+    void visit(FloatLiteral &node) override;
+    void visit(BoolLiteral &node) override;
+    void visit(StringLiteral &node) override;
     void visit(LocalDecl &node) override;
     void visit(FuncDecl &node) override;
 };
