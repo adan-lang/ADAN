@@ -1,7 +1,5 @@
 #pragma once
 
-#include <print>
-
 #include "ast.hh"
 
 class ASTVisitor
@@ -9,8 +7,7 @@ class ASTVisitor
 public:
     virtual ~ASTVisitor() = default;
 
-    // @todo As you implement a func, change from {} to = 0
-    virtual void visit(IntLiteral &node) = 0;
+    virtual void visit(IntLiteral &node) {};
     virtual void visit(FloatLiteral &node) {};
     virtual void visit(BoolLiteral &node) {};
     virtual void visit(StringLiteral &node) {};
