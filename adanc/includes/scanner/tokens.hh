@@ -38,7 +38,7 @@ enum class TokenKind : std::uint8_t
     RBracket,    // ]
     LBrace,      // {
     RBrace,      // }
-    Quote,       // \"
+    Quote,       // "
     Apostrophe,  // '
     Ellipsis,    // ...
     Tick,        // `
