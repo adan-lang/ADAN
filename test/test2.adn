@@ -1,7 +1,0 @@
-local size = [12, 12]
-
-function area -> (w, h) {
-    <- w * h
-}
-
-print <- (area <- (size[1], size[2]))
