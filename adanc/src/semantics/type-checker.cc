@@ -16,36 +16,40 @@ TypePtr TypeChecker::infer(Expr &expr)
 
 void TypeChecker::check(Stmt &stmt)
 {
+    stmt.accept(*this);
 }
 
 void TypeChecker::check(Block &block)
 {
+    for (const auto &stmt : block.stmts)
+        check(*stmt);
 }
 
 // Visitors
 
-void TypeChecker::visit(IntLiteral &node)
+void TypeChecker::visit(IntLiteral &)
 {
     last_inferred_type = make_int();
 }
 
-void TypeChecker::visit(FloatLiteral &node)
+void TypeChecker::visit(FloatLiteral &)
 {
     last_inferred_type = make_float();
 }
 
-void TypeChecker::visit(BoolLiteral &node)
+void TypeChecker::visit(BoolLiteral &)
 {
     last_inferred_type = make_bool();
 }
 
-void TypeChecker::visit(StringLiteral &node)
+void TypeChecker::visit(StringLiteral &)
 {
     last_inferred_type = make_string();
 }
 
 void TypeChecker::visit(LocalDecl &node)
 {
+    
 }
 
 void TypeChecker::visit(FuncDecl &node)
