@@ -8,6 +8,7 @@ class TypeChecker : public ASTVisitor
 {
     ScopeManager &symbol_table;
     TypePtr last_inferred_type;
+    TypePtr curr_func_result_type;
 
 public:
     explicit TypeChecker(ScopeManager &symbols) : symbol_table(symbols) {}
@@ -23,6 +24,9 @@ public:
     void visit(FloatLiteral &node) override;
     void visit(BoolLiteral &node) override;
     void visit(StringLiteral &node) override;
+
+    void visit(ReturnStmt &node) override;
+
     void visit(LocalDecl &node) override;
     void visit(FuncDecl &node) override;
 };

@@ -25,11 +25,11 @@ void TypeChecker::visit(StringLiteral &)
 
 void TypeChecker::visit(ReturnStmt &node)
 {
-    if (!current_function_result_type)
+    if (!curr_func_result_type)
         throw std::runtime_error("Return statement outside a function");
 
     const TypePtr return_type = node.value ? infer(*node.value) : make_void();
-    unify(current_function_result_type, return_type);
+    unify(curr_func_result_type, return_type);
 }
 
 void TypeChecker::visit(LocalDecl &node)
@@ -56,7 +56,7 @@ void TypeChecker::visit(FuncDecl &node)
     if (function_type->params.size() != node.params.size())
         throw std::runtime_error("Function parameter count does not match its type");
 
-    const TypePtr previous_function_result = current_function_result_type;
+    const TypePtr prev_func_result_type = curr_func_result_type;
     symbol_table.enter_scope();
 
     try
@@ -68,16 +68,16 @@ void TypeChecker::visit(FuncDecl &node)
         for (const auto &stmt : node.body.stmts)
             stmt->accept(collector);
 
-        current_function_result_type = function_type->result;
+        curr_func_result_type = function_type->result;
         check(node.body);
     }
     catch (...)
     {
-        current_function_result_type = previous_function_result;
+        curr_func_result_type = prev_func_result_type;
         symbol_table.exit_scope();
         throw;
     }
 
-    current_function_result_type = previous_function_result;
+    curr_func_result_type = prev_func_result_type;
     symbol_table.exit_scope();
 }
