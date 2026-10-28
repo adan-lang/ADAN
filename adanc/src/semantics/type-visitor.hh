@@ -22,6 +22,16 @@ void TypeChecker::visit(StringLiteral &)
 
 void TypeChecker::visit(LocalDecl &node)
 {
+    if (!node.init)
+        return;
+
+    Symbol *lookup = symbol_table.lookup(node.name);
+    if (node.init)
+    {
+        last_inferred_type = infer(*node.init);
+    }
+
+    unify(lookup->type, last_inferred_type);
 }
 
 void TypeChecker::visit(FuncDecl &node)
