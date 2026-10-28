@@ -7,6 +7,7 @@
 #include "tools.hh"
 #include "declaration-collector.hh"
 #include "scope-manager.hh"
+#include "type-checker.hh"
 
 static constexpr std::string COMPILER_VERSION = "version-1.1.3";
 
@@ -82,6 +83,9 @@ int main(const int argc, char *argv[])
     {
         program.stmts[i]->accept(collector);
     }
+
+    TypeChecker type_checker{symbol_table};
+    type_checker.check(program);
 
     symbol_table.print_symbols();
 
