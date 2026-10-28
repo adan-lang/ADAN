@@ -68,6 +68,10 @@ TypePtr prune(const TypePtr &type)
     return type;
 }
 
+/**
+ *
+ * @brief The intentions of `unify` are to equalize the two given types.
+ */
 void unify(TypePtr a, TypePtr b)
 {
     auto lhs = prune(a);
@@ -103,8 +107,6 @@ void unify(TypePtr a, TypePtr b)
 
     // @todo Work on these when you get type inference
     case TypeKind::Array:
-        unify(lhs->element, rhs->element);
-
     case TypeKind::Function:
         return;
     }
