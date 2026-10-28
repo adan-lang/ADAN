@@ -7,24 +7,24 @@ class ASTVisitor
 public:
     virtual ~ASTVisitor() = default;
 
-    virtual void visit(IntLiteral &node) {};
-    virtual void visit(FloatLiteral &node) {};
-    virtual void visit(BoolLiteral &node) {};
-    virtual void visit(StringLiteral &node) {};
-    virtual void visit(InterpolatedString &node) {};
-    virtual void visit(Identifier &node) {};
-    virtual void visit(ArrayLiteral &node) {};
-    virtual void visit(ArrayIndex &node) {};
-    virtual void visit(CallExpr &node) {};
-    virtual void visit(BinaryExpr &node) {};
-    virtual void visit(UnaryExpr &node) {};
-    virtual void visit(ReturnStmt &node) {};
-    virtual void visit(ExprStmt &node) {};
+    virtual void visit(IntLiteral &) {}
+    virtual void visit(FloatLiteral &) {}
+    virtual void visit(BoolLiteral &) {}
+    virtual void visit(StringLiteral &) {}
+    virtual void visit(InterpolatedString &) {}
+    virtual void visit(Identifier &) {}
+    virtual void visit(ArrayLiteral &) {}
+    virtual void visit(ArrayIndex &) {}
+    virtual void visit(CallExpr &) {}
+    virtual void visit(BinaryExpr &) {}
+    virtual void visit(UnaryExpr &) {}
+    virtual void visit(ReturnStmt &) {}
+    virtual void visit(ExprStmt &) {}
     virtual void visit(LocalDecl &node) = 0;
     virtual void visit(FuncDecl &node) = 0;
-    virtual void visit(IfStmt &node) {};
-    virtual void visit(NumericForStmt &node) {};
-    virtual void visit(ForInStmt &node) {};
-    virtual void visit(WhileStmt &node) {};
-    virtual void visit(Block &node) {};
+    virtual void visit(IfStmt &) {}
+    virtual void visit(NumericForStmt &) {}
+    virtual void visit(ForInStmt &) {}
+    virtual void visit(WhileStmt &) {}
+    virtual void visit(Block &) {}
 };
