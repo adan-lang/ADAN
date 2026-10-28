@@ -15,7 +15,6 @@ public:
     virtual void visit(Identifier &) {}
     virtual void visit(ArrayLiteral &) {}
     virtual void visit(ArrayIndex &) {}
-
     virtual void visit(CallExpr &) {}
     virtual void visit(BinaryExpr &) {}
     virtual void visit(UnaryExpr &) {}
