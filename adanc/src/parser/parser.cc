@@ -174,37 +174,51 @@ std::unique_ptr<Expr> Parser::parse_unary()
     op = UnaryOp::Decrement;
     break;
   default:
-  {
-    auto expression = parse_primary();
-    while (true)
-    {
-      if (matches(TokenKind::Increment, TokenKind::Decrement))
-      {
-        op = current_token.kind == TokenKind::Increment ? UnaryOp::Increment
-                                                        : UnaryOp::Decrement;
-        advance();
-        expression = std::make_unique<UnaryExpr>(op, std::move(expression), true);
-      }
-      else if (matches(TokenKind::LBracket))
-      {
-        advance();
-        auto index = parse_expr();
-        expect(TokenKind::RBracket);
-        expression = std::make_unique<ArrayIndex>(std::move(expression), std::move(index));
-      }
-      else
-      {
-        break;
-      }
-    }
-
-    return expression;
-  }
+    return parse_power();
   }
 
   advance();
   auto operand = parse_unary();
   return std::make_unique<UnaryExpr>(op, std::move(operand));
+}
+
+std::unique_ptr<Expr> Parser::parse_power()
+{
+  auto lhs = parse_postfix();
+  if (!matches(TokenKind::Power))
+    return lhs;
+
+  advance();
+  auto rhs = parse_unary();
+  return std::make_unique<BinaryExpr>(BinaryOp::Power, std::move(lhs), std::move(rhs));
+}
+
+std::unique_ptr<Expr> Parser::parse_postfix()
+{
+  auto expression = parse_primary();
+  while (true)
+  {
+    if (matches(TokenKind::Increment, TokenKind::Decrement))
+    {
+      const auto op = current_token.kind == TokenKind::Increment ? UnaryOp::Increment
+                                                                 : UnaryOp::Decrement;
+      advance();
+      expression = std::make_unique<UnaryExpr>(op, std::move(expression), true);
+    }
+    else if (matches(TokenKind::LBracket))
+    {
+      advance();
+      auto index = parse_expr();
+      expect(TokenKind::RBracket);
+      expression = std::make_unique<ArrayIndex>(std::move(expression), std::move(index));
+    }
+    else
+    {
+      break;
+    }
+  }
+
+  return expression;
 }
 
 std::unique_ptr<Expr> Parser::parse_array_literal()

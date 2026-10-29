@@ -107,6 +107,7 @@ enum class BinaryOp : uint8_t
     Minus,
     Multiply,
     Divide,
+    Power,
     Modulo,
     GreaterThan,
     GreaterEqual,

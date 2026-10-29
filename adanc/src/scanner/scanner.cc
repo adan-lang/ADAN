@@ -64,6 +64,10 @@ Token Lexer::lex()
         }
         return Token{TokenKind::Divide, "/"};
 
+    case '^':
+        advance();
+        return Token{TokenKind::Power, "^"};
+
     case '%':
         advance();
         if (peek() == '=')

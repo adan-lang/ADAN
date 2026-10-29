@@ -25,6 +25,7 @@ enum class TokenKind : std::uint8_t
     Minus,       // -
     Multiply,    // *
     Divide,      // /
+    Power,       // ^
     Modulo,      // %
     GreaterThan, // >
     LessThan,    // <

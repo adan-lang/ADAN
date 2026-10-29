@@ -61,6 +61,8 @@ private:
   std::unique_ptr<Expr> parse_additive();
   std::unique_ptr<Expr> parse_multiplicative();
   std::unique_ptr<Expr> parse_unary();
+  std::unique_ptr<Expr> parse_power();
+  std::unique_ptr<Expr> parse_postfix();
   std::unique_ptr<Expr> parse_primary();
   std::unique_ptr<Expr> parse_array_literal();
   std::unique_ptr<Expr> parse_template_string();

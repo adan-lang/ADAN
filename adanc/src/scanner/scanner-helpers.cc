@@ -32,6 +32,8 @@ std::string_view token_kind_name(const TokenKind kind)
         return "Multiply";
     case TokenKind::Divide:
         return "Divide";
+    case TokenKind::Power:
+        return "Power";
     case TokenKind::Modulo:
         return "Modulo";
     case TokenKind::GreaterThan:
