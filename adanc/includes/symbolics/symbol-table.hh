@@ -10,7 +10,6 @@
 #include "types.hh"
 #include "type-helpers.hh"
 
-// @note Possibly in the future consider `basic::Maybe` if adding support for anonymous functions
 struct Symbol
 {
     std::string name;
