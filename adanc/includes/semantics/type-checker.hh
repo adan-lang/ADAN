@@ -27,6 +27,7 @@ public:
     void visit(ArrayLiteral &node) override;
 
     void visit(BinaryExpr &node) override;
+    void visit(Identifier &node) override;
 
     void visit(ReturnStmt &node) override;
 
