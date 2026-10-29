@@ -24,6 +24,9 @@ public:
     void visit(FloatLiteral &node) override;
     void visit(BoolLiteral &node) override;
     void visit(StringLiteral &node) override;
+    void visit(ArrayLiteral &node) override;
+
+    void visit(BinaryExpr &node) override;
 
     void visit(ReturnStmt &node) override;
 
