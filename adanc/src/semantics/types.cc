@@ -71,6 +71,9 @@ TypePtr prune(const TypePtr &type)
 /**
  *
  * @brief The intentions of `unify` are to equalize the two given types.
+ *
+ * Unification either confirms two types agree, learns what an unknown
+ *  type must be, or reports that it's impossible for them to agree.
  */
 void unify(TypePtr a, TypePtr b)
 {
@@ -105,9 +108,19 @@ void unify(TypePtr a, TypePtr b)
     case TypeKind::Void:
         return;
 
-    // @todo Work on these when you get type inference
     case TypeKind::Array:
+        unify(lhs->element, rhs->element);
+        return;
+
     case TypeKind::Function:
+        if (lhs->params.size() == rhs->params.size())
+            // @todo @important Design a diagnostics system for debugging during semantic analysis
+            throw std::runtime_error("Function parameter count mismatch");
+
+        for (std::size_t i{}; i < lhs->params.size(); ++i)
+            unify(lhs->params[i], rhs->params[i]);
+
+        unify(lhs->result, rhs->result);
         return;
     }
 }
