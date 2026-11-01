@@ -1,13 +1,15 @@
 #pragma once
 
 #include "ast-visitor.hh"
+#include "operator-table.hh"
 #include "scope-manager.hh"
 #include "types.hh"
 
 class TypeChecker : public ASTVisitor
 {
     ScopeManager &symbol_table;
-    
+    OperatorTable operator_table;
+
     TypePtr last_inferred_type;
     TypePtr curr_func_result_type;
 
