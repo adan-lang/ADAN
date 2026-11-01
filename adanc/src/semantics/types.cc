@@ -85,12 +85,20 @@ void unify(TypePtr a, TypePtr b)
 
     if (lhs->kind == TypeKind::Var)
     {
+        if (occurs(lhs, rhs))
+            // @todo @important Design a diagnostics system for debugging during semantic analysis
+            throw std::runtime_error("The left type occurs inside the right type");
+
         lhs->link = rhs;
         return;
     }
 
     if (rhs->kind == TypeKind::Var)
     {
+        if (occurs(rhs, lhs))
+            // @todo @important Design a diagnostics system for debugging during semantic analysis
+            throw std::runtime_error("The right type occurs inside the left type");
+
         rhs->link = lhs;
         return;
     }
@@ -113,7 +121,7 @@ void unify(TypePtr a, TypePtr b)
         return;
 
     case TypeKind::Function:
-        if (lhs->params.size() == rhs->params.size())
+        if (lhs->params.size() != rhs->params.size())
             // @todo @important Design a diagnostics system for debugging during semantic analysis
             throw std::runtime_error("Function parameter count mismatch");
 
