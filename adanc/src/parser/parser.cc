@@ -155,17 +155,11 @@ std::unique_ptr<Expr> Parser::parse_unary()
   UnaryOp op;
   switch (current_token.kind)
   {
-  case TokenKind::Plus:
-    op = UnaryOp::Plus;
-    break;
   case TokenKind::Minus:
     op = UnaryOp::Minus;
     break;
   case TokenKind::Hashtag:
     op = UnaryOp::Hashtag;
-    break;
-  case TokenKind::Dollar:
-    op = UnaryOp::Dollar;
     break;
   case TokenKind::Increment:
     op = UnaryOp::Increment;

@@ -124,10 +124,8 @@ enum class BinaryOp : uint8_t
 
 enum class UnaryOp : uint8_t
 {
-    Plus,
     Minus,
     Hashtag,
-    Dollar,
     Increment,
     Decrement,
 };

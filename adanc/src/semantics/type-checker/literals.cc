@@ -20,6 +20,15 @@ void TypeChecker::visit(StringLiteral &)
     last_inferred_type = make_string();
 }
 
+void TypeChecker::visit(InterpolatedString &node)
+{
+    for (const auto &part : node.parts)
+        if (const auto *expression = std::get_if<std::unique_ptr<Expr>>(&part))
+            infer(**expression);
+
+    last_inferred_type = make_string();
+}
+
 void TypeChecker::visit(ArrayLiteral &node)
 {
     TypePtr element_type = make_var();
