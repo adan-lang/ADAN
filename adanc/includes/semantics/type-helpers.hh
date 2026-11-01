@@ -85,8 +85,10 @@ inline bool occurs(const TypePtr &variable, const TypePtr &type)
     case TypeKind::Void:
     case TypeKind::Var:
         return false;
+
     case TypeKind::Array:
         return occurs(variable, resolved->element);
+
     case TypeKind::Function:
         for (std::size_t i{}; i < resolved->params.size(); ++i)
             if (occurs(variable, resolved->params[i]))
