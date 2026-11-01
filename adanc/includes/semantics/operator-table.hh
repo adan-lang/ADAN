@@ -28,7 +28,7 @@ class OperatorTable
     std::vector<UnaryOperator> unary_operators;
 
 public:
-    OperatorTable() = default;
+    OperatorTable();
 
     inline void add_operator(BinaryOperator op)
     {
