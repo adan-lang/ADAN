@@ -61,3 +61,37 @@ inline std::string type_to_string(const TypePtr &type)
 
     return "\033[1;31mUnknown\033[0m";
 }
+
+/**
+ *
+ * @brief Returns whether or not `variable` appears in `type`.
+ *
+ * If the function returns false, that means `unify` can safely
+ *  link the variable to the type.
+ */
+inline bool occurs(const TypePtr &variable, const TypePtr &type)
+{
+    const TypePtr resolved = prune(type);
+
+    if (resolved == variable)
+        return true;
+
+    switch (resolved->kind)
+    {
+    case TypeKind::Int:
+    case TypeKind::Float:
+    case TypeKind::Bool:
+    case TypeKind::String:
+    case TypeKind::Void:
+    case TypeKind::Var:
+        return false;
+    case TypeKind::Array:
+        return occurs(variable, resolved->element);
+    case TypeKind::Function:
+        for (std::size_t i{}; i < resolved->params.size(); ++i)
+            if (occurs(variable, resolved->params[i]))
+                return true;
+
+        return occurs(variable, resolved->result);
+    }
+}
