@@ -7,6 +7,7 @@
 class TypeChecker : public ASTVisitor
 {
     ScopeManager &symbol_table;
+    
     TypePtr last_inferred_type;
     TypePtr curr_func_result_type;
 
@@ -28,6 +29,7 @@ public:
 
     void visit(BinaryExpr &node) override;
     void visit(Identifier &node) override;
+    void visit(UnaryExpr &node) override;
 
     void visit(ReturnStmt &node) override;
 
