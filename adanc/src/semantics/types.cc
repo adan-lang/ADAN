@@ -130,5 +130,9 @@ void unify(TypePtr a, TypePtr b)
 
         unify(lhs->result, rhs->result);
         return;
+
+    // Should just be impossible to get here
+    case TypeKind::Var:
+        throw std::logic_error("An unresolved variable has reached the structural comparison stage.");
     }
 }
