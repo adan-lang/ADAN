@@ -25,7 +25,7 @@ endforeach()
 
 list(REMOVE_DUPLICATES PROJECT_INCLUDE_DIRS)
 
-include("./Dependencies.cmake")
+include("./cmake/Dependencies.cmake")
 
 add_executable(${PROJECT_NAME}
     ${PROJECT_SOURCES}
