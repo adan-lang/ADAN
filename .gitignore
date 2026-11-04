@@ -1,7 +1,13 @@
+# Hidden files
+
+.clang-format
+
+# Public folders
+
 build/
 cmake-build-debug/
 
-# hidden files
+# Hidden folders
 
 .git/
 .vscode/
