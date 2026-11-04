@@ -48,7 +48,7 @@ build:
 	}; \
 	printf "————————————————————————— Build Logs —————————————————————————\n"; \
 	printf "\n\033[1;33m[1/3]\033[0m Configuring build...\n"; \
-	if ! cmake -S . -B "$(BUILD_DIR)" -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Release > "$(BUILD_LOG)" 2>&1; then \
+	if ! cmake -S . -B "$(BUILD_DIR)" -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Release > "$(BUILD_LOG)" 2>&1; then \
 	    report_build_failure; \
 	    exit 1; \
 	fi; \
