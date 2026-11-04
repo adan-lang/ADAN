@@ -30,17 +30,12 @@ class OperatorTable
 public:
     OperatorTable();
 
+    // Binary Operators
+
     inline void add_operator(BinaryOperator op)
     {
         binary_operators.emplace_back(op);
     }
-
-    inline void add_operator(UnaryOperator op)
-    {
-        unary_operators.emplace_back(op);
-    }
-
-    // Binary Operators
 
     inline std::vector<BinaryOperator> get_binary_operators()
     {
@@ -75,6 +70,11 @@ public:
     }
 
     // Unary Operators
+
+    inline void add_operator(UnaryOperator op)
+    {
+        unary_operators.emplace_back(op);
+    }
 
     inline std::vector<UnaryOperator> get_unary_operators()
     {
