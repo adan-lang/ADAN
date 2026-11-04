@@ -1,5 +1,4 @@
 #include <format>
-#include <vector>
 #include <print>
 
 #include "type-checker.hh"
