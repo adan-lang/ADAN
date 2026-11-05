@@ -52,7 +52,7 @@ sed -i.bak -E "s|(badge/version-)[0-9]+\.[0-9]+\.[0-9]+(-blue)|\1${new_version}\
 sed -i.bak -E "s|(COMPILER_VERSION = \"version-)[0-9]+\.[0-9]+\.[0-9]+(\";)|\1${new_version}\2|" "$MAIN"
 rm -f "$README.bak" "$MAIN.bak"
 
-commit_message="bump! (version: $readme_current -> $new_version)"
+commit_message="Bump! (version: $readme_current -> $new_version)"
 git -C "$REPO_ROOT" commit --only -m "$commit_message" -- "$README_REL" "$MAIN_REL"
 git -C "$REPO_ROOT" push "$remote" "HEAD:refs/heads/$upstream_branch"
 
