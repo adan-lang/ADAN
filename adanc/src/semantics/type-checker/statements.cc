@@ -6,6 +6,7 @@
 void TypeChecker::visit(ReturnStmt &node)
 {
     if (!curr_func_result_type)
+        // @todo @important Design a diagnostics system for debugging during semantic analysis
         throw std::runtime_error("Return statement outside a function");
 
     const TypePtr return_type = node.value ? infer(*node.value) : make_void();
@@ -19,6 +20,7 @@ void TypeChecker::visit(LocalDecl &node)
 
     Symbol *symbol = symbol_table.lookup(node.name);
     if (!symbol)
+        // @todo @important Design a diagnostics system for debugging during semantic analysis
         throw std::runtime_error("Local declaration was not collected");
 
     unify(symbol->type, infer(*node.init));
@@ -28,12 +30,15 @@ void TypeChecker::visit(FuncDecl &node)
 {
     Symbol *symbol = symbol_table.lookup(node.name);
     if (!symbol)
+        // @todo @important Design a diagnostics system for debugging during semantic analysis
         throw std::runtime_error("Function declaration was not collected");
 
     const TypePtr function_type = prune(symbol->type);
     if (function_type->kind != TypeKind::Function)
+        // @todo @important Design a diagnostics system for debugging during semantic analysis
         throw std::runtime_error("Function name does not have a function type");
     if (function_type->params.size() != node.params.size())
+        // @todo @important Design a diagnostics system for debugging during semantic analysis
         throw std::runtime_error("Function parameter count does not match its type");
 
     const TypePtr prev_func_result_type = curr_func_result_type;
