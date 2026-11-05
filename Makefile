@@ -1,7 +1,7 @@
 .PHONY: run build test-semantic
 
 FILE ?= ./test/grades-calc.adn
-BUILD_DIR ?= ./build
+BUILD_DIR ?= ./build/ninja
 BUILD_LOG ?= /tmp/adan_build.log
 
 run: build
@@ -48,12 +48,12 @@ build:
 	}; \
 	printf "————————————————————————— Build Logs —————————————————————————\n"; \
 	printf "\n\033[1;33m[1/3]\033[0m Configuring build...\n"; \
-	if ! cmake -S . -B "$(BUILD_DIR)" -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Release > "$(BUILD_LOG)" 2>&1; then \
+	if ! cmake -S . -B "$(BUILD_DIR)" -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Release > "$(BUILD_LOG)" 2>&1; then \
 	    report_build_failure; \
 	    exit 1; \
 	fi; \
 	printf "\033[1;33m[2/3]\033[0m Compiling ADAN...\n"; \
-	if ! cmake --build "$(BUILD_DIR)" > "$(BUILD_LOG)" 2>&1; then \
+	if ! cmake --build "$(BUILD_DIR)" --parallel 4 > "$(BUILD_LOG)" 2>&1; then \
 	    report_build_failure; \
 	    exit 1; \
 	fi; \
