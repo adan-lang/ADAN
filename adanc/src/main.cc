@@ -9,7 +9,7 @@
 #include "scope-manager.hh"
 #include "type-checker.hh"
 
-static constexpr std::string COMPILER_VERSION = "version-1.1.5";
+static constexpr std::string COMPILER_VERSION = "version-1.1.6";
 
 static inline void show_main_message()
 {
