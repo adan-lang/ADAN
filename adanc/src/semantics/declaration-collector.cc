@@ -4,7 +4,6 @@
 #include <stdexcept>
 
 #include "declaration-collector.hh"
-#include "type-helpers.hh"
 
 void DeclarationCollector::visit(LocalDecl &stmt)
 {
@@ -49,8 +48,6 @@ void DeclarationCollector::visit(FuncDecl &stmt)
         symbol_table.exit_scope();
     }
     else
-    {
         // @todo @important Design a diagnostics system for debugging during semantic analysis
         throw std::runtime_error(std::format("Redeclaration of function: \"{}\"", stmt.name));
-    }
 }
