@@ -1,3 +1,5 @@
+#pragma once
+
 #include "operator-table.hh"
 
 void register_binary_arithmetic(OperatorTable &table);
