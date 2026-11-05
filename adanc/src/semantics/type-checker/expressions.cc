@@ -1,8 +1,10 @@
 #include <format>
-#include <print>
+#include <stdexcept>
 
 #include "type-checker.hh"
 #include "operator-table.hh"
+#include "ast-helpers.hh"
+#include "type-helpers.hh"
 
 /**
  *
@@ -20,11 +22,22 @@ void TypeChecker::visit(BinaryExpr &node)
     TypePtr lhs = infer(*node.lhs);
     TypePtr rhs = infer(*node.rhs);
 
-    // for (std::size_t i{}; i < operator_table.get_binary_rules(node.op).size(); ++i)
-    for (const auto &rule : operator_table.get_binary_rules(node.op))
+    bool success{};
+    for (const BinaryOperator &rule : operator_table.get_binary_rules(node.op))
     {
-        std::println("{}", rule);
+        if ((*lhs == *rule.lhs) && (*rhs == *rule.rhs))
+        {
+            last_inferred_type = rule.result;
+            success = true;
+            break;
+        }
     }
+
+    if (!success)
+        // @todo @important Design a diagnostics system for debugging during semantic analysis
+        throw std::runtime_error(std::format("Type mismatch on the operator: {}, with the types: {} (left) and {} (right)",
+                                 binary_op_to_string(node.op),
+                                 type_to_string(lhs), type_to_string(rhs)));
 }
 
 void TypeChecker::visit(UnaryExpr &node)
