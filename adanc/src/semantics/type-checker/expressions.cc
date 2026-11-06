@@ -1,10 +1,20 @@
 #include <format>
 #include <stdexcept>
 
+#include "ast.hh"
 #include "type-checker.hh"
 #include "operator-table.hh"
 #include "ast-helpers.hh"
 #include "type-helpers.hh"
+
+void TypeChecker::visit(CallExpr &node)
+{
+    Symbol *callee = symbol_table.lookup(node.callee);
+    if (!callee)
+        throw std::runtime_error(std::format("Attempted to call an unknown function: {}", node.callee));
+
+    // @todo Stuff
+}
 
 /**
  *
@@ -12,10 +22,6 @@
  *  contains a binary operator (i.e., "+").
  *
  * "local x = 1 + 2" <-- "1 + 2" is the binary expression.
- *
- * Goal:
- * - Infer both the left and right-side operands. ✅
- * - Ensure both sides are compatible with one another. ❌
  */
 void TypeChecker::visit(BinaryExpr &node)
 {
@@ -40,6 +46,15 @@ void TypeChecker::visit(BinaryExpr &node)
                                  type_to_string(lhs), type_to_string(rhs)));
 }
 
+void TypeChecker::visit(Identifier &node)
+{
+    Symbol *symbol = symbol_table.lookup(node.name);
+    if (!symbol)
+        throw std::runtime_error(std::format("Unknown identifier: {}", node.name));
+
+    last_inferred_type = symbol->type;
+}
+
 void TypeChecker::visit(UnaryExpr &node)
 {
     TypePtr operand = infer(*node.operand);
@@ -60,13 +75,4 @@ void TypeChecker::visit(UnaryExpr &node)
         throw std::runtime_error(std::format("Type mismatch on the unary operator: {}, with the type: {}",
                                  op_to_string(node.op),
                                  type_to_string(operand)));
-}
-
-void TypeChecker::visit(Identifier &node)
-{
-    Symbol *symbol = symbol_table.lookup(node.name);
-    if (!symbol)
-        throw std::runtime_error(std::format("Unknown identifier: {}", node.name));
-
-    last_inferred_type = symbol->type;
 }
