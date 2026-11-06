@@ -35,8 +35,8 @@ void TypeChecker::visit(BinaryExpr &node)
 
     if (!success)
         // @todo @important Design a diagnostics system for debugging during semantic analysis
-        throw std::runtime_error(std::format("Type mismatch on the operator: {}, with the types: {} (left) and {} (right)",
-                                 binary_op_to_string(node.op),
+        throw std::runtime_error(std::format("Type mismatch on the binary operator: {}, with the types: {} (left) and {} (right)",
+                                 op_to_string(node.op),
                                  type_to_string(lhs), type_to_string(rhs)));
 }
 
@@ -44,7 +44,22 @@ void TypeChecker::visit(UnaryExpr &node)
 {
     TypePtr operand = infer(*node.operand);
 
-    // @todo do later
+    bool success{};
+    for (const UnaryOperator &rule : operator_table.get_unary_rules(node.op))
+    {
+        if ((*operand == *rule.operand))
+        {
+            last_inferred_type = rule.result;
+            success = true;
+            break;
+        }
+    }
+
+    if (!success)
+        // @todo @important Design a diagnostics system for debugging during semantic analysis
+        throw std::runtime_error(std::format("Type mismatch on the unary operator: {}, with the type: {}",
+                                 op_to_string(node.op),
+                                 type_to_string(operand)));
 }
 
 void TypeChecker::visit(Identifier &node)

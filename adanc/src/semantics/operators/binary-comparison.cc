@@ -1,5 +1,6 @@
 #include "operator-table.hh"
 #include "ast.hh"
+#include "types.hh"
 
 void register_binary_comparison(OperatorTable &table)
 {
@@ -26,5 +27,13 @@ void register_binary_comparison(OperatorTable &table)
         table.add_operator(BinaryOperator{make_float(), BinaryOp::LessEqual, make_int(), make_bool()});
         table.add_operator(BinaryOperator{make_int(), BinaryOp::LessEqual, make_float(), make_bool()});
         table.add_operator(BinaryOperator{make_float(), BinaryOp::LessEqual, make_float(), make_bool()});
+    }
+    {
+        table.add_operator(BinaryOperator{make_int(), BinaryOp::EqualEqual, make_int(), make_bool()});
+        table.add_operator(BinaryOperator{make_float(), BinaryOp::EqualEqual, make_int(), make_bool()});
+        table.add_operator(BinaryOperator{make_int(), BinaryOp::EqualEqual, make_float(), make_bool()});
+        table.add_operator(BinaryOperator{make_float(), BinaryOp::EqualEqual, make_float(), make_bool()});
+        table.add_operator(BinaryOperator{make_bool(), BinaryOp::EqualEqual, make_bool(), make_bool()});
+        table.add_operator(BinaryOperator{make_string(), BinaryOp::EqualEqual, make_string(), make_bool()});
     }
 }
