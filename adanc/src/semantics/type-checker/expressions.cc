@@ -6,14 +6,31 @@
 #include "operator-table.hh"
 #include "ast-helpers.hh"
 #include "type-helpers.hh"
+#include "types.hh"
 
 void TypeChecker::visit(CallExpr &node)
 {
     Symbol *callee = symbol_table.lookup(node.callee);
     if (!callee)
+        // @todo @important Design a diagnostics system for debugging during semantic analysis
         throw std::runtime_error(std::format("Attempted to call an unknown function: {}", node.callee));
 
-    // @todo Stuff
+    TypePtr callee_t = prune(callee->type);
+    if (callee_t->kind != TypeKind::Function)
+        // @todo @important Design a diagnostics system for debugging during semantic analysis
+        throw std::runtime_error(std::format("Attempted to call something that isn't a function"));
+
+    if (node.args.size() != callee_t->params.size())
+        // @todo @important Design a diagnostics system for debugging during semantic analysis
+        throw std::runtime_error(std::format("Function: \"{}\" expects {} argument(s), but got {}",
+                                 node.callee, callee_t->params.size(), node.args.size()));
+
+    for (std::size_t i{}; i < callee_t->params.size(); ++i)
+    {
+        unify(infer(*node.args[i]), callee_t->params[i]);
+    }
+
+    last_inferred_type = callee_t->result;
 }
 
 /**
