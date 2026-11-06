@@ -5,6 +5,7 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <print>
 
 #include "types.hh"
 #include "type-helpers.hh"
@@ -32,4 +33,17 @@ public:
     void declare(const Symbol &symbol);
 
     Symbol *lookup(std::string_view name);
+
+    // @todo Remember to remove this after everything is finished
+    inline void print_symbols()
+    {
+        for (auto item = scopes.rbegin(); item != scopes.rend(); ++item)
+        {
+            const auto &curr = *item;
+            for (const auto &[name, symbol] : curr)
+            {
+                std::println("Key: {}, Symbol: {}", name, symbol.to_string());
+            }
+        }
+    }
 };
