@@ -115,6 +115,7 @@ enum class BinaryOp : uint8_t
     LessEqual,
     Equal,
     EqualEqual,
+    NotEqualEqual,
     PlusAssign,
     MinusAssign,
     MultiplyAssign,
@@ -125,6 +126,7 @@ enum class BinaryOp : uint8_t
 enum class UnaryOp : uint8_t
 {
     Minus,
+    Not,
     Hashtag,
     Increment,
     Decrement,
