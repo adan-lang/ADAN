@@ -8,6 +8,18 @@
 #include "type-helpers.hh"
 #include "types.hh"
 
+void TypeChecker::visit(ArrayIndex &node)
+{
+    TypePtr array = infer(*node.array);
+    TypePtr array_generic = make_array(make_var());
+    unify(array, array_generic);
+
+    TypePtr index = infer(*node.index);
+    unify(index, make_int());
+
+    last_inferred_type = array_generic->element;
+}
+
 void TypeChecker::visit(CallExpr &node)
 {
     Symbol *callee = symbol_table.lookup(node.callee);
