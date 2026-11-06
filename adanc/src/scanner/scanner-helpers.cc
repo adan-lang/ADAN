@@ -70,6 +70,8 @@ std::string_view token_kind_name(const TokenKind kind)
         return "Tick";
     case TokenKind::Comma:
         return "Comma";
+    case TokenKind::Not:
+        return "Not";
     case TokenKind::Arrow:
         return "Arrow";
     case TokenKind::BackArrow:
@@ -90,6 +92,8 @@ std::string_view token_kind_name(const TokenKind kind)
         return "ModuloAssign";
     case TokenKind::EqualEqual:
         return "EqualEqual";
+    case TokenKind::NotEqualEqual:
+        return "NotEqualEqual";
     case TokenKind::GreaterEqual:
         return "GreaterEqual";
     case TokenKind::LessEqual:
