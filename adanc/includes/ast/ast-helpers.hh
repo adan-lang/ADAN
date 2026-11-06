@@ -1,6 +1,6 @@
 #include "ast.hh"
 
-inline std::string_view binary_op_to_string(BinaryOp op)
+inline std::string_view op_to_string(BinaryOp op)
 {
     switch (op)
     {
@@ -16,6 +16,7 @@ inline std::string_view binary_op_to_string(BinaryOp op)
     case BinaryOp::LessEqual: return "<=";
     case BinaryOp::Equal: return "=";
     case BinaryOp::EqualEqual: return "==";
+    case BinaryOp::NotEqualEqual: return "!==";
     case BinaryOp::PlusAssign: return "+=";
     case BinaryOp::MinusAssign: return "-=";
     case BinaryOp::MultiplyAssign: return "*=";
@@ -23,5 +24,19 @@ inline std::string_view binary_op_to_string(BinaryOp op)
     case BinaryOp::ModuloAssign: return "%=";
     }
 
-    return "?";
+    return "[??]";
+}
+
+inline std::string_view op_to_string(UnaryOp op)
+{
+    switch (op)
+    {
+    case UnaryOp::Minus: return "-";
+    case UnaryOp::Not: return "!";
+    case UnaryOp::Hashtag: return "#";
+    case UnaryOp::Increment: return "++";
+    case UnaryOp::Decrement: return "--";
+    }
+
+    return "[??]";
 }
