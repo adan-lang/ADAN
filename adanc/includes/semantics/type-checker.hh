@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ast-visitor.hh"
+#include "ast.hh"
 #include "operator-table.hh"
 #include "scope-manager.hh"
 #include "types.hh"
@@ -30,6 +31,7 @@ public:
     void visit(InterpolatedString &node) override;
     void visit(ArrayLiteral &node) override;
 
+    void visit(CallExpr &node) override;
     void visit(BinaryExpr &node) override;
     void visit(Identifier &node) override;
     void visit(UnaryExpr &node) override;
