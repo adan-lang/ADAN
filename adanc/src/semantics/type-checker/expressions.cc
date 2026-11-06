@@ -74,9 +74,16 @@ void TypeChecker::visit(Identifier &node)
 
 void TypeChecker::visit(UnaryExpr &node)
 {
-    TypePtr operand = infer(*node.operand);
-
     bool success{};
+    
+    TypePtr operand = infer(*node.operand);
+    if (node.op == UnaryOp::Hashtag)
+    {
+        unify(operand, make_array(make_var()));
+        last_inferred_type = make_int();
+        return;
+    }
+
     for (const UnaryOperator &rule : operator_table.get_unary_rules(node.op))
     {
         if ((*operand == *rule.operand))
