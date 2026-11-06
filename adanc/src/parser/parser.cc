@@ -75,7 +75,7 @@ std::unique_ptr<Expr> Parser::parse_comparison()
 
   while (matches(TokenKind::GreaterThan, TokenKind::GreaterEqual,
                  TokenKind::LessThan, TokenKind::LessEqual,
-                 TokenKind::EqualEqual))
+                 TokenKind::EqualEqual, TokenKind::NotEqualEqual))
   {
     BinaryOp op;
     switch (current_token.kind)
@@ -91,6 +91,9 @@ std::unique_ptr<Expr> Parser::parse_comparison()
       break;
     case TokenKind::LessEqual:
       op = BinaryOp::LessEqual;
+      break;
+    case TokenKind::NotEqualEqual:
+      op = BinaryOp::NotEqualEqual;
       break;
     default:
       op = BinaryOp::EqualEqual;
@@ -157,6 +160,9 @@ std::unique_ptr<Expr> Parser::parse_unary()
   {
   case TokenKind::Minus:
     op = UnaryOp::Minus;
+    break;
+  case TokenKind::Not:
+    op = UnaryOp::Not;
     break;
   case TokenKind::Hashtag:
     op = UnaryOp::Hashtag;
