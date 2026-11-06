@@ -27,9 +27,9 @@
 
 ; Returns          --> "<- <value>"                                      <-- Note, "<-" is shared between this and providing arguments to a function call.
 
-; Binary Operators --> ("+", "-", "*", "/", "%", ">", "<", "=" and their "=" variants, i.e., "+=", or "==")
+; Binary Operators --> ("+", "-", "*", "/", "%", ">", "<", "!", "=" and their "=" variants, i.e., "+=", or "==" and "!==")
 
-; Unary Operators  --> "-", "#", "++", "--"
+; Unary Operators  --> "-", "#", "++", "--", "!"
 
 ; Strings          --> "Hello", 'world!', `${<var>} was interpolated!`   <-- Note, you cannot use " or ' for interpolation.
 
