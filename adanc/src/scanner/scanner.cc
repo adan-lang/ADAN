@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "scanner.hh"
+#include "tokens.hh"
 
 Token Lexer::lex()
 {
@@ -164,13 +165,19 @@ Token Lexer::lex()
         advance();
         return Token{TokenKind::Eof, ""};
 
-        // case '`':
-        //     advance();
-        //     return Token{TokenKind::Tick, "`"};
-
     case ',':
         advance();
         return Token{TokenKind::Comma, ","};
+
+    case '!':
+        if (peek(1) == '=' && peek(2) == '=')
+        {
+            advance();
+            advance();
+            return Token{TokenKind::NotEqualEqual, "!=="};
+        }
+        advance();
+        return Token{TokenKind::Not, "!"};
 
     default:
         if (std::isdigit(curr))

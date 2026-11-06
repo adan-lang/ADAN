@@ -44,6 +44,7 @@ enum class TokenKind : std::uint8_t
     Ellipsis,    // ...
     Tick,        // `
     Comma,       // ,
+    Not,         // !
 
     // Variant Symbols
     Arrow,          // ->
@@ -56,6 +57,7 @@ enum class TokenKind : std::uint8_t
     DivideAssign,   // /=
     ModuloAssign,   // %=
     EqualEqual,     // ==
+    NotEqualEqual,  // !==
     GreaterEqual,   // >=
     LessEqual,      // <=
 
