@@ -23,7 +23,22 @@ void TypeChecker::visit(ExprStmt &node)
 void TypeChecker::visit(IfStmt &node)
 {
     unify(infer(*node.condition), make_bool());
-    check(node.body);
+
+    try
+    {
+        DeclarationCollector collector{symbol_table};
+        for (const auto &stmt : node.body.stmts)
+            stmt->accept(collector);
+        
+        check(node.body);
+    }
+    catch (...)
+    {
+        symbol_table.exit_scope();
+        throw;
+    }
+
+    symbol_table.exit_scope();
 }
 
 void TypeChecker::visit(NumericForStmt &node)
