@@ -8,6 +8,7 @@
 #include "declaration-collector.hh"
 #include "scope-manager.hh"
 #include "type-checker.hh"
+#include "built-ins.hh"
 
 static constexpr std::string COMPILER_VERSION = "version-1.1.6";
 
@@ -77,6 +78,8 @@ int main(const int argc, char *argv[])
 
     ScopeManager symbol_table;
     symbol_table.enter_scope();
+
+    declare_builtins(symbol_table);
 
     DeclarationCollector collector{symbol_table};
     for (std::size_t i{}; i < program.stmts.size(); ++i)

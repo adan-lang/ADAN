@@ -23,12 +23,10 @@ public:
     virtual void visit(ReturnStmt &) {}
     virtual void visit(ExprStmt &) {}
     virtual void visit(IfStmt &) {}
-    virtual void visit(NumericForStmt &) {}     // <-- TODO
+    virtual void visit(NumericForStmt &) {} 
     virtual void visit(ForInStmt &) {}
-    virtual void visit(WhileStmt &) {}          // <-- TODO
+    virtual void visit(WhileStmt &) {}
 
     virtual void visit(LocalDecl &) {}
     virtual void visit(FuncDecl &) {}
-
-    virtual void visit(Block &) {}              // <-- TODO
 };

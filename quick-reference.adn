@@ -31,6 +31,8 @@
 
 ; Unary Operators  --> "-", "#", "++", "--", "!"
 
+; Boolean Literals --> true, false
+
 ; Strings          --> "Hello", 'world!', `${<var>} was interpolated!`   <-- Note, you cannot use " or ' for interpolation.
 
 ; Arrays           --> "[<value>, ...]"                                  <-- Note, arrays are dynamically-sized and homogeneous. The element type is inferred

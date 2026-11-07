@@ -40,7 +40,9 @@ public:
     void visit(ReturnStmt &node) override;
     void visit(ExprStmt &node) override;
     void visit(IfStmt &node) override;
+    void visit(NumericForStmt &node) override;
     void visit(ForInStmt &node) override;
+    void visit(WhileStmt &node) override;
 
     void visit(LocalDecl &node) override;
     void visit(FuncDecl &node) override;

@@ -26,18 +26,73 @@ void TypeChecker::visit(IfStmt &node)
     check(node.body);
 }
 
+void TypeChecker::visit(NumericForStmt &node)
+{
+    TypePtr start = infer(*node.start);
+    TypePtr stop = infer(*node.stop);
+    TypePtr step = infer(*node.step);
+
+    unify(start, make_int());
+    unify(stop, make_int());
+    unify(step, make_int());
+
+    symbol_table.enter_scope();
+    
+    try
+    {
+        symbol_table.declare(Symbol{node.name, make_int()});
+
+        DeclarationCollector collector{symbol_table};
+        for (const auto &stmt : node.body.stmts)
+            stmt->accept(collector);
+        
+        check(node.body);
+    }
+    catch (...)
+    {
+        symbol_table.exit_scope();
+        throw;
+    }
+
+    symbol_table.exit_scope();
+}
+
 void TypeChecker::visit(ForInStmt &node)
 {
     TypePtr array = infer(*node.array);
     TypePtr array_generic = make_array(make_var());
-    unify(array, array_generic);
 
+    unify(array, array_generic);
     symbol_table.enter_scope();
     
     try
     {
         symbol_table.declare(Symbol{node.var, array_generic->element});
 
+        DeclarationCollector collector{symbol_table};
+        for (const auto &stmt : node.body.stmts)
+            stmt->accept(collector);
+        
+        check(node.body);
+    }
+    catch (...)
+    {
+        symbol_table.exit_scope();
+        throw;
+    }
+
+    symbol_table.exit_scope();
+}
+
+void TypeChecker::visit(WhileStmt &node)
+{
+    TypePtr condition = infer(*node.condition);
+
+    unify(condition, make_bool());
+    symbol_table.enter_scope();
+    
+    try
+    {
         DeclarationCollector collector{symbol_table};
         for (const auto &stmt : node.body.stmts)
             stmt->accept(collector);
