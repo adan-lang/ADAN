@@ -38,6 +38,7 @@ public:
     void visit(UnaryExpr &node) override;
 
     void visit(ReturnStmt &node) override;
+    void visit(ExprStmt &node) override;
     void visit(IfStmt &node) override;
     void visit(ForInStmt &node) override;
 

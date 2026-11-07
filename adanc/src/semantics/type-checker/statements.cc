@@ -15,6 +15,11 @@ void TypeChecker::visit(ReturnStmt &node)
     unify(curr_func_result_type, return_type);
 }
 
+void TypeChecker::visit(ExprStmt &node)
+{
+    TypePtr expr = infer(*node.expr);
+}
+
 void TypeChecker::visit(IfStmt &node)
 {
     unify(infer(*node.condition), make_bool());
