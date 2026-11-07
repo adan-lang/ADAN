@@ -22,7 +22,7 @@ public:
 
     virtual void visit(ReturnStmt &) {}
     virtual void visit(ExprStmt &) {}           // <-- TODO
-    virtual void visit(IfStmt &) {}             // <-- TODO
+    virtual void visit(IfStmt &) {}
     virtual void visit(NumericForStmt &) {}     // <-- TODO
     virtual void visit(ForInStmt &) {}          // <-- TODO
     virtual void visit(WhileStmt &) {}          // <-- TODO

@@ -2,6 +2,7 @@
 
 #include "declaration-collector.hh"
 #include "type-checker.hh"
+#include "types.hh"
 
 void TypeChecker::visit(ReturnStmt &node)
 {
@@ -11,6 +12,12 @@ void TypeChecker::visit(ReturnStmt &node)
 
     const TypePtr return_type = node.value ? infer(*node.value) : make_void();
     unify(curr_func_result_type, return_type);
+}
+
+void TypeChecker::visit(IfStmt &node)
+{
+    unify(infer(*node.condition), make_bool());
+    check(node.body);
 }
 
 void TypeChecker::visit(LocalDecl &node)
