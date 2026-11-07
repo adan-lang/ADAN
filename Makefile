@@ -1,6 +1,6 @@
-.PHONY: run build test-semantic
+.PHONY: run build
 
-FILE ?= ./test/grades-calc.adn
+FILE ?= ./test/checkout.adn
 BUILD_DIR ?= ./build/ninja
 BUILD_LOG ?= /tmp/adan_build.log
 
