@@ -363,8 +363,9 @@ std::unique_ptr<Expr> Parser::parse_primary()
 
   default:
     // @todo @important Design a diagnostics system for debugging during parsing
-    throw std::runtime_error(std::format("Expected primary, got {}",
-                                         token_kind_name(current_token.kind)));
+    throw std::runtime_error(std::format("Expected primary at {}:{}, got {} ('{}')",
+                       current_token.line, current_token.column,
+                       token_kind_name(current_token.kind), current_token.lexeme));
   }
 }
 

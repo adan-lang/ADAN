@@ -21,10 +21,15 @@ class Lexer
 {
     std::string_view source{};
     std::size_t position{};
+    int line{1};
+    int column{1};
+    int token_line{1};
+    int token_column{1};
     std::queue<Token> pending{};
 
 public:
-    explicit Lexer(std::string_view source_text) : source{source_text} {}
+    explicit Lexer(std::string_view source_text, int start_line = 1, int start_column = 1)
+        : source{source_text}, line{start_line}, column{start_column} {}
 
     Token next()
     {
@@ -36,7 +41,13 @@ public:
             return token;
         }
 
-        return lex();
+        Token token = lex();
+        if (token.line == 0 && token.column == 0)
+        {
+            token.line = token_line;
+            token.column = token_column;
+        }
+        return token;
     }
 
 private:
@@ -45,7 +56,15 @@ private:
     void advance()
     {
         if (!is_eof())
-            position++;
+        {
+            if (source[position++] == '\n')
+            {
+                ++line;
+                column = 1;
+            }
+            else
+                ++column;
+        }
     }
 
     [[nodiscard]] char peek(const std::size_t offset = 0) const

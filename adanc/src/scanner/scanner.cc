@@ -11,6 +11,8 @@ Token Lexer::lex()
 {
     skip_spaces();
     skip_comments();
+    token_line = line;
+    token_column = column;
 
     switch (const auto curr{peek()}; curr)
     {
@@ -174,6 +176,7 @@ Token Lexer::lex()
         {
             advance();
             advance();
+            advance();
             return Token{TokenKind::NotEqualEqual, "!=="};
         }
         advance();
@@ -244,6 +247,8 @@ Token Lexer::lex()
             advance();
 
             std::string segment;
+            int segment_line{line};
+            int segment_column{column};
             std::vector<char> stack{'`'};
 
             while (!is_eof() && !stack.empty())
@@ -275,6 +280,8 @@ Token Lexer::lex()
                             segment.clear();
 
                         const auto nested_start{position};
+                        const int nested_line{line};
+                        const int nested_column{column};
                         advance();
 
                         // @todo kill myself
@@ -321,7 +328,7 @@ Token Lexer::lex()
 
                         const std::string nested{source.substr(nested_start, position - nested_start)};
 
-                        Lexer nested_lexer(nested);
+                        Lexer nested_lexer(nested, nested_line, nested_column);
 
                         auto t = nested_lexer.next();
                         while (t.kind != TokenKind::Eof)
@@ -335,14 +342,18 @@ Token Lexer::lex()
                 {
                     if (!segment.empty())
                     {
-                        pending.push(Token{TokenKind::TemplateString, segment});
+                        pending.push(Token{TokenKind::TemplateString, segment, segment_line, segment_column});
                         segment.clear();
                     }
 
+                    const int interpolation_line{line};
+                    const int interpolation_column{column};
                     advance();
                     advance();
 
-                    pending.push(Token{TokenKind::InterpolateStart, "${"});
+                    pending.push(Token{TokenKind::InterpolateStart, "${", interpolation_line, interpolation_column});
+                    segment_line = line;
+                    segment_column = column;
                     stack.push_back('{');
                 }
                 else if (c == '{' && stack.back() == '{')
@@ -371,7 +382,7 @@ Token Lexer::lex()
 
                         if (!expr.empty())
                         {
-                            Lexer inter_lexer(expr);
+                            Lexer inter_lexer(expr, segment_line, segment_column);
 
                             auto next_token{inter_lexer.next()};
                             while (next_token.kind != TokenKind::Eof)
@@ -381,8 +392,10 @@ Token Lexer::lex()
                             }
                         }
 
-                        pending.push(Token{TokenKind::InterpolateEnd, "}"});
+                        pending.push(Token{TokenKind::InterpolateEnd, "}", line, column});
                         advance();
+                        segment_line = line;
+                        segment_column = column;
                     }
                     else
                     {
@@ -403,7 +416,7 @@ Token Lexer::lex()
             else
                 advance();
 
-            pending.push(Token{TokenKind::TemplateString, segment});
+            pending.push(Token{TokenKind::TemplateString, segment, segment_line, segment_column});
 
             auto first = pending.front();
             pending.pop();
@@ -416,7 +429,8 @@ Token Lexer::lex()
             if (value == source.substr(position, value.length()) &&
                 !isalnum(source[position + value.length()]))
             {
-                position += value.length();
+                for (std::size_t i{}; i < value.length(); ++i)
+                    advance();
                 return Token{key, std::string(value)};
             }
         }

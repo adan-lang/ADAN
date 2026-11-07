@@ -40,8 +40,9 @@ private:
     {
       // @todo @important Design a diagnostics system for debugging during
       // parsing
-      throw std::runtime_error(std::format("Expected {}, got {}", token_kind_name(kind),
-                               token_kind_name(current_token.kind)));
+      throw std::runtime_error(std::format("Expected {} at {}:{}, got {} ('{}')",
+               token_kind_name(kind), current_token.line, current_token.column,
+               token_kind_name(current_token.kind), current_token.lexeme));
     }
 
     return advance();
