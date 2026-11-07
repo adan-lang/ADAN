@@ -1,5 +1,6 @@
 #include <stdexcept>
 
+#include "ast.hh"
 #include "declaration-collector.hh"
 #include "type-checker.hh"
 #include "types.hh"
@@ -18,6 +19,33 @@ void TypeChecker::visit(IfStmt &node)
 {
     unify(infer(*node.condition), make_bool());
     check(node.body);
+}
+
+void TypeChecker::visit(ForInStmt &node)
+{
+    TypePtr array = infer(*node.array);
+    TypePtr array_generic = make_array(make_var());
+    unify(array, array_generic);
+
+    symbol_table.enter_scope();
+    
+    try
+    {
+        symbol_table.declare(Symbol{node.var, array_generic->element});
+
+        DeclarationCollector collector{symbol_table};
+        for (const auto &stmt : node.body.stmts)
+            stmt->accept(collector);
+        
+        check(node.body);
+    }
+    catch (...)
+    {
+        symbol_table.exit_scope();
+        throw;
+    }
+
+    symbol_table.exit_scope();
 }
 
 void TypeChecker::visit(LocalDecl &node)

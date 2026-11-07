@@ -24,7 +24,7 @@ public:
     virtual void visit(ExprStmt &) {}           // <-- TODO
     virtual void visit(IfStmt &) {}
     virtual void visit(NumericForStmt &) {}     // <-- TODO
-    virtual void visit(ForInStmt &) {}          // <-- TODO
+    virtual void visit(ForInStmt &) {}
     virtual void visit(WhileStmt &) {}          // <-- TODO
 
     virtual void visit(LocalDecl &) {}
