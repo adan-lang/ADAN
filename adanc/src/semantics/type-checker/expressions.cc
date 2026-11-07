@@ -58,6 +58,19 @@ void TypeChecker::visit(BinaryExpr &node)
     TypePtr rhs = infer(*node.rhs);
 
     bool success{};
+    if (node.op == BinaryOp::Equal)
+    {
+        if ((dynamic_cast<Identifier*>(node.lhs.get()) != nullptr) ||
+            (dynamic_cast<ArrayIndex*>(node.lhs.get()) != nullptr))
+        {
+            unify(lhs, rhs);
+            last_inferred_type = lhs;
+            return;
+        }
+
+        throw std::runtime_error("The left side of an assignment must be a variable or array index");
+    }
+
     for (const BinaryOperator &rule : operator_table.get_binary_rules(node.op))
     {
         if ((*lhs == *rule.lhs) && (*rhs == *rule.rhs))
