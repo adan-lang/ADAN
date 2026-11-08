@@ -24,6 +24,8 @@ void TypeChecker::visit(IfStmt &node)
 {
     unify(infer(*node.condition), make_bool());
 
+    symbol_table.enter_scope();
+
     try
     {
         DeclarationCollector collector{symbol_table};
