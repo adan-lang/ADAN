@@ -1,4 +1,5 @@
 #include <format>
+#include <print>
 #include <stdexcept>
 
 #include "ast.hh"
@@ -57,6 +58,8 @@ void TypeChecker::visit(BinaryExpr &node)
     TypePtr lhs = infer(*node.lhs);
     TypePtr rhs = infer(*node.rhs);
 
+    // std::println("{}", type_to_string(rhs));
+
     bool success{};
     if (node.op == BinaryOp::Equal)
     {
@@ -79,6 +82,11 @@ void TypeChecker::visit(BinaryExpr &node)
             success = true;
             break;
         }
+    }
+
+    if (prune(rhs)->kind == TypeKind::Var)
+    {
+        std::println("Right-hand side is an unresolved variable");
     }
 
     if (!success)
