@@ -1,3 +1,7 @@
 for i = 1, 10, 1 {
-    print <- ("Hello, world!")
+    print <- ("Hello, world! (With a step!)")
+}
+
+for i = 1, 10 {
+    print <- ("Hello, world! (Without a step!)")
 }
