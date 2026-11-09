@@ -1,12 +1,12 @@
 local array = [1.2, 2.3, 3.4]
 
 function add -> (array) {
-    local result = 0            ; Int
-    for element in array {      ; for t7 in Array<t7>
-        result += element       ; Int += t7
+    local result = 0
+    for element in array {
+        result += element
     }
 
-    <- result                   ; Int
+    <- result
 }
 
 add <- (array)
