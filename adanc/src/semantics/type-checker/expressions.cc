@@ -46,13 +46,6 @@ void TypeChecker::visit(CallExpr &node)
     last_inferred_type = callee_t->result;
 }
 
-/**
- *
- * A binary expression (BinaryExpr) is just an expression that
- *  contains a binary operator (i.e., "+").
- *
- * "local x = 1 + 2" <-- "1 + 2" is the binary expression.
- */
 void TypeChecker::visit(BinaryExpr &node)
 {
     TypePtr lhs = infer(*node.lhs);
