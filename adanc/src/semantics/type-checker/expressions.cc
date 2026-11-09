@@ -8,6 +8,21 @@
 #include "type-helpers.hh"
 #include "types.hh"
 
+static bool is_compound_assignment(BinaryOp op)
+{
+    switch (op)
+    {
+    case BinaryOp::PlusAssign:
+    case BinaryOp::MinusAssign:
+    case BinaryOp::MultiplyAssign:
+    case BinaryOp::DivideAssign:
+    case BinaryOp::ModuloAssign:
+        return true;
+    default:
+        return false;
+    }
+}
+
 static bool is_mutable_lvalue(Expr &expr)
 {
     return dynamic_cast<Identifier *>(&expr) != nullptr ||
@@ -115,20 +130,7 @@ void TypeChecker::visit(BinaryExpr &node)
         throw std::runtime_error("The left side of an assignment must be a variable or array index");
     }
 
-    bool compound_assignment{};
-    switch (node.op)
-    {
-    case BinaryOp::PlusAssign:
-    case BinaryOp::MinusAssign:
-    case BinaryOp::MultiplyAssign:
-    case BinaryOp::DivideAssign:
-    case BinaryOp::ModuloAssign:
-        compound_assignment = true;
-        return;
-    default:
-        return;
-    }
-
+    const bool compound_assignment = is_compound_assignment(node.op);
     if (compound_assignment && !is_mutable_lvalue(*node.lhs))
         // @todo @important Design a diagnostics system for debugging during semantic analysis
         throw std::runtime_error("The left side of a compound assignment must be a variable or array index");
