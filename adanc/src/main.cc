@@ -10,7 +10,7 @@
 #include "type-checker.hh"
 #include "built-ins.hh"
 
-static constexpr std::string COMPILER_VERSION = "version-1.1.6";
+static constexpr std::string COMPILER_VERSION = "version-1.2.7";
 
 static inline void show_main_message()
 {
