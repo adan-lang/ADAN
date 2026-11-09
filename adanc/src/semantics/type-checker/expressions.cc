@@ -117,6 +117,7 @@ void TypeChecker::visit(BinaryExpr &node)
 {
     TypePtr lhs = infer(*node.lhs);
     TypePtr rhs = infer(*node.rhs);
+
     if (node.op == BinaryOp::Equal)
     {
         if (is_mutable_lvalue(*node.lhs))
@@ -146,6 +147,7 @@ void TypeChecker::visit(BinaryExpr &node)
     if (matches.size() == 1)
     {
         const BinaryOperator &rule = matches.front();
+        
         unify(lhs, rule.lhs);
         unify(rhs, rule.rhs);
 
