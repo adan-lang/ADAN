@@ -1,12 +1,11 @@
 .PHONY: run build
 
-FILE ?= ./test/checkout.adn
 BUILD_DIR ?= ./build/ninja
 BUILD_LOG ?= /tmp/adan_build.log
 
 run: build
 	@output_file=$$(mktemp) || { printf "Failed to create temporary output file\n" >&2; exit 1; }; \
-	$(BUILD_DIR)/ADAN "$(FILE)" > "$$output_file"; \
+	$(BUILD_DIR)/ADAN > "$$output_file"; \
 	exit_code=$$?; \
 	if [ -s "$$output_file" ]; then \
 	    printf "—————————————————————— Program's Output ——————————————————————\n\n"; \

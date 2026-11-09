@@ -27,7 +27,7 @@ static inline void show_main_message()
         "Support the development of ADAN by starring the\n"
         "repository over on GitHub!\n"
         "\n"
-        "  \u27a4  \033[1;3;34mhttps://github.adan.sh/\033[0m\n"
+        "  \u27a4  \033[1;3;34mhttps://git.adan.sh/\033[0m\n"
         "\n"
         "For reporting a bug, please create a new issue on GitHub."
         "\n");
