@@ -89,6 +89,7 @@ int main(const int argc, char *argv[])
 
     TypeChecker type_checker{symbol_table};
     type_checker.check(program);
+    type_checker.finalize();
 
     symbol_table.print_symbols();
 

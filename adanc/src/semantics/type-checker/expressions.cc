@@ -1,5 +1,4 @@
 #include <format>
-#include <print>
 #include <stdexcept>
 
 #include "ast.hh"
@@ -8,6 +7,59 @@
 #include "ast-helpers.hh"
 #include "type-helpers.hh"
 #include "types.hh"
+
+static bool is_mutable_lvalue(Expr &expr)
+{
+    return dynamic_cast<Identifier *>(&expr) != nullptr ||
+           dynamic_cast<ArrayIndex *>(&expr) != nullptr;
+}
+
+static bool rebind_compound_target(Expr &expr, TypePtr type, ScopeManager &symbol_table)
+{
+    if (auto *identifier = dynamic_cast<Identifier *>(&expr))
+    {
+        Symbol *symbol = symbol_table.lookup(identifier->name);
+        if (symbol)
+        {
+            symbol->type = std::move(type);
+            return true;
+        }
+        return false;
+    }
+
+    std::size_t array_depth{};
+    Expr *base = &expr;
+    while (auto *index = dynamic_cast<ArrayIndex *>(base))
+    {
+        ++array_depth;
+        base = index->array.get();
+    }
+
+    auto *identifier = dynamic_cast<Identifier *>(base);
+    if (!identifier || array_depth == 0)
+        return false;
+
+    Symbol *symbol = symbol_table.lookup(identifier->name);
+    if (!symbol)
+        return false;
+
+    for (std::size_t i{}; i < array_depth; ++i)
+        type = make_array(std::move(type));
+    symbol->type = std::move(type);
+    return true;
+}
+
+static std::vector<BinaryOperator> matching_binary_rules(OperatorTable &table, BinaryOp op, const TypePtr &lhs, const TypePtr &rhs, const TypePtr &result = {})
+{
+    std::vector<BinaryOperator> matches;
+    for (const BinaryOperator &rule : table.get_binary_rules(op))
+    {
+        if (type_can_match(lhs, rule.lhs) && type_can_match(rhs, rule.rhs) && (!result || type_can_match(result, rule.result)))
+            matches.emplace_back(rule);
+    }
+
+    return matches;
+}
 
 void TypeChecker::visit(ArrayIndex &node)
 {
@@ -50,49 +102,82 @@ void TypeChecker::visit(BinaryExpr &node)
 {
     TypePtr lhs = infer(*node.lhs);
     TypePtr rhs = infer(*node.rhs);
-
-    // std::println("{}", type_to_string(rhs));
-
-    bool success{};
     if (node.op == BinaryOp::Equal)
     {
-        if ((dynamic_cast<Identifier*>(node.lhs.get()) != nullptr) ||
-            (dynamic_cast<ArrayIndex*>(node.lhs.get()) != nullptr))
+        if (is_mutable_lvalue(*node.lhs))
         {
             unify(lhs, rhs);
             last_inferred_type = lhs;
             return;
         }
-
+        
+        // @todo @important Design a diagnostics system for debugging during semantic analysis
         throw std::runtime_error("The left side of an assignment must be a variable or array index");
     }
 
-    for (const BinaryOperator &rule : operator_table.get_binary_rules(node.op))
+    bool compound_assignment{};
+    switch (node.op)
     {
-        if ((*lhs == *rule.lhs) && (*rhs == *rule.rhs))
-        {
-            last_inferred_type = rule.result;
-            success = true;
-            break;
-        }
+    case BinaryOp::PlusAssign:
+    case BinaryOp::MinusAssign:
+    case BinaryOp::MultiplyAssign:
+    case BinaryOp::DivideAssign:
+    case BinaryOp::ModuloAssign:
+        compound_assignment = true;
+        return;
+    default:
+        return;
     }
 
-    if (prune(rhs)->kind == TypeKind::Var)
-    {
-        std::println("Right-hand side is an unresolved variable");
-    }
-
-    if (!success)
+    if (compound_assignment && !is_mutable_lvalue(*node.lhs))
         // @todo @important Design a diagnostics system for debugging during semantic analysis
+        throw std::runtime_error("The left side of a compound assignment must be a variable or array index");
+
+    const std::vector<BinaryOperator> matches = matching_binary_rules(operator_table, node.op, lhs, rhs);
+    if (matches.empty())
+    {
         throw std::runtime_error(std::format("Type mismatch on the binary operator: {}, with the types: {} (left) and {} (right)",
                                  op_to_string(node.op),
                                  type_to_string(lhs), type_to_string(rhs)));
+    }
+
+    if (matches.size() == 1)
+    {
+        const BinaryOperator &rule = matches.front();
+        unify(lhs, rule.lhs);
+        unify(rhs, rule.rhs);
+
+        if (compound_assignment)
+        {
+            const bool target_widenable = rebind_compound_target(*node.lhs, rule.result, symbol_table);
+            if (!target_widenable && !(*lhs == *rule.result))
+                // @todo @important Design a diagnostics system for debugging during semantic analysis
+                throw std::runtime_error("This compound assignment cannot widen its target type");
+        }
+
+        last_inferred_type = rule.result;
+        return;
+    }
+
+    TypePtr result = make_var();
+    
+    const bool target_widenable = compound_assignment ? rebind_compound_target(*node.lhs, result, symbol_table) : true;
+    pending_binary_operators.push_back(PendingBinaryOperator{
+        lhs,
+        node.op, 
+        rhs, 
+        result, 
+        target_widenable,
+    });
+
+    last_inferred_type = result;
 }
 
 void TypeChecker::visit(Identifier &node)
 {
     Symbol *symbol = symbol_table.lookup(node.name);
     if (!symbol)
+        // @todo @important Design a diagnostics system for debugging during semantic analysis
         throw std::runtime_error(std::format("Unknown identifier: {}", node.name));
 
     last_inferred_type = symbol->type;
@@ -100,8 +185,6 @@ void TypeChecker::visit(Identifier &node)
 
 void TypeChecker::visit(UnaryExpr &node)
 {
-    bool success{};
-    
     TypePtr operand = infer(*node.operand);
     if (node.op == UnaryOp::Hashtag)
     {
@@ -110,19 +193,27 @@ void TypeChecker::visit(UnaryExpr &node)
         return;
     }
 
+    std::vector<UnaryOperator> matches;
     for (const UnaryOperator &rule : operator_table.get_unary_rules(node.op))
     {
-        if ((*operand == *rule.operand))
-        {
-            last_inferred_type = rule.result;
-            success = true;
-            break;
-        }
+        if (type_can_match(operand, rule.operand))
+            matches.emplace_back(rule);
     }
 
-    if (!success)
+    if (matches.empty())
         // @todo @important Design a diagnostics system for debugging during semantic analysis
         throw std::runtime_error(std::format("Type mismatch on the unary operator: {}, with the type: {}",
                                  op_to_string(node.op),
                                  type_to_string(operand)));
+
+    if (matches.size() == 1)
+    {
+        unify(operand, matches.front().operand);
+        last_inferred_type = matches.front().result;
+        return;
+    }
+
+    TypePtr result = make_var();
+    pending_unary_operators.push_back(PendingUnaryOperator{operand, node.op, result});
+    last_inferred_type = result;
 }

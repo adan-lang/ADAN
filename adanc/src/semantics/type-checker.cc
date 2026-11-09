@@ -1,8 +1,11 @@
 #include <stdexcept>
 #include <string>
 #include <format>
+#include <vector>
 
+#include "ast-helpers.hh"
 #include "type-checker.hh"
+#include "type-helpers.hh"
 
 namespace
 {
@@ -57,4 +60,99 @@ void TypeChecker::check(Block &block)
 {
     for (const auto &stmt : block.stmts)
         check(*stmt);
+}
+
+void TypeChecker::finalize()
+{
+    resolve_pending_operators();
+}
+
+void TypeChecker::resolve_pending_operators()
+{
+    std::vector<bool> binary_resolved(pending_binary_operators.size());
+    std::vector<bool> unary_resolved(pending_unary_operators.size());
+
+    bool made_progress{};
+    do
+    {
+        made_progress = false;
+
+        for (std::size_t i{}; i < pending_binary_operators.size(); ++i)
+        {
+            if (binary_resolved[i])
+                continue;
+
+            const PendingBinaryOperator &pending = pending_binary_operators[i];
+            std::vector<BinaryOperator> matches;
+            for (const BinaryOperator &rule : operator_table.get_binary_rules(pending.op))
+            {
+                if (type_can_match(pending.lhs, rule.lhs) &&
+                    type_can_match(pending.rhs, rule.rhs) &&
+                    type_can_match(pending.result, rule.result))
+                    matches.emplace_back(rule);
+            }
+
+            if (matches.empty())
+                throw std::runtime_error(std::format("Type mismatch on the binary operator: {}, with the types: {} (left) and {} (right)",
+                                         op_to_string(pending.op),
+                                         type_to_string(pending.lhs), type_to_string(pending.rhs)));
+            if (matches.size() != 1)
+                continue;
+
+            const BinaryOperator &rule = matches.front();
+            unify(pending.lhs, rule.lhs);
+            unify(pending.rhs, rule.rhs);
+            unify(pending.result, rule.result);
+
+            if (!pending.target_widenable && !(*pending.lhs == *rule.result))
+                throw std::runtime_error("This compound assignment cannot widen its target type");
+
+            binary_resolved[i] = true;
+            made_progress = true;
+        }
+
+        for (std::size_t i{}; i < pending_unary_operators.size(); ++i)
+        {
+            if (unary_resolved[i])
+                continue;
+
+            const PendingUnaryOperator &pending = pending_unary_operators[i];
+            std::vector<UnaryOperator> matches;
+            for (const UnaryOperator &rule : operator_table.get_unary_rules(pending.op))
+            {
+                if (type_can_match(pending.operand, rule.operand) &&
+                    type_can_match(pending.result, rule.result))
+                    matches.emplace_back(rule);
+            }
+
+            if (matches.empty())
+                throw std::runtime_error(std::format("Type mismatch on the unary operator: {}, with the type: {}",
+                                         op_to_string(pending.op), type_to_string(pending.operand)));
+            if (matches.size() != 1)
+                continue;
+
+            const UnaryOperator &rule = matches.front();
+            unify(pending.operand, rule.operand);
+            unify(pending.result, rule.result);
+            unary_resolved[i] = true;
+            made_progress = true;
+        }
+    } while (made_progress);
+
+    for (std::size_t i{}; i < binary_resolved.size(); ++i)
+        if (!binary_resolved[i])
+        {
+            const PendingBinaryOperator &pending = pending_binary_operators[i];
+            throw std::runtime_error(std::format("Ambiguous binary operator: {}, with the types: {} (left) and {} (right)",
+                                     op_to_string(pending.op),
+                                     type_to_string(pending.lhs), type_to_string(pending.rhs)));
+        }
+
+    for (std::size_t i{}; i < unary_resolved.size(); ++i)
+        if (!unary_resolved[i])
+        {
+            const PendingUnaryOperator &pending = pending_unary_operators[i];
+            throw std::runtime_error(std::format("Ambiguous unary operator: {}, with the type: {}",
+                                     op_to_string(pending.op), type_to_string(pending.operand)));
+        }
 }

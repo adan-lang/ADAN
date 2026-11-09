@@ -42,6 +42,39 @@ inline bool occurs(const TypePtr &variable, const TypePtr &type)
     }
 }
 
+inline bool type_can_match(const TypePtr &actual, const TypePtr &expected)
+{
+    const TypePtr resolved_actual = prune(actual);
+    const TypePtr resolved_expected = prune(expected);
+
+    if (resolved_actual->kind == TypeKind::Var || resolved_expected->kind == TypeKind::Var)
+        return true;
+    if (resolved_actual->kind != resolved_expected->kind)
+        return false;
+
+    switch (resolved_actual->kind)
+    {
+    case TypeKind::Array:
+        return type_can_match(resolved_actual->element, resolved_expected->element);
+    case TypeKind::Function:
+        if (resolved_actual->params.size() != resolved_expected->params.size())
+            return false;
+        for (std::size_t i{}; i < resolved_actual->params.size(); ++i)
+            if (!type_can_match(resolved_actual->params[i], resolved_expected->params[i]))
+                return false;
+        return type_can_match(resolved_actual->result, resolved_expected->result);
+    case TypeKind::Int:
+    case TypeKind::Float:
+    case TypeKind::Bool:
+    case TypeKind::String:
+    case TypeKind::Void:
+    case TypeKind::Var:
+        return true;
+    }
+
+    return false;
+}
+
 inline std::string type_to_string(const TypePtr &type)
 {
     const TypePtr resolved = prune(type);
