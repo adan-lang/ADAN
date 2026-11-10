@@ -1,23 +1,20 @@
-#include <fast_float/fast_float.h>
 #include <cstdint>
+#include <fast_float/fast_float.h>
 #include <memory>
 #include <system_error>
 #include <utility>
 #include <vector>
 
 #include "parser.hh"
-#include "tokens.hh"
 #include "scanner-helpers.hh"
+#include "tokens.hh"
 
-Block Parser::parse_block()
-{
+Block Parser::parse_block() {
   expect(TokenKind::LBrace);
   Block block;
 
-  while (!matches(TokenKind::RBrace))
-  {
-    if (matches(TokenKind::Eof))
-    {
+  while (!matches(TokenKind::RBrace)) {
+    if (matches(TokenKind::Eof)) {
       report_error("Unterminated block: expected '}'");
     }
 
@@ -30,13 +27,11 @@ Block Parser::parse_block()
 
 // expressions
 
-std::unique_ptr<Expr> Parser::parse_expr()
-{
+std::unique_ptr<Expr> Parser::parse_expr() {
   auto lhs = parse_comparison();
 
   BinaryOp op;
-  switch (current_token.kind)
-  {
+  switch (current_token.kind) {
   case TokenKind::Equal:
     op = BinaryOp::Equal;
     break;
@@ -64,17 +59,14 @@ std::unique_ptr<Expr> Parser::parse_expr()
   return std::make_unique<BinaryExpr>(op, std::move(lhs), std::move(rhs));
 }
 
-std::unique_ptr<Expr> Parser::parse_comparison()
-{
+std::unique_ptr<Expr> Parser::parse_comparison() {
   auto lhs = parse_additive();
 
   while (matches(TokenKind::GreaterThan, TokenKind::GreaterEqual,
                  TokenKind::LessThan, TokenKind::LessEqual,
-                 TokenKind::EqualEqual, TokenKind::NotEqualEqual))
-  {
+                 TokenKind::EqualEqual, TokenKind::NotEqualEqual)) {
     BinaryOp op;
-    switch (current_token.kind)
-    {
+    switch (current_token.kind) {
     case TokenKind::GreaterThan:
       op = BinaryOp::GreaterThan;
       break;
@@ -103,12 +95,10 @@ std::unique_ptr<Expr> Parser::parse_comparison()
   return lhs;
 }
 
-std::unique_ptr<Expr> Parser::parse_additive()
-{
+std::unique_ptr<Expr> Parser::parse_additive() {
   auto lhs = parse_multiplicative();
 
-  while (matches(TokenKind::Plus, TokenKind::Minus))
-  {
+  while (matches(TokenKind::Plus, TokenKind::Minus)) {
     auto op = current_token.kind == TokenKind::Plus ? BinaryOp::Plus
                                                     : BinaryOp::Minus;
     advance();
@@ -120,15 +110,12 @@ std::unique_ptr<Expr> Parser::parse_additive()
   return lhs;
 }
 
-std::unique_ptr<Expr> Parser::parse_multiplicative()
-{
+std::unique_ptr<Expr> Parser::parse_multiplicative() {
   auto lhs = parse_unary();
 
-  while (matches(TokenKind::Multiply, TokenKind::Divide, TokenKind::Modulo))
-  {
+  while (matches(TokenKind::Multiply, TokenKind::Divide, TokenKind::Modulo)) {
     BinaryOp op;
-    switch (current_token.kind)
-    {
+    switch (current_token.kind) {
     case TokenKind::Multiply:
       op = BinaryOp::Multiply;
       break;
@@ -148,11 +135,9 @@ std::unique_ptr<Expr> Parser::parse_multiplicative()
   return lhs;
 }
 
-std::unique_ptr<Expr> Parser::parse_unary()
-{
+std::unique_ptr<Expr> Parser::parse_unary() {
   UnaryOp op;
-  switch (current_token.kind)
-  {
+  switch (current_token.kind) {
   case TokenKind::Minus:
     op = UnaryOp::Minus;
     break;
@@ -177,38 +162,33 @@ std::unique_ptr<Expr> Parser::parse_unary()
   return std::make_unique<UnaryExpr>(op, std::move(operand));
 }
 
-std::unique_ptr<Expr> Parser::parse_power()
-{
+std::unique_ptr<Expr> Parser::parse_power() {
   auto lhs = parse_postfix();
   if (!matches(TokenKind::Power))
     return lhs;
 
   advance();
   auto rhs = parse_unary();
-  return std::make_unique<BinaryExpr>(BinaryOp::Power, std::move(lhs), std::move(rhs));
+  return std::make_unique<BinaryExpr>(BinaryOp::Power, std::move(lhs),
+                                      std::move(rhs));
 }
 
-std::unique_ptr<Expr> Parser::parse_postfix()
-{
+std::unique_ptr<Expr> Parser::parse_postfix() {
   auto expression = parse_primary();
-  while (true)
-  {
-    if (matches(TokenKind::Increment, TokenKind::Decrement))
-    {
-      const auto op = current_token.kind == TokenKind::Increment ? UnaryOp::Increment
-                                                                 : UnaryOp::Decrement;
+  while (true) {
+    if (matches(TokenKind::Increment, TokenKind::Decrement)) {
+      const auto op = current_token.kind == TokenKind::Increment
+                          ? UnaryOp::Increment
+                          : UnaryOp::Decrement;
       advance();
       expression = std::make_unique<UnaryExpr>(op, std::move(expression), true);
-    }
-    else if (matches(TokenKind::LBracket))
-    {
+    } else if (matches(TokenKind::LBracket)) {
       advance();
       auto index = parse_expr();
       expect(TokenKind::RBracket);
-      expression = std::make_unique<ArrayIndex>(std::move(expression), std::move(index));
-    }
-    else
-    {
+      expression =
+          std::make_unique<ArrayIndex>(std::move(expression), std::move(index));
+    } else {
       break;
     }
   }
@@ -216,13 +196,11 @@ std::unique_ptr<Expr> Parser::parse_postfix()
   return expression;
 }
 
-std::unique_ptr<Expr> Parser::parse_array_literal()
-{
+std::unique_ptr<Expr> Parser::parse_array_literal() {
   expect(TokenKind::LBracket);
   std::vector<std::unique_ptr<Expr>> elements;
 
-  while (!matches(TokenKind::RBracket))
-  {
+  while (!matches(TokenKind::RBracket)) {
     if (matches(TokenKind::Eof))
       report_error("Unterminated array literal: expected ']'");
 
@@ -240,14 +218,11 @@ std::unique_ptr<Expr> Parser::parse_array_literal()
   return std::make_unique<ArrayLiteral>(std::move(elements));
 }
 
-std::unique_ptr<Expr> Parser::parse_template_string()
-{
+std::unique_ptr<Expr> Parser::parse_template_string() {
   std::vector<InterpolatedString::Part> parts;
 
-  while (matches(TokenKind::TemplateString, TokenKind::InterpolateStart))
-  {
-    if (matches(TokenKind::TemplateString))
-    {
+  while (matches(TokenKind::TemplateString, TokenKind::InterpolateStart)) {
+    if (matches(TokenKind::TemplateString)) {
       auto segment = advance();
       parts.emplace_back(std::move(segment.lexeme));
       continue;
@@ -262,19 +237,15 @@ std::unique_ptr<Expr> Parser::parse_template_string()
   return std::make_unique<InterpolatedString>(std::move(parts));
 }
 
-std::unique_ptr<Expr> Parser::parse_primary()
-{
-  switch (current_token.kind)
-  {
-  case TokenKind::Int:
-  {
+std::unique_ptr<Expr> Parser::parse_primary() {
+  switch (current_token.kind) {
+  case TokenKind::Int: {
     int64_t value{};
     auto [ptr, ec] = fast_float::from_chars(
         current_token.lexeme.data(),
         current_token.lexeme.data() + current_token.lexeme.size(), value);
 
-    if (ec != std::errc())
-    {
+    if (ec != std::errc()) {
       report_error("Failed to parse integer literal");
     }
 
@@ -282,15 +253,13 @@ std::unique_ptr<Expr> Parser::parse_primary()
     return std::make_unique<IntLiteral>(value);
   }
 
-  case TokenKind::Float:
-  {
+  case TokenKind::Float: {
     double value{};
     auto [ptr, ec] = fast_float::from_chars(
         current_token.lexeme.data(),
         current_token.lexeme.data() + current_token.lexeme.size(), value);
 
-    if (ec != std::errc())
-    {
+    if (ec != std::errc()) {
       report_error("Failed to parse floating-point literal");
     }
 
@@ -298,14 +267,12 @@ std::unique_ptr<Expr> Parser::parse_primary()
     return std::make_unique<FloatLiteral>(value);
   }
 
-  case TokenKind::String:
-  {
+  case TokenKind::String: {
     auto token = advance();
     return std::make_unique<StringLiteral>(std::move(token.lexeme));
   }
 
-  case TokenKind::Bool:
-  {
+  case TokenKind::Bool: {
     auto token = advance();
     return std::make_unique<BoolLiteral>(token.lexeme == "true");
   }
@@ -317,8 +284,7 @@ std::unique_ptr<Expr> Parser::parse_primary()
   case TokenKind::LBracket:
     return parse_array_literal();
 
-  case TokenKind::Ident:
-  {
+  case TokenKind::Ident: {
     auto token = advance();
     if (!matches(TokenKind::BackArrow))
       return std::make_unique<Identifier>(std::move(token.lexeme));
@@ -326,8 +292,7 @@ std::unique_ptr<Expr> Parser::parse_primary()
     advance();
     expect(TokenKind::LParen);
     std::vector<std::unique_ptr<Expr>> args;
-    while (!matches(TokenKind::RParen))
-    {
+    while (!matches(TokenKind::RParen)) {
       if (matches(TokenKind::Eof))
         report_error("Unterminated function call: expected ')'");
 
@@ -344,8 +309,7 @@ std::unique_ptr<Expr> Parser::parse_primary()
     return std::make_unique<CallExpr>(std::move(token.lexeme), std::move(args));
   }
 
-  case TokenKind::LParen:
-  {
+  case TokenKind::LParen: {
     advance();
     auto expression = parse_expr();
     expect(TokenKind::RParen);
@@ -354,16 +318,15 @@ std::unique_ptr<Expr> Parser::parse_primary()
 
   default:
     report_error(std::format("Expected primary, got {} ('{}')",
-                             token_kind_name(current_token.kind), current_token.lexeme));
+                             token_kind_name(current_token.kind),
+                             current_token.lexeme));
   }
 }
 
 // statements
 
-std::unique_ptr<Stmt> Parser::parse_stmt()
-{
-  switch (current_token.kind)
-  {
+std::unique_ptr<Stmt> Parser::parse_stmt() {
+  switch (current_token.kind) {
   case TokenKind::BackArrow:
     return parse_return();
   case TokenKind::Local:
@@ -382,8 +345,7 @@ std::unique_ptr<Stmt> Parser::parse_stmt()
 }
 
 // <- <value>
-std::unique_ptr<Stmt> Parser::parse_return()
-{
+std::unique_ptr<Stmt> Parser::parse_return() {
   expect(TokenKind::BackArrow);
   auto expression = parse_expr();
 
@@ -391,16 +353,14 @@ std::unique_ptr<Stmt> Parser::parse_return()
 }
 
 // local <key> = <value>?
-std::unique_ptr<Stmt> Parser::parse_local()
-{
+std::unique_ptr<Stmt> Parser::parse_local() {
   expect(TokenKind::Local);
 
   auto name_token = expect(TokenKind::Ident);
   auto name = std::move(name_token.lexeme);
 
   std::unique_ptr<Expr> init;
-  if (matches(TokenKind::Equal))
-  {
+  if (matches(TokenKind::Equal)) {
     advance();
     init = parse_expr();
   }
@@ -409,21 +369,18 @@ std::unique_ptr<Stmt> Parser::parse_local()
 }
 
 // function <key> (-> (<params>, ...))? <block>
-std::unique_ptr<Stmt> Parser::parse_function()
-{
+std::unique_ptr<Stmt> Parser::parse_function() {
   expect(TokenKind::Function);
 
   auto name_token = expect(TokenKind::Ident);
   auto name = std::move(name_token.lexeme);
 
   std::vector<std::string> params;
-  if (matches(TokenKind::Arrow))
-  {
+  if (matches(TokenKind::Arrow)) {
     advance();
     expect(TokenKind::LParen);
 
-    while (!matches(TokenKind::RParen))
-    {
+    while (!matches(TokenKind::RParen)) {
       auto param = expect(TokenKind::Ident);
       params.emplace_back(param.lexeme);
 
@@ -442,8 +399,7 @@ std::unique_ptr<Stmt> Parser::parse_function()
 }
 
 // if (<conditional>)? <block>
-std::unique_ptr<Stmt> Parser::parse_if()
-{
+std::unique_ptr<Stmt> Parser::parse_if() {
   expect(TokenKind::If);
 
   std::unique_ptr<Expr> condition;
@@ -458,15 +414,13 @@ std::unique_ptr<Stmt> Parser::parse_if()
 
 // for <key>   =    <start>  <goal>, (<step>)?
 // for <name> in <iterable> <block>
-std::unique_ptr<Stmt> Parser::parse_for()
-{
+std::unique_ptr<Stmt> Parser::parse_for() {
   expect(TokenKind::For);
 
   auto name_token = expect(TokenKind::Ident);
   auto name = std::move(name_token.lexeme);
 
-  if (matches(TokenKind::In))
-  {
+  if (matches(TokenKind::In)) {
     advance();
     auto iterable = parse_expr();
     Block body = parse_block();
@@ -474,16 +428,14 @@ std::unique_ptr<Stmt> Parser::parse_for()
                                        std::move(body));
   }
 
-  if (matches(TokenKind::Equal))
-  {
+  if (matches(TokenKind::Equal)) {
     advance();
     auto start = parse_expr();
     expect(TokenKind::Comma);
     auto stop = parse_expr();
 
     std::unique_ptr<Expr> step = std::make_unique<IntLiteral>(1);
-    if (matches(TokenKind::Comma))
-    {
+    if (matches(TokenKind::Comma)) {
       advance();
       step = parse_expr();
     }
@@ -498,8 +450,7 @@ std::unique_ptr<Stmt> Parser::parse_for()
 }
 
 // while (<conditional>)? <block>
-std::unique_ptr<Stmt> Parser::parse_while()
-{
+std::unique_ptr<Stmt> Parser::parse_while() {
   expect(TokenKind::While);
 
   std::unique_ptr<Expr> condition;
