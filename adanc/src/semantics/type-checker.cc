@@ -6,7 +6,7 @@
 #include "type-checker.hh"
 #include "type-helpers.hh"
 
-namespace {
+// made using AI
 std::string describe_expression(const Expr &expr) {
   if (dynamic_cast<const IntLiteral *>(&expr))
     return "IntLiteral";
@@ -33,7 +33,6 @@ std::string describe_expression(const Expr &expr) {
 
   return "unknown expression";
 }
-} // namespace
 
 TypePtr TypeChecker::infer(Expr &expr) {
   last_inferred_type = nullptr;
