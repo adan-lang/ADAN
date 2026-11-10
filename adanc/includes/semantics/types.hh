@@ -4,6 +4,8 @@
 #include <memory>
 #include <vector>
 
+#include "diagnostics.hh"
+
 struct Type;
 using TypePtr = std::shared_ptr<Type>;
 
@@ -92,4 +94,4 @@ TypePtr make_var();
 
 TypePtr prune(const TypePtr &type);
 
-void unify(TypePtr a, TypePtr b);
+void unify(TypePtr a, TypePtr b, Diagnostics &diagnostics);

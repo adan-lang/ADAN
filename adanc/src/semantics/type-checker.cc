@@ -1,5 +1,4 @@
 #include <format>
-#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -41,9 +40,7 @@ TypePtr TypeChecker::infer(Expr &expr) {
   expr.accept(*this);
 
   if (!last_inferred_type)
-    // @todo @important Design a diagnostics system for debugging during
-    // semantic analysis
-    throw std::runtime_error(
+    diagnostics.error(
         std::format("Couldn't infer a type for {}. Is the corresponding "
                     "TypeChecker::visit override implemented?",
                     describe_expression(expr)));
@@ -54,8 +51,18 @@ TypePtr TypeChecker::infer(Expr &expr) {
 void TypeChecker::check(Stmt &stmt) { stmt.accept(*this); }
 
 void TypeChecker::check(Block &block) {
-  for (const auto &stmt : block.stmts)
+  bool unreachable{};
+  for (const auto &stmt : block.stmts) {
+    if (unreachable)
+      diagnostics.warning("Unreachable statement after return");
+
     check(*stmt);
+
+    if (dynamic_cast<ReturnStmt *>(stmt.get()))
+      unreachable = true;
+  }
+
+  symbol_table.warn_unused_declarations();
 }
 
 void TypeChecker::finalize() { resolve_pending_operators(); }
@@ -83,7 +90,7 @@ void TypeChecker::resolve_pending_operators() {
       }
 
       if (matches.empty())
-        throw std::runtime_error(
+        diagnostics.error(
             std::format("Type mismatch on the binary operator: {}, with the "
                         "types: {} (left) and {} (right)",
                         op_to_string(pending.op), type_to_string(pending.lhs),
@@ -92,12 +99,12 @@ void TypeChecker::resolve_pending_operators() {
         continue;
 
       const BinaryOperator &rule = matches.front();
-      unify(pending.lhs, rule.lhs);
-      unify(pending.rhs, rule.rhs);
-      unify(pending.result, rule.result);
+      unify(pending.lhs, rule.lhs, diagnostics);
+      unify(pending.rhs, rule.rhs, diagnostics);
+      unify(pending.result, rule.result, diagnostics);
 
       if (!pending.target_widenable && !(*pending.lhs == *rule.result))
-        throw std::runtime_error(
+        diagnostics.error(
             "This compound assignment cannot widen its target type");
 
       binary_resolved[i] = true;
@@ -118,15 +125,15 @@ void TypeChecker::resolve_pending_operators() {
       }
 
       if (matches.empty())
-        throw std::runtime_error(std::format(
+        diagnostics.error(std::format(
             "Type mismatch on the unary operator: {}, with the type: {}",
             op_to_string(pending.op), type_to_string(pending.operand)));
       if (matches.size() != 1)
         continue;
 
       const UnaryOperator &rule = matches.front();
-      unify(pending.operand, rule.operand);
-      unify(pending.result, rule.result);
+      unify(pending.operand, rule.operand, diagnostics);
+      unify(pending.result, rule.result, diagnostics);
       unary_resolved[i] = true;
       made_progress = true;
     }
@@ -135,7 +142,7 @@ void TypeChecker::resolve_pending_operators() {
   for (std::size_t i{}; i < binary_resolved.size(); ++i)
     if (!binary_resolved[i]) {
       const PendingBinaryOperator &pending = pending_binary_operators[i];
-      throw std::runtime_error(
+      diagnostics.error(
           std::format("Ambiguous binary operator: {}, with the types: {} "
                       "(left) and {} (right)",
                       op_to_string(pending.op), type_to_string(pending.lhs),
@@ -145,7 +152,7 @@ void TypeChecker::resolve_pending_operators() {
   for (std::size_t i{}; i < unary_resolved.size(); ++i)
     if (!unary_resolved[i]) {
       const PendingUnaryOperator &pending = pending_unary_operators[i];
-      throw std::runtime_error(std::format(
+      diagnostics.error(std::format(
           "Ambiguous unary operator: {}, with the type: {}",
           op_to_string(pending.op), type_to_string(pending.operand)));
     }

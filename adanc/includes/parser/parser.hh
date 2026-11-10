@@ -16,26 +16,23 @@ class Parser {
   Token current_token;
 
   Diagnostics &diagnostics;
-  struct ParseAbort {};
 
   [[noreturn]] void report_error(std::string message) {
-    diagnostics.collect(Log{Severity::Error, std::move(message),
-                            current_token.line, current_token.column});
-    throw ParseAbort{};
+    diagnostics.error(std::move(message), current_token.line,
+                      current_token.column);
   }
 
 public:
   explicit Parser(std::string_view input, Diagnostics &diagnostics)
-      : lexer{input}, diagnostics{diagnostics} {
-    current_token = lexer.next();
-  }
+      : lexer{input, diagnostics}, diagnostics{diagnostics} {}
 
   std::vector<std::unique_ptr<Stmt>> parse() {
     std::vector<std::unique_ptr<Stmt>> statements;
     try {
+      current_token = lexer.next();
       while (current_token.kind != TokenKind::Eof)
         statements.push_back(parse_stmt());
-    } catch (const ParseAbort &) {
+    } catch (const DiagnosticAbort &) {
     }
 
     return statements;

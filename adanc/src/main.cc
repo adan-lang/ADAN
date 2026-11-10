@@ -79,22 +79,35 @@ int main(const int argc, char *argv[]) {
   Block program;
   program.stmts = std::move(statements);
 
-  ScopeManager symbol_table;
+  ScopeManager symbol_table{diagnostics};
   symbol_table.enter_scope();
 
   declare_builtins(symbol_table);
 
-  DeclarationCollector collector{symbol_table};
-  for (std::size_t i{}; i < program.stmts.size(); ++i) {
-    program.stmts[i]->accept(collector);
+  try {
+    DeclarationCollector collector{symbol_table};
+    for (std::size_t i{}; i < program.stmts.size(); ++i) {
+      program.stmts[i]->accept(collector);
+    }
+  } catch (const DiagnosticAbort &) {
   }
 
-  TypeChecker type_checker{symbol_table};
-  type_checker.check(program);
-  type_checker.finalize();
+  symbol_table.set_shadow_warnings_enabled(false);
+
+  if (diagnostics.has_errors()) {
+    diagnostics.output();
+    return 1;
+  }
+
+  TypeChecker type_checker{symbol_table, diagnostics};
+  try {
+    type_checker.check(program);
+    type_checker.finalize();
+  } catch (const DiagnosticAbort &) {
+  }
 
   // symbol_table.print_symbols();
   diagnostics.output();
 
-  return 0;
+  return diagnostics.has_errors() ? 1 : 0;
 }

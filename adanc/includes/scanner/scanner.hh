@@ -2,10 +2,14 @@
 
 #include <cctype>
 #include <cstddef>
+#include <format>
 #include <queue>
+#include <string>
 #include <string_view>
 #include <unordered_map>
+#include <utility>
 
+#include "diagnostics.hh"
 #include "tokens.hh"
 
 const std::unordered_map<TokenKind, std::string_view> keywords = {
@@ -16,17 +20,23 @@ const std::unordered_map<TokenKind, std::string_view> keywords = {
 
 class Lexer {
   std::string_view source{};
+
+  Diagnostics &diagnostics;
+
   std::size_t position{};
+
   int line{1};
   int column{1};
   int token_line{1};
   int token_column{1};
+
   std::queue<Token> pending{};
 
 public:
-  explicit Lexer(std::string_view source_text, int start_line = 1,
-                 int start_column = 1)
-      : source{source_text}, line{start_line}, column{start_column} {}
+  explicit Lexer(std::string_view source_text, Diagnostics &diagnostics,
+                 int start_line = 1, int start_column = 1)
+      : source{source_text}, diagnostics{diagnostics}, line{start_line},
+        column{start_column} {}
 
   Token next() {
     if (!pending.empty()) {
@@ -46,6 +56,10 @@ public:
 
 private:
   Token lex();
+
+  [[noreturn]] void report_error(std::string message) {
+    diagnostics.error(std::move(message), token_line, token_column);
+  }
 
   void advance() {
     if (!is_eof()) {
@@ -72,21 +86,28 @@ private:
       skip_spaces();
 
       if (peek() == ';' && peek(1) == '-' && peek(2) == '-') {
+        const int comment_line{line};
+        const int comment_column{column};
         advance();
         advance();
         advance();
 
+        bool terminated{};
         while (!is_eof()) {
           if (peek() == '-' && peek(1) == '-' && peek(2) == ';') {
             advance();
             advance();
             advance();
-
+            terminated = true;
             break;
           }
 
           advance();
         }
+
+        if (!terminated)
+          diagnostics.error("Unterminated block comment", comment_line,
+                            comment_column);
       } else if (peek() == ';') {
         while (!is_eof() && peek() != '\n')
           advance();
@@ -96,7 +117,7 @@ private:
     }
   }
 
-  static char unescape(const char c) {
+  char unescape(const char c) {
     switch (c) {
     case 'n':
       return '\n'; // newline
@@ -119,6 +140,11 @@ private:
     case 'v':
       return '\v'; // vertical tab
     default:
+      if (c == '\0')
+        return c;
+
+      diagnostics.warning(std::format("Unknown escape sequence '\\{}'", c),
+                          line, column);
       return c;
     }
   }

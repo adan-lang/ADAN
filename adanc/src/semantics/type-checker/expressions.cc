@@ -1,5 +1,4 @@
 #include <format>
-#include <stdexcept>
 
 #include "ast-helpers.hh"
 #include "ast.hh"
@@ -74,10 +73,10 @@ matching_binary_rules(OperatorTable &table, BinaryOp op, const TypePtr &lhs,
 void TypeChecker::visit(ArrayIndex &node) {
   TypePtr array = infer(*node.array);
   TypePtr array_generic = make_array(make_var());
-  unify(array, array_generic);
+  unify(array, array_generic, diagnostics);
 
   TypePtr index = infer(*node.index);
-  unify(index, make_int());
+  unify(index, make_int(), diagnostics);
 
   last_inferred_type = array_generic->element;
 }
@@ -85,60 +84,58 @@ void TypeChecker::visit(ArrayIndex &node) {
 void TypeChecker::visit(CallExpr &node) {
   Symbol *callee = symbol_table.lookup(node.callee);
   if (!callee)
-    // @todo @important Design a diagnostics system for debugging during
-    // semantic analysis
-    throw std::runtime_error(
+    diagnostics.error(
         std::format("Attempted to call an unknown function: {}", node.callee));
 
   TypePtr callee_t = prune(callee->type);
   if (callee_t->kind != TypeKind::Function)
-    // @todo @important Design a diagnostics system for debugging during
-    // semantic analysis
-    throw std::runtime_error(
-        std::format("Attempted to call something that isn't a function"));
+    diagnostics.error("Attempted to call something that isn't a function");
 
   if (node.args.size() != callee_t->params.size())
-    // @todo @important Design a diagnostics system for debugging during
-    // semantic analysis
-    throw std::runtime_error(
+    diagnostics.error(
         std::format("Function: \"{}\" expects {} argument(s), but got {}",
                     node.callee, callee_t->params.size(), node.args.size()));
 
   for (std::size_t i{}; i < callee_t->params.size(); ++i) {
-    unify(infer(*node.args[i]), callee_t->params[i]);
+    unify(infer(*node.args[i]), callee_t->params[i], diagnostics);
   }
 
   last_inferred_type = callee_t->result;
 }
 
 void TypeChecker::visit(BinaryExpr &node) {
-  TypePtr lhs = infer(*node.lhs);
+  TypePtr lhs;
+  if (node.op == BinaryOp::Equal &&
+      dynamic_cast<Identifier *>(node.lhs.get())) {
+    const bool previous_use_tracking = count_identifier_uses;
+    count_identifier_uses = false;
+    lhs = infer(*node.lhs);
+    count_identifier_uses = previous_use_tracking;
+  } else {
+    lhs = infer(*node.lhs);
+  }
   TypePtr rhs = infer(*node.rhs);
 
   if (node.op == BinaryOp::Equal) {
     if (is_mutable_lvalue(*node.lhs)) {
-      unify(lhs, rhs);
+      unify(lhs, rhs, diagnostics);
       last_inferred_type = lhs;
       return;
     }
 
-    // @todo @important Design a diagnostics system for debugging during
-    // semantic analysis
-    throw std::runtime_error(
+    diagnostics.error(
         "The left side of an assignment must be a variable or array index");
   }
 
   const bool compound_assignment = is_compound_assignment(node.op);
   if (compound_assignment && !is_mutable_lvalue(*node.lhs))
-    // @todo @important Design a diagnostics system for debugging during
-    // semantic analysis
-    throw std::runtime_error("The left side of a compound assignment must be a "
-                             "variable or array index");
+    diagnostics.error("The left side of a compound assignment must be a "
+                      "variable or array index");
 
   const std::vector<BinaryOperator> matches =
       matching_binary_rules(operator_table, node.op, lhs, rhs);
   if (matches.empty()) {
-    throw std::runtime_error(std::format(
+    diagnostics.error(std::format(
         "Type mismatch on the binary operator: {}, with the types: {} (left) "
         "and {} (right)",
         op_to_string(node.op), type_to_string(lhs), type_to_string(rhs)));
@@ -147,16 +144,14 @@ void TypeChecker::visit(BinaryExpr &node) {
   if (matches.size() == 1) {
     const BinaryOperator &rule = matches.front();
 
-    unify(lhs, rule.lhs);
-    unify(rhs, rule.rhs);
+    unify(lhs, rule.lhs, diagnostics);
+    unify(rhs, rule.rhs, diagnostics);
 
     if (compound_assignment) {
       const bool target_widenable =
           rebind_compound_target(*node.lhs, rule.result, symbol_table);
       if (!target_widenable && !(*lhs == *rule.result))
-        // @todo @important Design a diagnostics system for debugging during
-        // semantic analysis
-        throw std::runtime_error(
+        diagnostics.error(
             "This compound assignment cannot widen its target type");
     }
 
@@ -184,17 +179,17 @@ void TypeChecker::visit(BinaryExpr &node) {
 void TypeChecker::visit(Identifier &node) {
   Symbol *symbol = symbol_table.lookup(node.name);
   if (!symbol)
-    // @todo @important Design a diagnostics system for debugging during
-    // semantic analysis
-    throw std::runtime_error(std::format("Unknown identifier: {}", node.name));
+    diagnostics.error(std::format("Unknown identifier: {}", node.name));
 
+  if (count_identifier_uses)
+    symbol->used = true;
   last_inferred_type = symbol->type;
 }
 
 void TypeChecker::visit(UnaryExpr &node) {
   TypePtr operand = infer(*node.operand);
   if (node.op == UnaryOp::Hashtag) {
-    unify(operand, make_array(make_var()));
+    unify(operand, make_array(make_var()), diagnostics);
     last_inferred_type = make_int();
     return;
   }
@@ -206,14 +201,12 @@ void TypeChecker::visit(UnaryExpr &node) {
   }
 
   if (matches.empty())
-    // @todo @important Design a diagnostics system for debugging during
-    // semantic analysis
-    throw std::runtime_error(std::format(
+    diagnostics.error(std::format(
         "Type mismatch on the unary operator: {}, with the type: {}",
         op_to_string(node.op), type_to_string(operand)));
 
   if (matches.size() == 1) {
-    unify(operand, matches.front().operand);
+    unify(operand, matches.front().operand, diagnostics);
     last_inferred_type = matches.front().result;
     return;
   }

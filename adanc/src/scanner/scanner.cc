@@ -1,5 +1,5 @@
 #include <cctype>
-#include <print>
+#include <format>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,6 +14,9 @@ Token Lexer::lex() {
   token_column = column;
 
   switch (const auto curr{peek()}; curr) {
+  case '\0':
+    return Token{TokenKind::Eof, ""};
+
   case '+':
     advance();
     if (peek() == '+') {
@@ -134,14 +137,6 @@ Token Lexer::lex() {
     advance();
     return Token{TokenKind::RBrace, "}"};
 
-    // case '"':
-    //     advance();
-    //     return Token{TokenKind::Quote, "\""};
-
-    // case '\'':
-    //     advance();
-    //     return Token{TokenKind::Apostrophe, "'"};
-
   case '.':
     if (peek(1) == '.' && peek(2) == '.') {
       advance();
@@ -149,8 +144,7 @@ Token Lexer::lex() {
       advance();
       return Token{TokenKind::Ellipsis, "..."};
     }
-    advance();
-    return Token{TokenKind::Eof, ""};
+    report_error("Unexpected character '.'");
 
   case ',':
     advance();
@@ -206,9 +200,7 @@ Token Lexer::lex() {
       }
 
       if (is_eof())
-        // @todo @important Design a diagnostics system for debugging during
-        // lexical analysis
-        std::println("Unterminated string literal");
+        report_error("Unterminated string literal");
       else
         advance();
 
@@ -287,7 +279,7 @@ Token Lexer::lex() {
             const std::string nested{
                 source.substr(nested_start, position - nested_start)};
 
-            Lexer nested_lexer(nested, nested_line, nested_column);
+            Lexer nested_lexer(nested, diagnostics, nested_line, nested_column);
 
             auto t = nested_lexer.next();
             while (t.kind != TokenKind::Eof) {
@@ -334,7 +326,8 @@ Token Lexer::lex() {
             // std::println("expr: '{}'", expr);
 
             if (!expr.empty()) {
-              Lexer inter_lexer(expr, segment_line, segment_column);
+              Lexer inter_lexer(expr, diagnostics, segment_line,
+                                segment_column);
 
               auto next_token{inter_lexer.next()};
               while (next_token.kind != TokenKind::Eof) {
@@ -358,9 +351,7 @@ Token Lexer::lex() {
       }
 
       if (is_eof())
-        // @todo @important Design a diagnostics system for debugging during
-        // lexical analysis
-        std::println("Unterminated template literal");
+        report_error("Unterminated template literal");
       else
         advance();
 
@@ -395,6 +386,6 @@ Token Lexer::lex() {
       return Token{TokenKind::Ident, std::move(value)};
     }
 
-    return Token{TokenKind::Eof, ""};
+    report_error(std::format("Unexpected character '{}'", curr));
   }
 }

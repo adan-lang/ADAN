@@ -4,6 +4,8 @@
 
 class ScopeManager : public SymbolTable {
 public:
+  explicit ScopeManager(Diagnostics &diagnostics) : SymbolTable{diagnostics} {}
+
   void enter_scope();
   void exit_scope();
 

@@ -3,6 +3,7 @@
 #include <utility>
 #include <vector>
 
+#include "diagnostics.hh"
 #include "type-helpers.hh"
 
 TypePtr make_int() { return make_type(TypeKind::Int); }
@@ -56,7 +57,7 @@ TypePtr prune(const TypePtr &type) {
  * Unification either confirms two types agree, learns what an unknown
  *  type must be, or reports that it's impossible for them to agree.
  */
-void unify(TypePtr a, TypePtr b) {
+void unify(TypePtr a, TypePtr b, Diagnostics &diagnostics) {
   auto lhs = prune(a);
   auto rhs = prune(b);
 
@@ -65,9 +66,7 @@ void unify(TypePtr a, TypePtr b) {
 
   if (lhs->kind == TypeKind::Var) {
     if (occurs(lhs, rhs))
-      // @todo @important Design a diagnostics system for debugging during
-      // semantic analysis
-      throw std::runtime_error("The left type occurs inside the right type");
+      diagnostics.error("The left type occurs inside the right type");
 
     lhs->link = rhs;
     return;
@@ -75,18 +74,14 @@ void unify(TypePtr a, TypePtr b) {
 
   if (rhs->kind == TypeKind::Var) {
     if (occurs(rhs, lhs))
-      // @todo @important Design a diagnostics system for debugging during
-      // semantic analysis
-      throw std::runtime_error("The right type occurs inside the left type");
+      diagnostics.error("The right type occurs inside the left type");
 
     rhs->link = lhs;
     return;
   }
 
   if (lhs->kind != rhs->kind)
-    // @todo @important Design a diagnostics system for debugging during
-    // semantic analysis
-    throw std::runtime_error(
+    diagnostics.error(
         std::format("There was a mismatch between: (left) {} and (right) {}",
                     type_to_string(lhs), type_to_string(rhs)));
 
@@ -99,19 +94,17 @@ void unify(TypePtr a, TypePtr b) {
     return;
 
   case TypeKind::Array:
-    unify(lhs->element, rhs->element);
+    unify(lhs->element, rhs->element, diagnostics);
     return;
 
   case TypeKind::Function:
     if (lhs->params.size() != rhs->params.size())
-      // @todo @important Design a diagnostics system for debugging during
-      // semantic analysis
-      throw std::runtime_error("Function parameter count mismatch");
+      diagnostics.error("Function parameter count mismatch");
 
     for (std::size_t i{}; i < lhs->params.size(); ++i)
-      unify(lhs->params[i], rhs->params[i]);
+      unify(lhs->params[i], rhs->params[i], diagnostics);
 
-    unify(lhs->result, rhs->result);
+    unify(lhs->result, rhs->result, diagnostics);
     return;
 
   // Should just be impossible to get here

@@ -19,7 +19,7 @@ void TypeChecker::visit(InterpolatedString &node) {
 void TypeChecker::visit(ArrayLiteral &node) {
   TypePtr element_type = make_var();
   for (const auto &element : node.elements)
-    unify(element_type, infer(*element.get()));
+    unify(element_type, infer(*element.get()), diagnostics);
 
   last_inferred_type = make_array(element_type);
 }

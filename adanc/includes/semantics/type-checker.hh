@@ -2,6 +2,7 @@
 
 #include "ast-visitor.hh"
 #include "ast.hh"
+#include "diagnostics.hh"
 #include "operator-table.hh"
 #include "scope-manager.hh"
 #include "types.hh"
@@ -27,10 +28,12 @@ class TypeChecker : public ASTVisitor {
   };
 
   ScopeManager &symbol_table;
+  Diagnostics &diagnostics;
   OperatorTable operator_table;
 
   TypePtr last_inferred_type;
   TypePtr curr_func_result_type;
+  bool count_identifier_uses{true};
 
   std::vector<PendingBinaryOperator> pending_binary_operators;
   std::vector<PendingUnaryOperator> pending_unary_operators;
@@ -38,7 +41,8 @@ class TypeChecker : public ASTVisitor {
   void resolve_pending_operators();
 
 public:
-  explicit TypeChecker(ScopeManager &symbols) : symbol_table(symbols) {}
+  explicit TypeChecker(ScopeManager &symbols, Diagnostics &diagnostics)
+      : symbol_table(symbols), diagnostics{diagnostics} {}
 
   TypePtr infer(Expr &expr);
 
