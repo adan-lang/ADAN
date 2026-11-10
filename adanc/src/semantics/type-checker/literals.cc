@@ -1,39 +1,25 @@
 #include "type-checker.hh"
 
-void TypeChecker::visit(IntLiteral &)
-{
-    last_inferred_type = make_int();
+void TypeChecker::visit(IntLiteral &) { last_inferred_type = make_int(); }
+
+void TypeChecker::visit(FloatLiteral &) { last_inferred_type = make_float(); }
+
+void TypeChecker::visit(BoolLiteral &) { last_inferred_type = make_bool(); }
+
+void TypeChecker::visit(StringLiteral &) { last_inferred_type = make_string(); }
+
+void TypeChecker::visit(InterpolatedString &node) {
+  for (const auto &part : node.parts)
+    if (const auto *expression = std::get_if<std::unique_ptr<Expr>>(&part))
+      infer(**expression);
+
+  last_inferred_type = make_string();
 }
 
-void TypeChecker::visit(FloatLiteral &)
-{
-    last_inferred_type = make_float();
-}
+void TypeChecker::visit(ArrayLiteral &node) {
+  TypePtr element_type = make_var();
+  for (const auto &element : node.elements)
+    unify(element_type, infer(*element.get()));
 
-void TypeChecker::visit(BoolLiteral &)
-{
-    last_inferred_type = make_bool();
-}
-
-void TypeChecker::visit(StringLiteral &)
-{
-    last_inferred_type = make_string();
-}
-
-void TypeChecker::visit(InterpolatedString &node)
-{
-    for (const auto &part : node.parts)
-        if (const auto *expression = std::get_if<std::unique_ptr<Expr>>(&part))
-            infer(**expression);
-
-    last_inferred_type = make_string();
-}
-
-void TypeChecker::visit(ArrayLiteral &node)
-{
-    TypePtr element_type = make_var();
-    for (const auto &element : node.elements)
-        unify(element_type, infer(*element.get()));
-
-    last_inferred_type = make_array(element_type);
+  last_inferred_type = make_array(element_type);
 }
