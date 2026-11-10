@@ -3,12 +3,15 @@
 #include <format>
 #include <print>
 #include <string>
+#include <utility>
 #include <vector>
 
 enum Severity {
   Error,
   Warning,
 };
+
+struct DiagnosticAbort {};
 
 struct Log {
   Severity severity;
@@ -17,7 +20,7 @@ struct Log {
   int line;
   int column;
 
-  const std::string to_string() {
+  std::string to_string() const {
     std::string severity_name;
     switch (severity) {
     case Error:
@@ -28,7 +31,11 @@ struct Log {
       break;
     }
 
-    return std::format("{}: {} ({}:{})", severity_name, message, line, column);
+    if (line > 0 && column > 0)
+      return std::format("{}: {} ({}:{})", severity_name, message, line,
+                         column);
+
+    return std::format("{}: {}", severity_name, message);
   }
 };
 
@@ -37,6 +44,16 @@ class Diagnostics {
 
 public:
   inline void collect(Log log) { collected_logs.emplace_back(log); }
+
+  [[noreturn]] inline void error(std::string message, int line = 0,
+                                 int column = 0) {
+    collect(Log{Severity::Error, std::move(message), line, column});
+    throw DiagnosticAbort{};
+  }
+
+  inline void warning(std::string message, int line = 0, int column = 0) {
+    collect(Log{Severity::Warning, std::move(message), line, column});
+  }
 
   inline bool has_errors() const {
     for (const auto &log : collected_logs) {
