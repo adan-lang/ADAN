@@ -9,144 +9,119 @@
 #include "tokens.hh"
 
 const std::unordered_map<TokenKind, std::string_view> keywords = {
-    {TokenKind::Local, "local"},
-    {TokenKind::Function, "function"},
-    {TokenKind::If, "if"},
-    {TokenKind::While, "while"},
-    {TokenKind::For, "for"},
-    {TokenKind::In, "in"},
+    {TokenKind::Local, "local"}, {TokenKind::Function, "function"},
+    {TokenKind::If, "if"},       {TokenKind::While, "while"},
+    {TokenKind::For, "for"},     {TokenKind::In, "in"},
 };
 
-class Lexer
-{
-    std::string_view source{};
-    std::size_t position{};
-    int line{1};
-    int column{1};
-    int token_line{1};
-    int token_column{1};
-    std::queue<Token> pending{};
+class Lexer {
+  std::string_view source{};
+  std::size_t position{};
+  int line{1};
+  int column{1};
+  int token_line{1};
+  int token_column{1};
+  std::queue<Token> pending{};
 
 public:
-    explicit Lexer(std::string_view source_text, int start_line = 1, int start_column = 1)
-        : source{source_text}, line{start_line}, column{start_column} {}
+  explicit Lexer(std::string_view source_text, int start_line = 1,
+                 int start_column = 1)
+      : source{source_text}, line{start_line}, column{start_column} {}
 
-    Token next()
-    {
-        if (!pending.empty())
-        {
-            auto token = pending.front();
-            pending.pop();
+  Token next() {
+    if (!pending.empty()) {
+      auto token = pending.front();
+      pending.pop();
 
-            return token;
-        }
-
-        Token token = lex();
-        if (token.line == 0 && token.column == 0)
-        {
-            token.line = token_line;
-            token.column = token_column;
-        }
-        return token;
+      return token;
     }
+
+    Token token = lex();
+    if (token.line == 0 && token.column == 0) {
+      token.line = token_line;
+      token.column = token_column;
+    }
+    return token;
+  }
 
 private:
-    Token lex();
+  Token lex();
 
-    void advance()
-    {
-        if (!is_eof())
-        {
-            if (source[position++] == '\n')
-            {
-                ++line;
-                column = 1;
-            }
-            else
-                ++column;
-        }
+  void advance() {
+    if (!is_eof()) {
+      if (source[position++] == '\n') {
+        ++line;
+        column = 1;
+      } else
+        ++column;
     }
+  }
 
-    [[nodiscard]] char peek(const std::size_t offset = 0) const
-    {
-        return (position + offset >= source.length()) ? '\0' : source[position + offset];
-    }
+  [[nodiscard]] char peek(const std::size_t offset = 0) const {
+    return (position + offset >= source.length()) ? '\0'
+                                                  : source[position + offset];
+  }
 
-    void skip_spaces()
-    {
-        while (!is_eof() && std::isspace(peek()))
+  void skip_spaces() {
+    while (!is_eof() && std::isspace(peek()))
+      advance();
+  }
+
+  void skip_comments() {
+    while (!is_eof()) {
+      skip_spaces();
+
+      if (peek() == ';' && peek(1) == '-' && peek(2) == '-') {
+        advance();
+        advance();
+        advance();
+
+        while (!is_eof()) {
+          if (peek() == '-' && peek(1) == '-' && peek(2) == ';') {
             advance();
-    }
+            advance();
+            advance();
 
-    void skip_comments()
-    {
-        while (!is_eof())
-        {
-            skip_spaces();
+            break;
+          }
 
-            if (peek() == ';' && peek(1) == '-' && peek(2) == '-')
-            {
-                advance();
-                advance();
-                advance();
-
-                while (!is_eof())
-                {
-                    if (peek() == '-' && peek(1) == '-' && peek(2) == ';')
-                    {
-                        advance();
-                        advance();
-                        advance();
-
-                        break;
-                    }
-
-                    advance();
-                }
-            }
-            else if (peek() == ';')
-            {
-                while (!is_eof() && peek() != '\n')
-                    advance();
-            }
-            else
-            {
-                break;
-            }
+          advance();
         }
+      } else if (peek() == ';') {
+        while (!is_eof() && peek() != '\n')
+          advance();
+      } else {
+        break;
+      }
     }
+  }
 
-    static char unescape(const char c)
-    {
-        switch (c)
-        {
-        case 'n':
-            return '\n'; // newline
-        case 't':
-            return '\t'; // horizontal tab
-        case 'r':
-            return '\r'; // carriage return
-        case '\\':
-            return '\\'; // backslash
-        case '"':
-            return '"'; // double quote
-        case '\'':
-            return '\''; // single quote
-        case '`':
-            return '`'; // backtick
-        case '0':
-            return '\0'; // null
-        case 'b':
-            return '\b'; // backspace
-        case 'v':
-            return '\v'; // vertical tab
-        default:
-            return c;
-        }
+  static char unescape(const char c) {
+    switch (c) {
+    case 'n':
+      return '\n'; // newline
+    case 't':
+      return '\t'; // horizontal tab
+    case 'r':
+      return '\r'; // carriage return
+    case '\\':
+      return '\\'; // backslash
+    case '"':
+      return '"'; // double quote
+    case '\'':
+      return '\''; // single quote
+    case '`':
+      return '`'; // backtick
+    case '0':
+      return '\0'; // null
+    case 'b':
+      return '\b'; // backspace
+    case 'v':
+      return '\v'; // vertical tab
+    default:
+      return c;
     }
+  }
 
-    [[nodiscard]] bool is_eof() const
-    {
-        return position >= source.length();
-    }
+  [[nodiscard]] bool is_eof() const { return position >= source.length(); }
 };
