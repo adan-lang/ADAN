@@ -1,49 +1,45 @@
 #pragma once
 
 #include <format>
-#include <unordered_map>
+#include <print>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
-#include <print>
 
-#include "types.hh"
 #include "type-helpers.hh"
+#include "types.hh"
 
-struct Symbol
-{
-    std::string name;
-    TypePtr type;
+struct Symbol {
+  std::string name;
+  TypePtr type;
 
-    std::string to_string() const
-    {
-        return std::format("Symbol(Name: {}, Type: {})", name, type_to_string(type));
-    }
+  std::string to_string() const {
+    return std::format("Symbol(Name: {}, Type: {})", name,
+                       type_to_string(type));
+  }
 };
 
-// @todo Fix this garbage shit and make it use a tree instead of a flat stack of Symbols sometime
+// @todo Fix this garbage shit and make it use a tree instead of a flat stack of
+// Symbols sometime
 using Scope = std::unordered_map<std::string, Symbol>;
 
-class SymbolTable
-{
+class SymbolTable {
 protected:
-    std::vector<Scope> scopes;
+  std::vector<Scope> scopes;
 
 public:
-    void declare(const Symbol &symbol);
+  void declare(const Symbol &symbol);
 
-    Symbol *lookup(std::string_view name);
+  Symbol *lookup(std::string_view name);
 
-    // @todo Remember to remove this after everything is finished
-    inline void print_symbols()
-    {
-        for (auto item = scopes.rbegin(); item != scopes.rend(); ++item)
-        {
-            const auto &curr = *item;
-            for (const auto &[name, symbol] : curr)
-            {
-                std::println("Key: {}, Symbol: {}", name, symbol.to_string());
-            }
-        }
+  // @todo Remember to remove this after everything is finished
+  inline void print_symbols() {
+    for (auto item = scopes.rbegin(); item != scopes.rend(); ++item) {
+      const auto &curr = *item;
+      for (const auto &[name, symbol] : curr) {
+        std::println("Key: {}, Symbol: {}", name, symbol.to_string());
+      }
     }
+  }
 };
