@@ -8,70 +8,67 @@
 
 #include <vector>
 
-class TypeChecker : public ASTVisitor
-{
-    struct PendingBinaryOperator
-    {
-        TypePtr lhs;
-        BinaryOp op;
-        TypePtr rhs;
+class TypeChecker : public ASTVisitor {
+  struct PendingBinaryOperator {
+    TypePtr lhs;
+    BinaryOp op;
+    TypePtr rhs;
 
-        TypePtr result;
-        
-        bool target_widenable{};
-    };
+    TypePtr result;
 
-    struct PendingUnaryOperator
-    {
-        TypePtr operand;
-        UnaryOp op;
+    bool target_widenable{};
+  };
 
-        TypePtr result;
-    };
+  struct PendingUnaryOperator {
+    TypePtr operand;
+    UnaryOp op;
 
-    ScopeManager &symbol_table;
-    OperatorTable operator_table;
+    TypePtr result;
+  };
 
-    TypePtr last_inferred_type;
-    TypePtr curr_func_result_type;
+  ScopeManager &symbol_table;
+  OperatorTable operator_table;
 
-    std::vector<PendingBinaryOperator> pending_binary_operators;
-    std::vector<PendingUnaryOperator> pending_unary_operators;
+  TypePtr last_inferred_type;
+  TypePtr curr_func_result_type;
 
-    void resolve_pending_operators();
+  std::vector<PendingBinaryOperator> pending_binary_operators;
+  std::vector<PendingUnaryOperator> pending_unary_operators;
+
+  void resolve_pending_operators();
 
 public:
-    explicit TypeChecker(ScopeManager &symbols) : symbol_table(symbols) {}
+  explicit TypeChecker(ScopeManager &symbols) : symbol_table(symbols) {}
 
-    TypePtr infer(Expr &expr);
+  TypePtr infer(Expr &expr);
 
-    void check(Stmt &stmt);
-    void check(Block &block);
-    
-    void finalize();
+  void check(Stmt &stmt);
+  void check(Block &block);
 
-    // Visitors
+  void finalize();
 
-    void visit(IntLiteral &node) override;
-    void visit(FloatLiteral &node) override;
-    void visit(BoolLiteral &node) override;
-    void visit(StringLiteral &node) override;
-    void visit(InterpolatedString &node) override;
-    void visit(ArrayLiteral &node) override;
+  // Visitors
 
-    void visit(ArrayIndex &node) override;
-    void visit(CallExpr &node) override;
-    void visit(BinaryExpr &node) override;
-    void visit(Identifier &node) override;
-    void visit(UnaryExpr &node) override;
+  void visit(IntLiteral &node) override;
+  void visit(FloatLiteral &node) override;
+  void visit(BoolLiteral &node) override;
+  void visit(StringLiteral &node) override;
+  void visit(InterpolatedString &node) override;
+  void visit(ArrayLiteral &node) override;
 
-    void visit(ReturnStmt &node) override;
-    void visit(ExprStmt &node) override;
-    void visit(IfStmt &node) override;
-    void visit(NumericForStmt &node) override;
-    void visit(ForInStmt &node) override;
-    void visit(WhileStmt &node) override;
+  void visit(ArrayIndex &node) override;
+  void visit(CallExpr &node) override;
+  void visit(BinaryExpr &node) override;
+  void visit(Identifier &node) override;
+  void visit(UnaryExpr &node) override;
 
-    void visit(LocalDecl &node) override;
-    void visit(FuncDecl &node) override;
+  void visit(ReturnStmt &node) override;
+  void visit(ExprStmt &node) override;
+  void visit(IfStmt &node) override;
+  void visit(NumericForStmt &node) override;
+  void visit(ForInStmt &node) override;
+  void visit(WhileStmt &node) override;
+
+  void visit(LocalDecl &node) override;
+  void visit(FuncDecl &node) override;
 };
