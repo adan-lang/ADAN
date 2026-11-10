@@ -1,7 +1,3 @@
-# Hidden files
-
-.clang-format
-
 # Public folders
 
 build/

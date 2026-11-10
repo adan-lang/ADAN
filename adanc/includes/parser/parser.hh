@@ -2,31 +2,41 @@
 
 #include <format>
 #include <memory>
-#include <stdexcept>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "ast.hh"
-#include "scanner.hh"
+#include "diagnostics.hh"
 #include "scanner-helpers.hh"
+#include "scanner.hh"
 
-class Parser
-{
+class Parser {
   Lexer lexer;
   Token current_token;
 
+  Diagnostics &diagnostics;
+  struct ParseAbort {};
+
+  [[noreturn]] void report_error(std::string message) {
+    diagnostics.collect(Log{Severity::Error, std::move(message),
+                            current_token.line, current_token.column});
+    throw ParseAbort{};
+  }
+
 public:
-  explicit Parser(std::string_view input) : lexer{input}
-  {
+  explicit Parser(std::string_view input, Diagnostics &diagnostics)
+      : lexer{input}, diagnostics{diagnostics} {
     current_token = lexer.next();
   }
 
-  std::vector<std::unique_ptr<Stmt>> parse()
-  {
+  std::vector<std::unique_ptr<Stmt>> parse() {
     std::vector<std::unique_ptr<Stmt>> statements;
-    while (current_token.kind != TokenKind::Eof)
-      statements.push_back(parse_stmt());
+    try {
+      while (current_token.kind != TokenKind::Eof)
+        statements.push_back(parse_stmt());
+    } catch (const ParseAbort &) {
+    }
 
     return statements;
   }
@@ -34,23 +44,17 @@ public:
 private:
   Token advance() { return std::exchange(current_token, lexer.next()); }
 
-  Token expect(const TokenKind kind)
-  {
-    if (current_token.kind != kind)
-    {
-      // @todo @important Design a diagnostics system for debugging during
-      // parsing
-      throw std::runtime_error(std::format("Expected {} at {}:{}, got {} ('{}')",
-               token_kind_name(kind), current_token.line, current_token.column,
-               token_kind_name(current_token.kind), current_token.lexeme));
+  Token expect(const TokenKind kind) {
+    if (current_token.kind != kind) {
+      report_error(std::format(
+          "Expected {}, got {} (\"{}\")", token_kind_name(kind),
+          token_kind_name(current_token.kind), current_token.lexeme));
     }
 
     return advance();
   }
 
-  template <typename... T>
-  bool matches(T... types) const
-  {
+  template <typename... T> bool matches(T... types) const {
     return ((current_token.kind == types) || ...);
   }
 

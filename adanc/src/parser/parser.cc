@@ -1,9 +1,6 @@
 #include <fast_float/fast_float.h>
 #include <cstdint>
-#include <format>
 #include <memory>
-#include <stdexcept>
-#include <string>
 #include <system_error>
 #include <utility>
 #include <vector>
@@ -21,9 +18,7 @@ Block Parser::parse_block()
   {
     if (matches(TokenKind::Eof))
     {
-      // @todo @important Design a diagnostics system for debugging during
-      // parsing
-      throw std::runtime_error("Unterminated block: Expected '}'");
+      report_error("Unterminated block: expected '}'");
     }
 
     block.stmts.push_back(parse_stmt());
@@ -229,7 +224,7 @@ std::unique_ptr<Expr> Parser::parse_array_literal()
   while (!matches(TokenKind::RBracket))
   {
     if (matches(TokenKind::Eof))
-      throw std::runtime_error("Unterminated array literal: expected ']' ");
+      report_error("Unterminated array literal: expected ']'");
 
     elements.push_back(parse_expr());
 
@@ -280,9 +275,7 @@ std::unique_ptr<Expr> Parser::parse_primary()
 
     if (ec != std::errc())
     {
-      // @todo @important Design a diagnostics system for debugging during
-      // parsing
-      throw std::runtime_error("Failed to parse integer literal");
+      report_error("Failed to parse integer literal");
     }
 
     advance();
@@ -298,9 +291,7 @@ std::unique_ptr<Expr> Parser::parse_primary()
 
     if (ec != std::errc())
     {
-      // @todo @important Design a diagnostics system for debugging during
-      // parsing
-      throw std::runtime_error("Failed to parse floating-point literal");
+      report_error("Failed to parse floating-point literal");
     }
 
     advance();
@@ -338,7 +329,7 @@ std::unique_ptr<Expr> Parser::parse_primary()
     while (!matches(TokenKind::RParen))
     {
       if (matches(TokenKind::Eof))
-        throw std::runtime_error("Unterminated function call: expected ')'");
+        report_error("Unterminated function call: expected ')'");
 
       args.push_back(parse_expr());
       if (!matches(TokenKind::Comma))
@@ -362,10 +353,8 @@ std::unique_ptr<Expr> Parser::parse_primary()
   }
 
   default:
-    // @todo @important Design a diagnostics system for debugging during parsing
-    throw std::runtime_error(std::format("Expected primary at {}:{}, got {} ('{}')",
-                       current_token.line, current_token.column,
-                       token_kind_name(current_token.kind), current_token.lexeme));
+    report_error(std::format("Expected primary, got {} ('{}')",
+                             token_kind_name(current_token.kind), current_token.lexeme));
   }
 }
 
@@ -505,8 +494,7 @@ std::unique_ptr<Stmt> Parser::parse_for()
                                             std::move(body));
   }
 
-  // @todo @important Design a diagnostics system for debugging during parsing
-  throw std::runtime_error("Expected 'in' or '=' after for-loop variable");
+  report_error("Expected 'in' or '=' after for-loop variable");
 }
 
 // while (<conditional>)? <block>

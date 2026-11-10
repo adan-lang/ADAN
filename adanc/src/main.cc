@@ -9,6 +9,7 @@
 #include "scope-manager.hh"
 #include "type-checker.hh"
 #include "built-ins.hh"
+#include "diagnostics.hh"
 
 static constexpr std::string COMPILER_VERSION = "version-1.2.7";
 
@@ -69,9 +70,17 @@ int main(const int argc, char *argv[])
     }
 
     const std::string source{read_file(file_path)};
+    
+    Diagnostics diagnostics;
 
-    Parser parser(source);
+    Parser parser(source, diagnostics);
     auto statements = parser.parse();
+
+    if (diagnostics.has_errors())
+    {
+        diagnostics.output();
+        return 1;
+    }
 
     Block program;
     program.stmts = std::move(statements);
@@ -91,7 +100,8 @@ int main(const int argc, char *argv[])
     type_checker.check(program);
     type_checker.finalize();
 
-    symbol_table.print_symbols();
+    // symbol_table.print_symbols();
+    diagnostics.output();
 
     return 0;
 }
