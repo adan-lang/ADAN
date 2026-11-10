@@ -2,13 +2,12 @@
 
 #include "symbol-table.hh"
 
-class ScopeManager : public SymbolTable
-{
+class ScopeManager : public SymbolTable {
 public:
-    void enter_scope();
-    void exit_scope();
+  void enter_scope();
+  void exit_scope();
 
-    bool in_global_scope() const;
+  bool in_global_scope() const;
 
-    void print_scope();
+  void print_scope();
 };
