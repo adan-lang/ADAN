@@ -1,0 +1,24 @@
+IndentWidth: 4
+ColumnLimit: 999
+BreakConstructorInitializers: BeforeColon
+ConstructorInitializerIndentWidth: 4
+AllowShortFunctionsOnASingleLine: Empty
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterFunction: true
+  SplitEmptyFunction: false
+  AfterControlStatement: Always
+  BeforeElse: true
+  BeforeCatch: true
+  BeforeWhile: true
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^<.*[/.].*>'
+    Priority: 1
+  - Regex: '^<[^/.]+>'
+    Priority: 2
+  - Regex: '^".*"'
+    Priority: 3
+BinPackArguments: false
+AllowAllArgumentsOnNextLine: false
