@@ -13,101 +13,115 @@
 
 static constexpr std::string COMPILER_VERSION = "version-1.2.8";
 
-static inline void show_main_message() {
-  std::println("\n"
-               "\033[1mUsage:\033[0m adan \033[2m[options]\033[0m <file>\n"
-               "\n"
-               "\033[1mArguments:\033[0m\n"
-               "    \033[32m--version\033[0m, \033[32m-v\033[0m     Get your "
-               "version of ADAN that's on your machine.\n"
-               "    \033[32m--help\033[0m, \033[32m-h\033[0m        Display "
-               "this message.\n"
-               "\n"
-               "ADAN is in BETA and is a passion project of mine.\n"
-               "\n"
-               "Support the development of ADAN by starring the\n"
-               "repository over on GitHub!\n"
-               "\n"
-               "  \u27a4  \033[1;3;34mhttps://git.adan.sh/\033[0m\n"
-               "\n"
-               "For reporting a bug, please create a new issue on GitHub."
-               "\n");
+static inline void show_main_message()
+{
+    std::println("\n"
+                 "\033[1mUsage:\033[0m adan \033[2m[options]\033[0m <file>\n"
+                 "\n"
+                 "\033[1mArguments:\033[0m\n"
+                 "    \033[32m--version\033[0m, \033[32m-v\033[0m     Get your "
+                 "version of ADAN that's on your machine.\n"
+                 "    \033[32m--help\033[0m, \033[32m-h\033[0m        Display "
+                 "this message.\n"
+                 "\n"
+                 "ADAN is in BETA and is a passion project of mine.\n"
+                 "\n"
+                 "Support the development of ADAN by starring the\n"
+                 "repository over on GitHub!\n"
+                 "\n"
+                 "  \u27a4  \033[1;3;34mhttps://git.adan.sh/\033[0m\n"
+                 "\n"
+                 "For reporting a bug, please create a new issue on GitHub."
+                 "\n");
 }
 
-int main(const int argc, char *argv[]) {
-  bool show_help = false;
-  bool show_version = false;
+int main(const int argc, char *argv[])
+{
+    bool show_help = false;
+    bool show_version = false;
 
-  std::string file_path;
+    std::string file_path;
 
-  for (int i = 1; i < argc; i++) {
-    if (std::string arg = argv[i]; arg == "--help" || arg == "-h")
-      show_help = true;
-    else if (arg == "--version" || arg == "-v")
-      show_version = true;
-    else
-      file_path = arg;
-  }
-
-  if (show_help) {
-    show_main_message();
-    return 0;
-  }
-
-  if (show_version) {
-    std::println("Compiler on {}\n", COMPILER_VERSION);
-    return 0;
-  }
-
-  if (file_path.empty()) {
-    show_main_message();
-    return 1;
-  }
-
-  const std::string source{read_file(file_path)};
-
-  Diagnostics diagnostics;
-
-  Parser parser(source, diagnostics);
-  auto statements = parser.parse();
-
-  if (diagnostics.has_errors()) {
-    diagnostics.output();
-    return 1;
-  }
-
-  Block program;
-  program.stmts = std::move(statements);
-
-  ScopeManager symbol_table{diagnostics};
-  symbol_table.enter_scope();
-
-  declare_builtins(symbol_table);
-
-  try {
-    DeclarationCollector collector{symbol_table};
-    for (std::size_t i{}; i < program.stmts.size(); ++i) {
-      program.stmts[i]->accept(collector);
+    for (int i = 1; i < argc; i++)
+    {
+        if (std::string arg = argv[i]; arg == "--help" || arg == "-h")
+            show_help = true;
+        else if (arg == "--version" || arg == "-v")
+            show_version = true;
+        else
+            file_path = arg;
     }
-  } catch (const DiagnosticAbort &) {
-  }
 
-  symbol_table.set_shadow_warnings_enabled(false);
+    if (show_help)
+    {
+        show_main_message();
+        return 0;
+    }
 
-  if (diagnostics.has_errors()) {
+    if (show_version)
+    {
+        std::println("Compiler on {}\n", COMPILER_VERSION);
+        return 0;
+    }
+
+    if (file_path.empty())
+    {
+        show_main_message();
+        return 1;
+    }
+
+    const std::string source{read_file(file_path)};
+
+    Diagnostics diagnostics;
+
+    Parser parser(source, diagnostics);
+    auto statements = parser.parse();
+
+    if (diagnostics.has_errors())
+    {
+        diagnostics.output();
+        return 1;
+    }
+
+    Block program;
+    program.stmts = std::move(statements);
+
+    ScopeManager symbol_table{diagnostics};
+    symbol_table.enter_scope();
+
+    declare_builtins(symbol_table);
+
+    try
+    {
+        DeclarationCollector collector{symbol_table};
+        for (std::size_t i{}; i < program.stmts.size(); ++i)
+        {
+            program.stmts[i]->accept(collector);
+        }
+    }
+    catch (const DiagnosticAbort &)
+    {
+    }
+
+    symbol_table.set_shadow_warnings_enabled(false);
+
+    if (diagnostics.has_errors())
+    {
+        diagnostics.output();
+        return 1;
+    }
+
+    TypeChecker type_checker{symbol_table, diagnostics};
+    try
+    {
+        type_checker.check(program);
+        type_checker.finalize();
+    }
+    catch (const DiagnosticAbort &)
+    {
+    }
+
     diagnostics.output();
-    return 1;
-  }
 
-  TypeChecker type_checker{symbol_table, diagnostics};
-  try {
-    type_checker.check(program);
-    type_checker.finalize();
-  } catch (const DiagnosticAbort &) {
-  }
-
-  // symbol_table.print_symbols();
-  diagnostics.output();
-
-  return diagnostics.has_errors() ? 1 : 0;
+    return diagnostics.has_errors() ? 1 : 0;
 }
