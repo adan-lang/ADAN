@@ -36,7 +36,15 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${PROJECT_INCLUDE_DIRS}
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE fast_float)
+target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
+    ${LLVM_INCLUDE_DIRS}
+)
+
+target_compile_options(${PROJECT_NAME} PRIVATE
+    ${LLVM_DEFINITIONS}
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE fast_float LLVM)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
     target_compile_options(${PROJECT_NAME} PRIVATE
