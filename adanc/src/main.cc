@@ -1,4 +1,8 @@
+#include <llvm/IR/LLVMContext.h>
+#include <llvm/Support/raw_ostream.h>
+
 #include <cstddef>
+#include <cstdio>
 #include <print>
 #include <string>
 #include <utility>
@@ -6,6 +10,7 @@
 #include "built-ins.hh"
 #include "declaration-collector.hh"
 #include "diagnostics.hh"
+#include "lower.hh"
 #include "parser.hh"
 #include "scope-manager.hh"
 #include "tools.hh"
@@ -23,6 +28,7 @@ static inline void show_main_message()
                  "version of ADAN that's on your machine.\n"
                  "    \033[32m--help\033[0m, \033[32m-h\033[0m        Display "
                  "this message.\n"
+                 "    \033[32m--emit-ir\033[0m             Emit LLVM IR for supported functions.\n"
                  "\n"
                  "ADAN is in BETA and is a passion project of mine.\n"
                  "\n"
@@ -100,8 +106,7 @@ int main(const int argc, char *argv[])
         }
     }
     catch (const DiagnosticAbort &)
-    {
-    }
+    {}
 
     symbol_table.set_shadow_warnings_enabled(false);
 
@@ -118,10 +123,44 @@ int main(const int argc, char *argv[])
         type_checker.finalize();
     }
     catch (const DiagnosticAbort &)
+    {}
+
+    if (diagnostics.has_errors())
     {
+        diagnostics.output();
+        return 1;
     }
 
-    diagnostics.output();
+    llvm::LLVMContext llvm_context;
+    ASTLowerer lowerer{llvm_context, file_path, diagnostics};
 
-    return diagnostics.has_errors() ? 1 : 0;
+    try
+    {
+        for (const auto &stmt : program.stmts)
+        {
+            const auto *function = dynamic_cast<const FuncDecl *>(stmt.get());
+            const TypePtr function_type = prune(symbol_table.lookup(function->name)->type);
+
+            lowerer.declare_function(function->name, function_type);
+        }
+
+        for (const auto &stmt : program.stmts)
+        {
+            const auto *function = dynamic_cast<const FuncDecl *>(stmt.get());
+
+            auto lowered = lowerer.lower_function(*function);
+            if (!lowered)
+                diagnostics.error("Failed to lower function '" + function->name + "': " + lowered.error());
+        }
+    }
+    catch (const DiagnosticAbort &)
+    {}
+
+    diagnostics.output();
+    if (diagnostics.has_errors())
+        return 1;
+
+    lowerer.module().print(llvm::outs(), nullptr);
+
+    return 0;
 }

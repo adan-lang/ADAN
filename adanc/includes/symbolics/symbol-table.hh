@@ -34,12 +34,11 @@ class SymbolTable {
   protected:
     std::vector<Scope> scopes;
     Diagnostics &diagnostics;
+
     bool warn_shadowing{true};
 
   public:
-    explicit SymbolTable(Diagnostics &diagnostics) : diagnostics{diagnostics}
-    {
-    }
+    explicit SymbolTable(Diagnostics &diagnostics) : diagnostics{diagnostics} {}
 
     void declare(const Symbol &symbol);
 

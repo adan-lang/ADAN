@@ -7,30 +7,30 @@
 
 #include <expected>
 #include <memory>
-#include <span>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 
+#include "ast-visitor.hh"
 #include "ast.hh"
+#include "diagnostics.hh"
+#include "types.hh"
 
-class ASTLowerer {
+class ASTLowerer : public ASTVisitor {
     llvm::LLVMContext &context;
     llvm::IRBuilder<> builder;
 
     std::unique_ptr<llvm::Module> _module;
+    Diagnostics &diagnostics;
+    std::unordered_map<std::string, llvm::Value *> local_values;
+
+    llvm::Value *result{};
 
   public:
-    ASTLowerer(llvm::LLVMContext &context, std::string_view module_name);
+    ASTLowerer(llvm::LLVMContext &context, std::string_view module_name, Diagnostics &diagnostics);
 
-    /**
-     *
-     * Creates `i64 name()` and lowers `body` into it. Returns LLVM's verifier.
-     *
-     * If the result isn't valid IR, send a message.
-     *
-     * Temporary until the AST has a function node.
-     */
-    std::expected<llvm::Function *, std::string> lower_function(std::string_view name, std::span<const Stmt> body);
+    void declare_function(std::string_view name, const TypePtr &function_type);
+    std::expected<llvm::Function *, std::string> lower_function(const FuncDecl &declaration);
 
     const llvm::Module &module() const
     {
@@ -47,4 +47,32 @@ class ASTLowerer {
     }
 
   private:
+    llvm::Type *lower_type(const TypePtr &type, bool allow_void = false);
+    llvm::Value *lower_expr(Expr &expr);
+
+    void visit(IntLiteral &node) override;
+    void visit(FloatLiteral &node) override;
+    void visit(BoolLiteral &node) override;
+    void visit(StringLiteral &node) override;
+    // void visit(InterpolatedString &node) override;
+    // void visit(ArrayLiteral &node) override;
+
+    // void visit(ArrayIndex &node) override;
+    void visit(CallExpr &node) override;
+    void visit(Identifier &node) override;
+    // void visit(BinaryExpr &node) override;
+    // void visit(Identifier &node) override;
+    // void visit(UnaryExpr &node) override;
+
+    void lower_stmt(Stmt &stmt);
+
+    void visit(ReturnStmt &node) override;
+    void visit(ExprStmt &node) override;
+    void visit(IfStmt &node) override;
+    // void visit(NumericForStmt &node) override;
+    // void visit(ForInStmt &node) override;
+    // void visit(WhileStmt &node) override;
+
+    // void visit(LocalDecl &node) override;
+    // void visit(FuncDecl &node) override;
 };
