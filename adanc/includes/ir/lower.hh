@@ -16,7 +16,7 @@
 #include "diagnostics.hh"
 #include "types.hh"
 
-class ASTLowerer : public ASTVisitor {
+class IRLowerer : public ASTVisitor {
     llvm::LLVMContext &context;
     llvm::IRBuilder<> builder;
 
@@ -27,7 +27,7 @@ class ASTLowerer : public ASTVisitor {
     llvm::Value *result{};
 
   public:
-    ASTLowerer(llvm::LLVMContext &context, std::string_view module_name, Diagnostics &diagnostics);
+    IRLowerer(llvm::LLVMContext &context, std::string_view module_name, Diagnostics &diagnostics);
 
     void declare_function(std::string_view name, const TypePtr &function_type);
     std::expected<llvm::Function *, std::string> lower_function(const FuncDecl &declaration);
@@ -47,6 +47,8 @@ class ASTLowerer : public ASTVisitor {
     }
 
   private:
+    void lower_program(Block &program);
+
     llvm::Type *lower_type(const TypePtr &type, bool allow_void = false);
     llvm::Value *lower_expr(Expr &expr);
 
