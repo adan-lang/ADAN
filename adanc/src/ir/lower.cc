@@ -15,13 +15,16 @@
 
 #include "ast.hh"
 
-ASTLowerer::ASTLowerer(llvm::LLVMContext &context, std::string_view module_name, Diagnostics &diagnostics) : context(context), builder(context), _module(std::make_unique<llvm::Module>(module_name, context)), diagnostics(diagnostics)
+// @todo Do this
+void IRLowerer::lower_program(Block &program) {}
+
+IRLowerer::IRLowerer(llvm::LLVMContext &context, std::string_view module_name, Diagnostics &diagnostics) : context(context), builder(context), _module(std::make_unique<llvm::Module>(module_name, context)), diagnostics(diagnostics)
 {
     auto *print_type = llvm::FunctionType::get(builder.getVoidTy(), {builder.getPtrTy()}, false);
     llvm::Function::Create(print_type, llvm::Function::ExternalLinkage, "print", *_module);
 }
 
-llvm::Type *ASTLowerer::lower_type(const TypePtr &type, bool allow_void)
+llvm::Type *IRLowerer::lower_type(const TypePtr &type, bool allow_void)
 {
     const TypePtr resolved = prune(type);
     switch (resolved->kind)
@@ -45,7 +48,7 @@ llvm::Type *ASTLowerer::lower_type(const TypePtr &type, bool allow_void)
     diagnostics.error("IR lowering does not support this type yet");
 }
 
-void ASTLowerer::declare_function(std::string_view name, const TypePtr &function_type)
+void IRLowerer::declare_function(std::string_view name, const TypePtr &function_type)
 {
     const TypePtr resolved_function_type = prune(function_type);
     if (resolved_function_type->kind != TypeKind::Function)
@@ -64,7 +67,7 @@ void ASTLowerer::declare_function(std::string_view name, const TypePtr &function
     llvm::Function::Create(type, llvm::Function::ExternalLinkage, name, *_module);
 }
 
-std::expected<llvm::Function *, std::string> ASTLowerer::lower_function(const FuncDecl &declaration)
+std::expected<llvm::Function *, std::string> IRLowerer::lower_function(const FuncDecl &declaration)
 {
     llvm::Function *function = _module->getFunction(declaration.name);
     if (function == nullptr)
@@ -98,7 +101,7 @@ std::expected<llvm::Function *, std::string> ASTLowerer::lower_function(const Fu
     return function;
 }
 
-llvm::Value *ASTLowerer::lower_expr(Expr &expr)
+llvm::Value *IRLowerer::lower_expr(Expr &expr)
 {
     result = nullptr;
     expr.accept(*this);
@@ -107,7 +110,7 @@ llvm::Value *ASTLowerer::lower_expr(Expr &expr)
     return result;
 }
 
-void ASTLowerer::lower_stmt(Stmt &stmt)
+void IRLowerer::lower_stmt(Stmt &stmt)
 {
     stmt.accept(*this);
 }
