@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <cstdio>
+#include <format>
 #include <print>
 #include <string>
 #include <utility>
@@ -132,25 +133,29 @@ int main(const int argc, char *argv[])
     }
 
     llvm::LLVMContext llvm_context;
-    ASTLowerer lowerer{llvm_context, file_path, diagnostics};
+    IRLowerer lowerer{llvm_context, file_path, diagnostics};
 
     try
     {
+        // @todo Work on supporting non-top-level function declarations.
         for (const auto &stmt : program.stmts)
         {
-            const auto *function = dynamic_cast<const FuncDecl *>(stmt.get());
-            const TypePtr function_type = prune(symbol_table.lookup(function->name)->type);
+            const auto *function = dynamic_cast<FuncDecl *>(stmt.get());
+            if (function == nullptr)
+                diagnostics.error("Lowering currently supports top-level functions only.");
 
-            lowerer.declare_function(function->name, function_type);
+            lowerer.declare_function(function->name, prune(symbol_table.lookup(function->name)->type));
         }
 
         for (const auto &stmt : program.stmts)
         {
-            const auto *function = dynamic_cast<const FuncDecl *>(stmt.get());
+            const auto *function = dynamic_cast<FuncDecl *>(stmt.get());
 
             auto lowered = lowerer.lower_function(*function);
             if (!lowered)
-                diagnostics.error("Failed to lower function '" + function->name + "': " + lowered.error());
+                diagnostics.error(std::format("Failed to lower function: \"{}\": {}", function->name, lowered.error()));
+
+            // @todo Lower top-level statements.
         }
     }
     catch (const DiagnosticAbort &)
