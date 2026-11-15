@@ -3,22 +3,22 @@
 #include "ast.hh"
 #include "lower.hh"
 
-void ASTLowerer::visit(IntLiteral &node)
+void IRLowerer::visit(IntLiteral &node)
 {
     result = llvm::ConstantInt::getSigned(builder.getInt64Ty(), node.value);
 }
 
-void ASTLowerer::visit(FloatLiteral &node)
+void IRLowerer::visit(FloatLiteral &node)
 {
     result = llvm::ConstantFP::get(builder.getDoubleTy(), node.value);
 }
 
-void ASTLowerer::visit(BoolLiteral &node)
+void IRLowerer::visit(BoolLiteral &node)
 {
     result = llvm::ConstantInt::get(builder.getInt1Ty(), node.value);
 }
 
-void ASTLowerer::visit(StringLiteral &node)
+void IRLowerer::visit(StringLiteral &node)
 {
     result = builder.CreateGlobalString(node.value);
 }

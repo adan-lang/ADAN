@@ -4,7 +4,7 @@
 
 #include "lower.hh"
 
-void ASTLowerer::visit(CallExpr &node)
+void IRLowerer::visit(CallExpr &node)
 {
     llvm::Function *function = _module->getFunction(node.callee);
     if (function == nullptr)
@@ -29,7 +29,7 @@ void ASTLowerer::visit(CallExpr &node)
     result = builder.CreateCall(function, args);
 }
 
-void ASTLowerer::visit(Identifier &node)
+void IRLowerer::visit(Identifier &node)
 {
     const auto value = local_values.find(node.name);
     if (value == local_values.end())
