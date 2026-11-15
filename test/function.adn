@@ -1,0 +1,11 @@
+function x -> () {
+
+}
+
+function y -> () {
+    <- 1
+}
+
+function z -> (a, b) {
+
+}

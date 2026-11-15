@@ -1,0 +1,13 @@
+local x = true
+if x {
+    print <- ("X is true!")
+}
+
+if {
+    print <- ("Just a true condition by default :P")
+}
+
+local y = false
+if y {
+    print <- ("Hopefully this isn't ran..")
+}
