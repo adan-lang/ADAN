@@ -14,6 +14,7 @@
 class Parser {
     Lexer lexer;
     Token current_token;
+    Token next_token;
 
     Diagnostics &diagnostics;
 
@@ -31,6 +32,7 @@ class Parser {
         try
         {
             current_token = lexer.next();
+            next_token = lexer.next();
             while (current_token.kind != TokenKind::Eof)
                 statements.push_back(parse_stmt());
         }
@@ -43,7 +45,10 @@ class Parser {
   private:
     Token advance()
     {
-        return std::exchange(current_token, lexer.next());
+        Token previous = std::move(current_token);
+        current_token = std::move(next_token);
+        next_token = lexer.next();
+        return previous;
     }
 
     Token expect(const TokenKind kind)

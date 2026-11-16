@@ -309,7 +309,7 @@ std::unique_ptr<Expr> Parser::parse_primary()
 
     case TokenKind::Ident: {
         auto token = advance();
-        if (!matches(TokenKind::BackArrow))
+        if (!matches(TokenKind::BackArrow) || next_token.kind != TokenKind::LParen)
             return std::make_unique<Identifier>(std::move(token.lexeme));
 
         advance();
