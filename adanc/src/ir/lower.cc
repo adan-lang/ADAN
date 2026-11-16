@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "ast.hh"
+#include "type-helpers.hh"
 
 IRLowerer::IRLowerer(llvm::LLVMContext &context, std::string_view module_name, Diagnostics &diagnostics) : context(context), builder(context), _module(std::make_unique<llvm::Module>(module_name, context)), diagnostics(diagnostics)
 {
@@ -46,7 +47,7 @@ llvm::Type *IRLowerer::lower_type(const TypePtr &type, bool allow_void)
         break;
     }
 
-    diagnostics.error("IR lowering does not support this type yet");
+    diagnostics.error(std::format("IR lowering does not support the {} type yet", type_to_string(resolved)));
 }
 
 void IRLowerer::declare_function(std::string_view name, const TypePtr &function_type)
@@ -78,15 +79,22 @@ std::expected<llvm::Function *, std::string> IRLowerer::lower_function(const Fun
         diagnostics.error("Function parameter count does not match its LLVM declaration");
 
     local_values.clear();
+    llvm::BasicBlock *entry_block = llvm::BasicBlock::Create(context, "entry", function);
+    builder.SetInsertPoint(entry_block);
+
+    llvm::IRBuilder<> entry_builder(context);
+    entry_builder.SetInsertPoint(entry_block, entry_block->begin());
+
     std::size_t parameter_index{};
     for (llvm::Argument &argument : function->args())
     {
         const std::string &parameter_name = declaration.params[parameter_index++];
         argument.setName(parameter_name);
-        local_values.emplace(parameter_name, &argument);
-    }
 
-    builder.SetInsertPoint(llvm::BasicBlock::Create(context, "entry", function));
+        llvm::AllocaInst *storage = entry_builder.CreateAlloca(argument.getType(), nullptr, parameter_name);
+        builder.CreateStore(&argument, storage);
+        local_values.emplace(parameter_name, storage);
+    }
 
     for (const auto &stmt : declaration.body.stmts)
     {
