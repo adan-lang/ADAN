@@ -38,3 +38,12 @@ function sum -> (codes) {
 
 print <- (`Sum ${sum <- (codes)}`)
 ```
+
+---
+
+### TODO
+
+1. Work on `BinaryExpr` lowering for occurrences such as: `b + c`.
+2. Handle unused parameters whose types remain unresolved, without trying to lower `t1`.
+3. Add scope handling for locals so shadowing works properly.
+4. Decide how I should lower uninitalized locals (the type checker allows this).
