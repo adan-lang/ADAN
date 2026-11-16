@@ -1,22 +1,23 @@
 #include "lower.hh"
 
 #include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/Constants.h>
+#include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
+#include <llvm/IR/Type.h>
 #include <llvm/IR/Verifier.h>
 #include <llvm/Support/raw_ostream.h>
 
 #include <expected>
+#include <format>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "ast.hh"
-
-// @todo Do this
-void IRLowerer::lower_program(Block &program) {}
 
 IRLowerer::IRLowerer(llvm::LLVMContext &context, std::string_view module_name, Diagnostics &diagnostics) : context(context), builder(context), _module(std::make_unique<llvm::Module>(module_name, context)), diagnostics(diagnostics)
 {
@@ -88,7 +89,11 @@ std::expected<llvm::Function *, std::string> IRLowerer::lower_function(const Fun
     builder.SetInsertPoint(llvm::BasicBlock::Create(context, "entry", function));
 
     for (const auto &stmt : declaration.body.stmts)
+    {
+        if (builder.GetInsertBlock()->getTerminatorOrNull() != nullptr)
+            break;
         lower_stmt(*stmt);
+    }
 
     std::string error;
     llvm::raw_string_ostream stream(error);
@@ -99,6 +104,26 @@ std::expected<llvm::Function *, std::string> IRLowerer::lower_function(const Fun
     }
 
     return function;
+}
+
+void IRLowerer::lower_program(Block &program)
+{
+    llvm::FunctionType *function_type = llvm::FunctionType::get(llvm::Type::getInt32Ty(context), false);
+    llvm::Function *function = llvm::Function::Create(function_type, llvm::Function::ExternalLinkage, "main", *_module);
+
+    builder.SetInsertPoint(llvm::BasicBlock::Create(context, "main", function));
+
+    for (auto &stmt : program.stmts)
+        if (dynamic_cast<FuncDecl *>(stmt.get()) == nullptr)
+            lower_stmt(*stmt);
+
+    if (builder.GetInsertBlock()->getTerminatorOrNull() == nullptr)
+        builder.CreateRet(llvm::ConstantInt::get(llvm::Type::getInt32Ty(context), 0));
+
+    std::string error;
+    llvm::raw_string_ostream stream(error);
+    if (llvm::verifyModule(*_module, &stream))
+        diagnostics.error(std::format("LLVM module verification failed:\n{}", stream.str()));
 }
 
 llvm::Value *IRLowerer::lower_expr(Expr &expr)
