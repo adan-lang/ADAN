@@ -1,5 +1,6 @@
-function a {
-    if {
-        <- 1
-    }
+function a -> (b, c) {
+    local d = b + c
+    <- d
 }
+
+a <- (1, 2)
