@@ -32,6 +32,8 @@ class IRLowerer : public ASTVisitor {
     void declare_function(std::string_view name, const TypePtr &function_type);
     std::expected<llvm::Function *, std::string> lower_function(const FuncDecl &declaration);
 
+    void lower_program(Block &program);
+
     const llvm::Module &module() const
     {
         return *_module;
@@ -47,8 +49,6 @@ class IRLowerer : public ASTVisitor {
     }
 
   private:
-    void lower_program(Block &program);
-
     llvm::Type *lower_type(const TypePtr &type, bool allow_void = false);
     llvm::Value *lower_expr(Expr &expr);
 

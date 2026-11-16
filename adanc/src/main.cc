@@ -141,22 +141,22 @@ int main(const int argc, char *argv[])
         for (const auto &stmt : program.stmts)
         {
             const auto *function = dynamic_cast<FuncDecl *>(stmt.get());
-            if (function == nullptr)
-                diagnostics.error("Lowering currently supports top-level functions only.");
-
-            lowerer.declare_function(function->name, prune(symbol_table.lookup(function->name)->type));
+            if (function != nullptr)
+                lowerer.declare_function(function->name, prune(symbol_table.lookup(function->name)->type));
         }
 
         for (const auto &stmt : program.stmts)
         {
             const auto *function = dynamic_cast<FuncDecl *>(stmt.get());
-
-            auto lowered = lowerer.lower_function(*function);
-            if (!lowered)
-                diagnostics.error(std::format("Failed to lower function: \"{}\": {}", function->name, lowered.error()));
-
-            // @todo Lower top-level statements.
+            if (function != nullptr)
+            {
+                auto lowered = lowerer.lower_function(*function);
+                if (!lowered)
+                    diagnostics.error(std::format("Failed to lower function: \"{}\": {}", function->name, lowered.error()));
+            }
         }
+
+        lowerer.lower_program(program);
     }
     catch (const DiagnosticAbort &)
     {}
