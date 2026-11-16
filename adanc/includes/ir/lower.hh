@@ -75,6 +75,6 @@ class IRLowerer : public ASTVisitor {
     // void visit(ForInStmt &node) override;
     // void visit(WhileStmt &node) override;
 
-    // void visit(LocalDecl &node) override;
+    void visit(LocalDecl &node) override;
     // void visit(FuncDecl &node) override;
 };
