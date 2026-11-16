@@ -1,5 +1,8 @@
 #include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/GlobalVariable.h>
 #include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/Instructions.h>
+#include <llvm/IR/Type.h>
 
 #include "ast.hh"
 #include "lower.hh"
@@ -56,4 +59,25 @@ void IRLowerer::visit(IfStmt &node)
         builder.CreateBr(continuation_block);
 
     builder.SetInsertPoint(continuation_block);
+}
+
+void IRLowerer::visit(LocalDecl &node)
+{
+    if (!node.init)
+        diagnostics.error("Local declarations without an initializer are not supported in IR lowering");
+
+    llvm::Value *value = lower_expr(*node.init);
+    llvm::Type *ident_type = value->getType();
+    if (ident_type == nullptr)
+        diagnostics.error("Local initializer did not produce an LLVM type");
+
+    llvm::IRBuilder<> temp_builder(context);
+    
+    llvm::BasicBlock &entry_block = builder.GetInsertBlock()->getParent()->getEntryBlock();
+    temp_builder.SetInsertPoint(&entry_block, entry_block.begin());
+
+    llvm::AllocaInst *storage = temp_builder.CreateAlloca(ident_type);
+    builder.CreateStore(value, storage);
+
+    local_values.insert({node.name, storage});
 }
