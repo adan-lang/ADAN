@@ -18,26 +18,6 @@ void IRLowerer::visit(ExprStmt &node)
     lower_expr(*node.expr);
 }
 
-/**
- *
- * Breakdown of this function:
- *  - Create a new `condition`, which is an `llvm::Value *`.
- *
- *  - Create `function`, which is the LLVM function that owns the block.
- *
- *  - Create a `then` block, the parent of which is `function`.
- *  - - The block is this portion: `if <cond> { ... (Block) }`
- *
- *  - Create a `continuation` block, which is what is after the if statement, not the else clause.
- *
- *  - Update the "Insert Point", which is updating what block we're in to be the `then` block.
- *
- *  - Iterate over each statement in the if statement's statement list.
- *
- *  - Check if there is no terminator (like `return`), if not, create a branch and set its destination to the `continuation` block.
- *
- *  - Update the "Insert Point" to be the `continuation` block.
- */
 void IRLowerer::visit(IfStmt &node)
 {
     if (const auto *literal = dynamic_cast<const BoolLiteral *>(node.condition.get()))
