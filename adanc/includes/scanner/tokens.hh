@@ -54,6 +54,7 @@ enum class TokenKind : std::uint8_t {
     MinusAssign,    // -=
     MultiplyAssign, // *=
     DivideAssign,   // /=
+    PowerAssign,    // ^=
     ModuloAssign,   // %=
     EqualEqual,     // ==
     NotEqualEqual,  // !==

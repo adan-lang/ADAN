@@ -29,6 +29,12 @@ void register_binary_assignment(OperatorTable &table)
         table.add_operator(BinaryOperator{make_float(), BinaryOp::DivideAssign, make_float(), make_float()});
     }
     {
+        table.add_operator(BinaryOperator{make_int(), BinaryOp::PowerAssign, make_int(), make_int()});
+        table.add_operator(BinaryOperator{make_float(), BinaryOp::PowerAssign, make_int(), make_float()});
+        table.add_operator(BinaryOperator{make_int(), BinaryOp::PowerAssign, make_float(), make_float()});
+        table.add_operator(BinaryOperator{make_float(), BinaryOp::PowerAssign, make_float(), make_float()});
+    }
+    {
         table.add_operator(BinaryOperator{make_int(), BinaryOp::ModuloAssign, make_int(), make_int()});
         table.add_operator(BinaryOperator{make_float(), BinaryOp::ModuloAssign, make_int(), make_float()});
         table.add_operator(BinaryOperator{make_int(), BinaryOp::ModuloAssign, make_float(), make_float()});

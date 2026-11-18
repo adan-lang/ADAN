@@ -38,6 +38,8 @@ inline std::string_view op_to_string(BinaryOp op)
         return "*=";
     case BinaryOp::DivideAssign:
         return "/=";
+    case BinaryOp::PowerAssign:
+        return "^=";
     case BinaryOp::ModuloAssign:
         return "%=";
     }

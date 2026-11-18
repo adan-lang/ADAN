@@ -73,6 +73,11 @@ Token Lexer::lex()
 
     case '^':
         advance();
+        if (peek() == '=')
+        {
+            advance();
+            return Token{TokenKind::PowerAssign, "^="};
+        }
         return Token{TokenKind::Power, "^"};
 
     case '%':

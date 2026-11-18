@@ -102,6 +102,7 @@ enum class BinaryOp : uint8_t {
     MinusAssign,
     MultiplyAssign,
     DivideAssign,
+    PowerAssign,
     ModuloAssign,
 };
 

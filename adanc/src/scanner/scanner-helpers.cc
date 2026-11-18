@@ -88,6 +88,8 @@ std::string_view token_kind_name(const TokenKind kind)
         return "MultiplyAssign";
     case TokenKind::DivideAssign:
         return "DivideAssign";
+    case TokenKind::PowerAssign:
+        return "PowerAssign";
     case TokenKind::ModuloAssign:
         return "ModuloAssign";
     case TokenKind::EqualEqual:

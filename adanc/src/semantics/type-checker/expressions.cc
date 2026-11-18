@@ -15,6 +15,7 @@ static bool is_compound_assignment(BinaryOp op)
     case BinaryOp::MinusAssign:
     case BinaryOp::MultiplyAssign:
     case BinaryOp::DivideAssign:
+    case BinaryOp::PowerAssign:
     case BinaryOp::ModuloAssign:
         return true;
     default:

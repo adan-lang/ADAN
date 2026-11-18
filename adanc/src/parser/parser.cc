@@ -54,6 +54,9 @@ std::unique_ptr<Expr> Parser::parse_expr()
     case TokenKind::DivideAssign:
         op = BinaryOp::DivideAssign;
         break;
+    case TokenKind::PowerAssign:
+        op = BinaryOp::PowerAssign;
+        break;
     case TokenKind::ModuloAssign:
         op = BinaryOp::ModuloAssign;
         break;
