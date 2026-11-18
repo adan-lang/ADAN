@@ -27,7 +27,7 @@
 
 ; Returns          --> "<- <value>"                                      <-- Note, "<-" is shared between this and providing arguments to a function call.
 
-; Binary Operators --> ("+", "-", "*", "/", "%", ">", "<", "!", "=" and their "=" variants, i.e., "+=", or "==" and "!==")
+; Binary Operators --> ("+", "-", "*", "/", "^", "%", ">", "<", "!", "=" and their "=" variants, i.e., "+=", or "==" and "!==")
 
 ; Unary Operators  --> "-", "#", "++", "--", "!"
 
