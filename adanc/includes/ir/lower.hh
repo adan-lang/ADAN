@@ -2,6 +2,7 @@
 
 #include <llvm/IR/Function.h>
 #include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/Instructions.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
 
@@ -22,7 +23,7 @@ class IRLowerer : public ASTVisitor {
 
     std::unique_ptr<llvm::Module> _module;
     Diagnostics &diagnostics;
-    std::unordered_map<std::string, llvm::Value *> local_values;
+    std::unordered_map<std::string, llvm::AllocaInst *> local_values;
 
     llvm::Value *result{};
 
@@ -62,7 +63,7 @@ class IRLowerer : public ASTVisitor {
     // void visit(ArrayIndex &node) override;
     void visit(CallExpr &node) override;
     void visit(Identifier &node) override;
-    // void visit(BinaryExpr &node) override;
+    void visit(BinaryExpr &node) override;
     // void visit(Identifier &node) override;
     // void visit(UnaryExpr &node) override;
 
