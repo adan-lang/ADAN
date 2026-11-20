@@ -5,8 +5,6 @@
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
 
-#include <stdexcept>
-
 #include "ast.hh"
 #include "lower.hh"
 
