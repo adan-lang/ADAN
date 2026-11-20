@@ -58,7 +58,7 @@ class IRLowerer : public ASTVisitor {
     void visit(BoolLiteral &node) override;
     void visit(StringLiteral &node) override;
     // void visit(InterpolatedString &node) override;
-    // void visit(ArrayLiteral &node) override;
+    void visit(ArrayLiteral &node) override;
 
     // void visit(ArrayIndex &node) override;
     void visit(CallExpr &node) override;
