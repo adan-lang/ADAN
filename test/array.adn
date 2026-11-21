@@ -1,0 +1,7 @@
+local x = [1, 2, 3]
+
+function y -> (index) {
+    <- index + 1.2
+}
+
+y <- (x[1])
