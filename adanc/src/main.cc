@@ -29,7 +29,6 @@ static inline void show_main_message()
                  "version of ADAN that's on your machine.\n"
                  "    \033[32m--help\033[0m, \033[32m-h\033[0m        Display "
                  "this message.\n"
-                 "    \033[32m--emit-ir\033[0m             Emit LLVM IR for supported functions.\n"
                  "\n"
                  "ADAN is in BETA and is a passion project of mine.\n"
                  "\n"
