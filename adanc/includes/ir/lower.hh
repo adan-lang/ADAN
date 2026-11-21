@@ -52,6 +52,7 @@ class IRLowerer : public ASTVisitor {
   private:
     llvm::Type *lower_type(const TypePtr &type, bool allow_void = false);
     llvm::Value *lower_expr(Expr &expr);
+    llvm::Value *lower_array_element_address(llvm::AllocaInst *array, llvm::Value *index);
 
     void visit(IntLiteral &node) override;
     void visit(FloatLiteral &node) override;
