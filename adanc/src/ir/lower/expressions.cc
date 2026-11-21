@@ -44,6 +44,7 @@ llvm::Value *IRLowerer::lower_array_element_address(llvm::AllocaInst *array, llv
     return builder.CreateGEP(array_type, array, indices);
 }
 
+// @todo Support nested indexing and array-literal bases
 void IRLowerer::visit(ArrayIndex &node)
 {
     if (auto ident = dynamic_cast<Identifier *>(node.array.get()); ident != nullptr)
@@ -98,6 +99,7 @@ void IRLowerer::visit(Identifier &node)
     result = loaded;
 }
 
+// @todo Simplify the massive node.op switch statement
 void IRLowerer::visit(BinaryExpr &node)
 {
     llvm::Value *rhs = lower_expr(*node.rhs);
