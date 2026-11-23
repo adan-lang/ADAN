@@ -117,7 +117,6 @@ void IRLowerer::visit(Identifier &node)
     result = loaded;
 }
 
-// @todo Simplify the massive node.op switch statement
 void IRLowerer::visit(BinaryExpr &node)
 {
     llvm::Value *rhs = lower_expr(*node.rhs);
@@ -151,124 +150,88 @@ void IRLowerer::visit(BinaryExpr &node)
     }
 
     llvm::Value *lhs = lower_expr(*node.lhs);
+    const bool is_float = lhs->getType()->isDoubleTy() || rhs->getType()->isDoubleTy();
+    if (is_float)
+    {
+        if (lhs->getType()->isIntegerTy())
+            lhs = builder.CreateSIToFP(lhs, llvm::Type::getDoubleTy(context));
+        if (rhs->getType()->isIntegerTy())
+            rhs = builder.CreateSIToFP(rhs, llvm::Type::getDoubleTy(context));
+    }
 
     llvm::Value *instruction = nullptr;
     switch (node.op)
     {
     case BinaryOp::Plus:
         // @todo Eventually add support for string concatenation (str + str).
-        if (lhs->getType()->isDoubleTy() && rhs->getType()->isDoubleTy())
+        if (is_float)
             instruction = builder.CreateFAdd(lhs, rhs);
-        if (lhs->getType()->isIntegerTy() && rhs->getType()->isDoubleTy())
-            instruction = builder.CreateFAdd(builder.CreateSIToFP(lhs, llvm::Type::getDoubleTy(context)), rhs);
-        if (lhs->getType()->isDoubleTy() && rhs->getType()->isIntegerTy())
-            instruction = builder.CreateFAdd(lhs, builder.CreateSIToFP(rhs, llvm::Type::getDoubleTy(context)));
-        if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy())
+        else if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy())
             instruction = builder.CreateAdd(lhs, rhs);
         break;
     case BinaryOp::Minus:
-        if (lhs->getType()->isDoubleTy() && rhs->getType()->isDoubleTy())
+        if (is_float)
             instruction = builder.CreateFSub(lhs, rhs);
-        if (lhs->getType()->isIntegerTy() && rhs->getType()->isDoubleTy())
-            instruction = builder.CreateFSub(builder.CreateSIToFP(lhs, llvm::Type::getDoubleTy(context)), rhs);
-        if (lhs->getType()->isDoubleTy() && rhs->getType()->isIntegerTy())
-            instruction = builder.CreateFSub(lhs, builder.CreateSIToFP(rhs, llvm::Type::getDoubleTy(context)));
-        if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy())
+        else if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy())
             instruction = builder.CreateSub(lhs, rhs);
         break;
     case BinaryOp::Multiply:
-        if (lhs->getType()->isDoubleTy() && rhs->getType()->isDoubleTy())
+        if (is_float)
             instruction = builder.CreateFMul(lhs, rhs);
-        if (lhs->getType()->isIntegerTy() && rhs->getType()->isDoubleTy())
-            instruction = builder.CreateFMul(builder.CreateSIToFP(lhs, llvm::Type::getDoubleTy(context)), rhs);
-        if (lhs->getType()->isDoubleTy() && rhs->getType()->isIntegerTy())
-            instruction = builder.CreateFMul(lhs, builder.CreateSIToFP(rhs, llvm::Type::getDoubleTy(context)));
-        if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy())
+        else if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy())
             instruction = builder.CreateMul(lhs, rhs);
         break;
     case BinaryOp::Divide:
-        if (lhs->getType()->isDoubleTy() && rhs->getType()->isDoubleTy())
+        if (is_float)
             instruction = builder.CreateFDiv(lhs, rhs);
-        if (lhs->getType()->isIntegerTy() && rhs->getType()->isDoubleTy())
-            instruction = builder.CreateFDiv(builder.CreateSIToFP(lhs, llvm::Type::getDoubleTy(context)), rhs);
-        if (lhs->getType()->isDoubleTy() && rhs->getType()->isIntegerTy())
-            instruction = builder.CreateFDiv(lhs, builder.CreateSIToFP(rhs, llvm::Type::getDoubleTy(context)));
-        if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy())
+        else if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy())
             instruction = builder.CreateSDiv(lhs, rhs);
         break;
     case BinaryOp::Power:
         break;
     case BinaryOp::Modulo:
-        if (lhs->getType()->isFloatTy() && rhs->getType()->isFloatTy())
+        if (is_float)
             instruction = builder.CreateFRem(lhs, rhs);
-        if (lhs->getType()->isIntegerTy() && rhs->getType()->isFloatTy())
-            instruction = builder.CreateFRem(builder.CreateSIToFP(lhs, llvm::Type::getDoubleTy(context)), rhs);
-        if (lhs->getType()->isFloatTy() && rhs->getType()->isIntegerTy())
-            instruction = builder.CreateFRem(lhs, builder.CreateSIToFP(rhs, llvm::Type::getDoubleTy(context)));
-        if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy())
+        else if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy())
             instruction = builder.CreateSRem(lhs, rhs);
         break;
     case BinaryOp::GreaterThan:
-        if (lhs->getType()->isDoubleTy() && rhs->getType()->isDoubleTy())
+        if (is_float)
             instruction = builder.CreateFCmpUGT(lhs, rhs);
-        if (lhs->getType()->isIntegerTy() && rhs->getType()->isDoubleTy())
-            instruction = builder.CreateFCmpUGT(builder.CreateSIToFP(lhs, llvm::Type::getDoubleTy(context)), rhs);
-        if (lhs->getType()->isDoubleTy() && rhs->getType()->isIntegerTy())
-            instruction = builder.CreateFCmpUGT(lhs, builder.CreateSIToFP(rhs, llvm::Type::getDoubleTy(context)));
-        if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy())
+        else if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy())
             instruction = builder.CreateICmpSGT(lhs, rhs);
         break;
     case BinaryOp::GreaterEqual:
-        if (lhs->getType()->isDoubleTy() && rhs->getType()->isDoubleTy())
+        if (is_float)
             instruction = builder.CreateFCmpUGE(lhs, rhs);
-        if (lhs->getType()->isIntegerTy() && rhs->getType()->isDoubleTy())
-            instruction = builder.CreateFCmpUGE(builder.CreateSIToFP(lhs, llvm::Type::getDoubleTy(context)), rhs);
-        if (lhs->getType()->isDoubleTy() && rhs->getType()->isIntegerTy())
-            instruction = builder.CreateFCmpUGE(lhs, builder.CreateSIToFP(rhs, llvm::Type::getDoubleTy(context)));
-        if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy())
+        else if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy())
             instruction = builder.CreateICmpSGE(lhs, rhs);
         break;
     case BinaryOp::LessThan:
-        if (lhs->getType()->isDoubleTy() && rhs->getType()->isDoubleTy())
+        if (is_float)
             instruction = builder.CreateFCmpULT(lhs, rhs);
-        if (lhs->getType()->isIntegerTy() && rhs->getType()->isDoubleTy())
-            instruction = builder.CreateFCmpULT(builder.CreateSIToFP(lhs, llvm::Type::getDoubleTy(context)), rhs);
-        if (lhs->getType()->isDoubleTy() && rhs->getType()->isIntegerTy())
-            instruction = builder.CreateFCmpULT(lhs, builder.CreateSIToFP(rhs, llvm::Type::getDoubleTy(context)));
-        if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy())
+        else if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy())
             instruction = builder.CreateICmpSLT(lhs, rhs);
         break;
     case BinaryOp::LessEqual:
-        if (lhs->getType()->isDoubleTy() && rhs->getType()->isDoubleTy())
+        if (is_float)
             instruction = builder.CreateFCmpULE(lhs, rhs);
-        if (lhs->getType()->isIntegerTy() && rhs->getType()->isDoubleTy())
-            instruction = builder.CreateFCmpULE(builder.CreateSIToFP(lhs, llvm::Type::getDoubleTy(context)), rhs);
-        if (lhs->getType()->isDoubleTy() && rhs->getType()->isIntegerTy())
-            instruction = builder.CreateFCmpULE(lhs, builder.CreateSIToFP(rhs, llvm::Type::getDoubleTy(context)));
-        if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy())
+        else if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy())
             instruction = builder.CreateICmpSLE(lhs, rhs);
         break;
     case BinaryOp::EqualEqual:
         // @todo Eventually add support for string concatenation (str + str).
         // @todo Eventually add support for booleans.
         // @todo Eventually add support for arrays.
-        if (lhs->getType()->isDoubleTy() && rhs->getType()->isDoubleTy())
+        if (is_float)
             instruction = builder.CreateFCmpUEQ(lhs, rhs);
-        if (lhs->getType()->isIntegerTy() && rhs->getType()->isDoubleTy())
-            instruction = builder.CreateFCmpUEQ(builder.CreateSIToFP(lhs, llvm::Type::getDoubleTy(context)), rhs);
-        if (lhs->getType()->isDoubleTy() && rhs->getType()->isIntegerTy())
-            instruction = builder.CreateFCmpUEQ(lhs, builder.CreateSIToFP(rhs, llvm::Type::getDoubleTy(context)));
-        if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy())
+        else if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy())
             instruction = builder.CreateICmpEQ(lhs, rhs);
         break;
     case BinaryOp::NotEqualEqual:
-        if (lhs->getType()->isDoubleTy() && rhs->getType()->isDoubleTy())
+        if (is_float)
             instruction = builder.CreateFCmpUNE(lhs, rhs);
-        if (lhs->getType()->isIntegerTy() && rhs->getType()->isDoubleTy())
-            instruction = builder.CreateFCmpUNE(builder.CreateSIToFP(lhs, llvm::Type::getDoubleTy(context)), rhs);
-        if (lhs->getType()->isDoubleTy() && rhs->getType()->isIntegerTy())
-            instruction = builder.CreateFCmpUNE(lhs, builder.CreateSIToFP(rhs, llvm::Type::getDoubleTy(context)));
-        if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy())
+        else if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy())
             instruction = builder.CreateICmpNE(lhs, rhs);
         break;
     case BinaryOp::PlusAssign:
