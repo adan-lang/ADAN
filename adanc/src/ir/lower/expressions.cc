@@ -44,20 +44,38 @@ llvm::Value *IRLowerer::lower_array_element_address(llvm::AllocaInst *array, llv
     return builder.CreateGEP(array_type, array, indices);
 }
 
-// @todo Support nested indexing and array-literal bases
 void IRLowerer::visit(ArrayIndex &node)
 {
+    llvm::AllocaInst *array_storage{};
     if (auto ident = dynamic_cast<Identifier *>(node.array.get()); ident != nullptr)
     {
         auto array = local_values.find(ident->name);
         if (array == std::end(local_values))
             diagnostics.error(std::format("No lowered storage exists for indexed array: \"{}\"", ident->name));
 
-        llvm::Value *index = lower_expr(*node.index);
-        llvm::ArrayType *array_type = llvm::cast<llvm::ArrayType>(array->second->getAllocatedType());
-        llvm::Value *element = lower_array_element_address(array->second, index);
-        result = builder.CreateLoad(array_type->getElementType(), element);
+        array_storage = array->second;
     }
+    else
+    {
+        llvm::Value *array_value = lower_expr(*node.array);
+        auto *array_type = llvm::dyn_cast<llvm::ArrayType>(array_value->getType());
+        if (array_type == nullptr)
+            diagnostics.error("Array indexing requires an array value");
+
+        llvm::BasicBlock &entry_block = builder.GetInsertBlock()->getParent()->getEntryBlock();
+        llvm::IRBuilder<> entry_builder(context);
+        entry_builder.SetInsertPoint(&entry_block, entry_block.begin());
+        array_storage = entry_builder.CreateAlloca(array_type);
+        builder.CreateStore(array_value, array_storage);
+    }
+
+    auto *array_type = llvm::dyn_cast<llvm::ArrayType>(array_storage->getAllocatedType());
+    if (array_type == nullptr)
+        diagnostics.error("Indexed storage is not an LLVM array");
+
+    llvm::Value *index = lower_expr(*node.index);
+    llvm::Value *element = lower_array_element_address(array_storage, index);
+    result = builder.CreateLoad(array_type->getElementType(), element);
 }
 
 void IRLowerer::visit(CallExpr &node)
