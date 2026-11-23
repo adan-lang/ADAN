@@ -117,6 +117,17 @@ void IRLowerer::visit(Identifier &node)
     result = loaded;
 }
 
+//
+// @todo Power: decide what integer powers do for negative exponents and overflow.
+//       Then keep int^int as Int and any power with a Float operand as Float, as registered.
+//       Lower integer powers with integer operations and floating powers with a pow operation.
+//       Add checks for integer, float, mixed, and edge-case exponents.
+//
+// @todo Numeric compound assignment: use the matching arithmetic operation for each operator.
+//       Read the current value, apply the same Int/Float conversions as normal arithmetic, then store it.
+//       Support identifiers and indexed elements; evaluate the target and index only once.
+//       Return the value that was stored, and test each operator with Int and Float values.
+//
 void IRLowerer::visit(BinaryExpr &node)
 {
     llvm::Value *rhs = lower_expr(*node.rhs);
@@ -131,7 +142,10 @@ void IRLowerer::visit(BinaryExpr &node)
             llvm::AllocaInst *stored = value->second;
             builder.CreateStore(rhs, stored);
         }
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshadow"
         else if (auto lhs = dynamic_cast<ArrayIndex *>(node.lhs.get()); lhs != nullptr)
+#pragma clang diagnostic pop
         {
             if (auto ident = dynamic_cast<Identifier *>(lhs->array.get()); ident != nullptr)
             {
@@ -163,7 +177,6 @@ void IRLowerer::visit(BinaryExpr &node)
     switch (node.op)
     {
     case BinaryOp::Plus:
-        // @todo Eventually add support for string concatenation (str + str).
         if (is_float)
             instruction = builder.CreateFAdd(lhs, rhs);
         else if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy())
@@ -220,9 +233,6 @@ void IRLowerer::visit(BinaryExpr &node)
             instruction = builder.CreateICmpSLE(lhs, rhs);
         break;
     case BinaryOp::EqualEqual:
-        // @todo Eventually add support for string concatenation (str + str).
-        // @todo Eventually add support for booleans.
-        // @todo Eventually add support for arrays.
         if (is_float)
             instruction = builder.CreateFCmpUEQ(lhs, rhs);
         else if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy())
