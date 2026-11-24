@@ -1,9 +1,12 @@
 #include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/Constants.h>
+#include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/GlobalVariable.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/Type.h>
+#include <llvm/Support/Casting.h>
 
 #include "ast.hh"
 #include "lower.hh"
@@ -130,6 +133,74 @@ void IRLowerer::visit(NumericForStmt &node)
         local_values.insert_or_assign(node.name, found);
     else
         local_values.erase(node.name);
+}
+
+void IRLowerer::visit(ForInStmt &node)
+{
+    llvm::Value *array = lower_expr(*node.array);
+    llvm::Type *ident_type = array->getType();
+    auto *array_type = llvm::dyn_cast<llvm::ArrayType>(ident_type);
+    if (array_type == nullptr)
+        diagnostics.error("For-in iteration requires an array value");
+
+    llvm::IRBuilder<> temp_builder(context);
+
+    llvm::BasicBlock &entry_block = builder.GetInsertBlock()->getParent()->getEntryBlock();
+    temp_builder.SetInsertPoint(&entry_block, entry_block.begin());
+
+    llvm::AllocaInst *array_storage = temp_builder.CreateAlloca(array_type);
+    llvm::AllocaInst *index_storage = temp_builder.CreateAlloca(builder.getInt64Ty());
+    llvm::AllocaInst *element_storage = temp_builder.CreateAlloca(array_type->getElementType());
+    builder.CreateStore(array, array_storage);
+    builder.CreateStore(builder.getInt64(0), index_storage);
+
+    llvm::Function *function = builder.GetInsertBlock()->getParent();
+    llvm::BasicBlock *condition_block = llvm::BasicBlock::Create(context, "for-in.cond", function);
+    llvm::BasicBlock *body_block = llvm::BasicBlock::Create(context, "for-in.body", function);
+    llvm::BasicBlock *increment_block = llvm::BasicBlock::Create(context, "for-in.step", function);
+    llvm::BasicBlock *exit_block = llvm::BasicBlock::Create(context, "for-in.exit", function);
+
+    builder.CreateBr(condition_block);
+
+    builder.SetInsertPoint(condition_block);
+    llvm::Value *current_index = builder.CreateLoad(builder.getInt64Ty(), index_storage);
+    llvm::Value *has_next = builder.CreateICmpSLT(current_index, builder.getInt64(array_type->getNumElements()));
+    builder.CreateCondBr(has_next, body_block, exit_block);
+
+    auto to_find = local_values.find(node.key);
+    llvm::AllocaInst *found = nullptr;
+    if (to_find != local_values.end())
+        found = to_find->second;
+    const bool was_found = to_find != local_values.end();
+    local_values.insert_or_assign(node.key, element_storage);
+
+    builder.SetInsertPoint(body_block);
+    current_index = builder.CreateLoad(builder.getInt64Ty(), index_storage);
+    llvm::Value *element_address = lower_array_element_address(array_storage, current_index);
+    llvm::Value *element_value = builder.CreateLoad(array_type->getElementType(), element_address);
+    builder.CreateStore(element_value, element_storage);
+
+    for (const auto &stmt : node.body.stmts)
+    {
+        if (builder.GetInsertBlock()->getTerminatorOrNull() != nullptr)
+            break;
+        lower_stmt(*stmt);
+    }
+
+    if (builder.GetInsertBlock()->getTerminatorOrNull() == nullptr)
+        builder.CreateBr(increment_block);
+
+    builder.SetInsertPoint(increment_block);
+    current_index = builder.CreateLoad(builder.getInt64Ty(), index_storage);
+    llvm::Value *next_index = builder.CreateAdd(current_index, builder.getInt64(1));
+    builder.CreateStore(next_index, index_storage);
+    builder.CreateBr(condition_block);
+
+    builder.SetInsertPoint(exit_block);
+    if (was_found)
+        local_values.insert_or_assign(node.key, found);
+    else
+        local_values.erase(node.key);
 }
 
 void IRLowerer::visit(LocalDecl &node)
