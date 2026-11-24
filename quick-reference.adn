@@ -39,4 +39,5 @@
 ;                                                                                  from the literals provided and all subsequent elements must match.
 ;
 ; Accessing Arrays --> "<array>[<index>]"                                <-- Note, index for arrays begin at 1 instead of 0.
- 
+
+print <- ("ADAN's quick reference! View the source of this file for guidance.")
