@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(ADAN VERSION 1.0.0 LANGUAGES CXX)
+project(ADAN VERSION 1.0.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -27,6 +27,9 @@ list(REMOVE_DUPLICATES PROJECT_INCLUDE_DIRS)
 
 include("./cmake/Dependencies.cmake")
 
+separate_arguments(ADAN_LLVM_DEFINITIONS NATIVE_COMMAND "${LLVM_DEFINITIONS}")
+list(REMOVE_ITEM ADAN_LLVM_DEFINITIONS "-D_GNU_SOURCE")
+
 add_executable(${PROJECT_NAME}
     ${PROJECT_SOURCES}
     ${PROJECT_HEADERS}
@@ -41,7 +44,7 @@ target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE
-    ${LLVM_DEFINITIONS}
+    ${ADAN_LLVM_DEFINITIONS}
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE fast_float LLVM)
