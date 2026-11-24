@@ -197,11 +197,11 @@ struct NumericForStmt : Stmt {
 };
 
 struct ForInStmt : Stmt {
-    std::string var;
+    std::string key;
     std::unique_ptr<Expr> array;
     Block body;
 
-    ForInStmt(std::string var, std::unique_ptr<Expr> array, Block body) : var{std::move(var)}, array{std::move(array)}, body{std::move(body)} {}
+    ForInStmt(std::string key, std::unique_ptr<Expr> array, Block body) : key{std::move(key)}, array{std::move(array)}, body{std::move(body)} {}
 
     void accept(ASTVisitor &visitor) override;
 };

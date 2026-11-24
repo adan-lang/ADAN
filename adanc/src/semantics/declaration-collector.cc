@@ -64,7 +64,7 @@ void DeclarationCollector::visit(NumericForStmt &stmt)
 void DeclarationCollector::visit(ForInStmt &stmt)
 {
     symbol_table.enter_scope();
-    symbol_table.declare(Symbol{stmt.var, make_var(), SymbolKind::Local});
+    symbol_table.declare(Symbol{stmt.key, make_var(), SymbolKind::Local});
     for (const auto &body_stmt : stmt.body.stmts)
         body_stmt->accept(*this);
     symbol_table.exit_scope();

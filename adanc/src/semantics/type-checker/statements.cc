@@ -81,7 +81,7 @@ void TypeChecker::visit(ForInStmt &node)
 
     try
     {
-        symbol_table.declare(Symbol{node.var, array_generic->element, SymbolKind::Local});
+        symbol_table.declare(Symbol{node.key, array_generic->element, SymbolKind::Local});
 
         DeclarationCollector collector{symbol_table};
         for (const auto &stmt : node.body.stmts)
