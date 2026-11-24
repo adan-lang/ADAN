@@ -16,18 +16,20 @@
 #include "ast.hh"
 #include "lower.hh"
 
-llvm::Value *IRLowerer::lower_array_element_address(llvm::AllocaInst *array, llvm::Value *index)
+llvm::Value *IRLowerer::lower_array_element_address(llvm::Value *array, llvm::Type *element_type, llvm::Value *index)
 {
-    auto *array_type = llvm::dyn_cast<llvm::ArrayType>(array->getAllocatedType());
-    if (array_type == nullptr)
-        diagnostics.error("Indexed storage is not an LLVM array");
+    auto *descriptor_type = llvm::dyn_cast<llvm::StructType>(array->getType());
+    if (descriptor_type == nullptr || descriptor_type->getNumElements() != 2 || !descriptor_type->getElementType(0)->isPointerTy() || !descriptor_type->getElementType(1)->isIntegerTy(64))
+        diagnostics.error("Array indexing requires a {ptr, i64} descriptor");
     if (!index->getType()->isIntegerTy(64))
         diagnostics.error("Array index did not lower to an i64 value");
 
-    llvm::Value *zero = builder.getInt64(0);
-    llvm::Value *non_negative = builder.CreateICmpSGE(index, zero);
-    llvm::Value *below_length = builder.CreateICmpSLT(index, builder.getInt64(array_type->getNumElements()));
-    llvm::Value *in_bounds = builder.CreateAnd(non_negative, below_length);
+    llvm::Value *data = builder.CreateExtractValue(array, {0});
+    llvm::Value *length = builder.CreateExtractValue(array, {1});
+    llvm::Value *one = builder.getInt64(1);
+    llvm::Value *at_least_one = builder.CreateICmpSGE(index, one);
+    llvm::Value *at_most_length = builder.CreateICmpSLE(index, length);
+    llvm::Value *in_bounds = builder.CreateAnd(at_least_one, at_most_length);
 
     llvm::Function *function = builder.GetInsertBlock()->getParent();
     llvm::BasicBlock *failure_block = llvm::BasicBlock::Create(context, "array.bounds.fail", function);
@@ -40,42 +42,20 @@ llvm::Value *IRLowerer::lower_array_element_address(llvm::AllocaInst *array, llv
     builder.CreateUnreachable();
 
     builder.SetInsertPoint(success_block);
-    llvm::Value *indices[] = {zero, index};
-    return builder.CreateGEP(array_type, array, indices);
+    llvm::Value *zero_based_index = builder.CreateSub(index, one);
+    return builder.CreateGEP(element_type, data, zero_based_index);
 }
 
 void IRLowerer::visit(ArrayIndex &node)
 {
-    llvm::AllocaInst *array_storage{};
-    if (auto ident = dynamic_cast<Identifier *>(node.array.get()); ident != nullptr)
-    {
-        auto array = local_values.find(ident->name);
-        if (array == std::end(local_values))
-            diagnostics.error(std::format("No lowered storage exists for indexed array: \"{}\"", ident->name));
-
-        array_storage = array->second;
-    }
-    else
-    {
-        llvm::Value *array_value = lower_expr(*node.array);
-        auto *array_type = llvm::dyn_cast<llvm::ArrayType>(array_value->getType());
-        if (array_type == nullptr)
-            diagnostics.error("Array indexing requires an array value");
-
-        llvm::BasicBlock &entry_block = builder.GetInsertBlock()->getParent()->getEntryBlock();
-        llvm::IRBuilder<> entry_builder(context);
-        entry_builder.SetInsertPoint(&entry_block, entry_block.begin());
-        array_storage = entry_builder.CreateAlloca(array_type);
-        builder.CreateStore(array_value, array_storage);
-    }
-
-    auto *array_type = llvm::dyn_cast<llvm::ArrayType>(array_storage->getAllocatedType());
-    if (array_type == nullptr)
-        diagnostics.error("Indexed storage is not an LLVM array");
+    llvm::Value *array_value = lower_expr(*node.array);
+    const auto element_type = array_element_types.find(array_value);
+    if (element_type == array_element_types.end())
+        diagnostics.error("Array element type is unavailable during IR lowering");
 
     llvm::Value *index = lower_expr(*node.index);
-    llvm::Value *element = lower_array_element_address(array_storage, index);
-    result = builder.CreateLoad(array_type->getElementType(), element);
+    llvm::Value *element = lower_array_element_address(array_value, element_type->second, index);
+    result = builder.CreateLoad(element_type->second, element);
 }
 
 void IRLowerer::visit(CallExpr &node)
@@ -101,6 +81,9 @@ void IRLowerer::visit(CallExpr &node)
     }
 
     result = builder.CreateCall(function, args);
+    const auto return_element_type = fn_array_return_types.find(node.callee);
+    if (return_element_type != fn_array_return_types.end())
+        array_element_types.emplace(result, return_element_type->second);
 }
 
 void IRLowerer::visit(Identifier &node)
@@ -115,6 +98,9 @@ void IRLowerer::visit(Identifier &node)
 
     llvm::LoadInst *loaded = builder.CreateLoad(instance->getAllocatedType(), value->second);
     result = loaded;
+    const auto element_type = array_element_types.find(value->second);
+    if (element_type != array_element_types.end())
+        array_element_types.emplace(result, element_type->second);
 }
 
 //
@@ -147,16 +133,14 @@ void IRLowerer::visit(BinaryExpr &node)
         else if (auto lhs = dynamic_cast<ArrayIndex *>(node.lhs.get()); lhs != nullptr)
 #pragma clang diagnostic pop
         {
-            if (auto ident = dynamic_cast<Identifier *>(lhs->array.get()); ident != nullptr)
-            {
-                auto array = local_values.find(ident->name);
-                if (array == std::end(local_values))
-                    diagnostics.error(std::format("No lowered storage exists for assignment target: \"{}\"", ident->name));
+            llvm::Value *array_value = lower_expr(*lhs->array);
+            const auto element_type = array_element_types.find(array_value);
+            if (element_type == array_element_types.end())
+                diagnostics.error("Array element type is unavailable during IR lowering");
 
-                llvm::Value *index = lower_expr(*lhs->index);
-                llvm::Value *element = lower_array_element_address(array->second, index);
-                builder.CreateStore(rhs, element);
-            }
+            llvm::Value *index = lower_expr(*lhs->index);
+            llvm::Value *element = lower_array_element_address(array_value, element_type->second, index);
+            builder.CreateStore(rhs, element);
         }
 
         result = rhs;

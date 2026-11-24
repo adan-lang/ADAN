@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <vector>
 
 #include "ast-visitor.hh"
 #include "ast.hh"
@@ -23,7 +24,12 @@ class IRLowerer : public ASTVisitor {
 
     std::unique_ptr<llvm::Module> _module;
     Diagnostics &diagnostics;
+
     std::unordered_map<std::string, llvm::AllocaInst *> local_values;
+
+    std::unordered_map<llvm::Value *, llvm::Type *> array_element_types;
+    std::unordered_map<std::string, std::vector<llvm::Type *>> fn_array_arg_types;
+    std::unordered_map<std::string, llvm::Type *> fn_array_return_types;
 
     llvm::Value *result{};
 
@@ -52,7 +58,7 @@ class IRLowerer : public ASTVisitor {
   private:
     llvm::Type *lower_type(const TypePtr &type, bool allow_void = false);
     llvm::Value *lower_expr(Expr &expr);
-    llvm::Value *lower_array_element_address(llvm::AllocaInst *array, llvm::Value *index);
+    llvm::Value *lower_array_element_address(llvm::Value *array, llvm::Type *element_type, llvm::Value *index);
 
     void visit(IntLiteral &node) override;
     void visit(FloatLiteral &node) override;

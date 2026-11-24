@@ -19,6 +19,7 @@
 
 #include "ast.hh"
 #include "type-helpers.hh"
+#include "types.hh"
 
 IRLowerer::IRLowerer(llvm::LLVMContext &context, std::string_view module_name, Diagnostics &diagnostics) : context(context), builder(context), _module(std::make_unique<llvm::Module>(module_name, context)), diagnostics(diagnostics)
 {
@@ -43,6 +44,8 @@ llvm::Type *IRLowerer::lower_type(const TypePtr &type, bool allow_void)
         if (allow_void)
             return builder.getVoidTy();
         break;
+    case TypeKind::Array:
+        return llvm::StructType::get(context, {builder.getPtrTy(), builder.getInt64Ty()});
     default:
         break;
     }
@@ -61,9 +64,18 @@ void IRLowerer::declare_function(std::string_view name, const TypePtr &function_
 
     llvm::Type *return_type = lower_type(resolved_function_type->result, true);
     std::vector<llvm::Type *> parameter_types;
+    std::vector<llvm::Type *> array_parameter_element_types;
     parameter_types.reserve(resolved_function_type->params.size());
     for (const TypePtr &parameter : resolved_function_type->params)
+    {
         parameter_types.push_back(lower_type(parameter));
+        const TypePtr resolved_parameter = prune(parameter);
+        array_parameter_element_types.push_back(resolved_parameter->kind == TypeKind::Array ? lower_type(resolved_parameter->element) : nullptr);
+    }
+
+    if (prune(resolved_function_type->result)->kind == TypeKind::Array)
+        fn_array_return_types.emplace(std::string{name}, lower_type(prune(resolved_function_type->result)->element));
+    fn_array_arg_types.emplace(std::string{name}, std::move(array_parameter_element_types));
 
     auto *type = llvm::FunctionType::get(return_type, parameter_types, false);
     llvm::Function::Create(type, llvm::Function::ExternalLinkage, name, *_module);
@@ -86,6 +98,7 @@ std::expected<llvm::Function *, std::string> IRLowerer::lower_function(const Fun
     entry_builder.SetInsertPoint(entry_block, entry_block->begin());
 
     std::size_t parameter_index{};
+    const auto array_parameter_types = fn_array_arg_types.find(declaration.name);
     for (llvm::Argument &argument : function->args())
     {
         const std::string &parameter_name = declaration.params[parameter_index++];
@@ -94,6 +107,8 @@ std::expected<llvm::Function *, std::string> IRLowerer::lower_function(const Fun
         llvm::AllocaInst *storage = entry_builder.CreateAlloca(argument.getType(), nullptr, parameter_name);
         builder.CreateStore(&argument, storage);
         local_values.emplace(parameter_name, storage);
+        if (array_parameter_types != fn_array_arg_types.end() && array_parameter_types->second[parameter_index - 1] != nullptr)
+            array_element_types.emplace(storage, array_parameter_types->second[parameter_index - 1]);
     }
 
     for (const auto &stmt : declaration.body.stmts)

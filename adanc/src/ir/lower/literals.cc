@@ -4,6 +4,9 @@
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
+#include <llvm/Support/Casting.h>
+
+#include <cstddef>
 
 #include "ast.hh"
 #include "lower.hh"
@@ -42,14 +45,24 @@ void IRLowerer::visit(ArrayLiteral &node)
         if (element->getType() != element_type)
             diagnostics.error("Array literal elements must have the same lowered LLVM type");
 
-    llvm::ArrayType *array_type = llvm::ArrayType::get(element_type, node.elements.size());
-    llvm::Value *inserted = llvm::UndefValue::get(array_type);
+    llvm::IRBuilder<> temp_builder(context);
+
+    llvm::BasicBlock &entry_block = builder.GetInsertBlock()->getParent()->getEntryBlock();
+    temp_builder.SetInsertPoint(&entry_block, entry_block.begin());
+
+    llvm::AllocaInst *array_storage = temp_builder.CreateAlloca(element_type, temp_builder.getInt64(vec.size()));
+    llvm::Type *descriptor = llvm::StructType::get(context, {builder.getPtrTy(), builder.getInt64Ty()});
+    llvm::Value *value = llvm::UndefValue::get(descriptor);
+
     for (std::size_t i{}; i < vec.size(); ++i)
     {
-        auto unsigned_vec = llvm::SmallVector<unsigned, 1>();
-        unsigned_vec.emplace_back(static_cast<unsigned>(i));
-        inserted = builder.CreateInsertValue(inserted, vec[i], unsigned_vec);
+        llvm::Value *constructed = builder.CreateGEP(element_type, array_storage, temp_builder.getInt64(i));
+        builder.CreateStore(vec[i], constructed);
     }
 
-    result = inserted;
+    value = builder.CreateInsertValue(value, array_storage, {0});
+    value = builder.CreateInsertValue(value, builder.getInt64(vec.size()), {1});
+
+    result = value;
+    array_element_types.emplace(result, element_type);
 }

@@ -138,20 +138,22 @@ void IRLowerer::visit(NumericForStmt &node)
 void IRLowerer::visit(ForInStmt &node)
 {
     llvm::Value *array = lower_expr(*node.array);
-    llvm::Type *ident_type = array->getType();
-    auto *array_type = llvm::dyn_cast<llvm::ArrayType>(ident_type);
-    if (array_type == nullptr)
-        diagnostics.error("For-in iteration requires an array value");
+    const auto element_type = array_element_types.find(array);
+    if (element_type == array_element_types.end())
+        diagnostics.error("Array element type is unavailable during IR lowering");
+
+    auto *descriptor_type = llvm::dyn_cast<llvm::StructType>(array->getType());
+    if (descriptor_type == nullptr || descriptor_type->getNumElements() != 2 || !descriptor_type->getElementType(0)->isPointerTy() || !descriptor_type->getElementType(1)->isIntegerTy(64))
+        diagnostics.error("For-in iteration requires a {ptr, i64} array descriptor");
+    llvm::Value *length = builder.CreateExtractValue(array, {1});
 
     llvm::IRBuilder<> temp_builder(context);
 
     llvm::BasicBlock &entry_block = builder.GetInsertBlock()->getParent()->getEntryBlock();
     temp_builder.SetInsertPoint(&entry_block, entry_block.begin());
 
-    llvm::AllocaInst *array_storage = temp_builder.CreateAlloca(array_type);
     llvm::AllocaInst *index_storage = temp_builder.CreateAlloca(builder.getInt64Ty());
-    llvm::AllocaInst *element_storage = temp_builder.CreateAlloca(array_type->getElementType());
-    builder.CreateStore(array, array_storage);
+    llvm::AllocaInst *element_storage = temp_builder.CreateAlloca(element_type->second);
     builder.CreateStore(builder.getInt64(0), index_storage);
 
     llvm::Function *function = builder.GetInsertBlock()->getParent();
@@ -164,7 +166,7 @@ void IRLowerer::visit(ForInStmt &node)
 
     builder.SetInsertPoint(condition_block);
     llvm::Value *current_index = builder.CreateLoad(builder.getInt64Ty(), index_storage);
-    llvm::Value *has_next = builder.CreateICmpSLT(current_index, builder.getInt64(array_type->getNumElements()));
+    llvm::Value *has_next = builder.CreateICmpSLT(current_index, length);
     builder.CreateCondBr(has_next, body_block, exit_block);
 
     auto to_find = local_values.find(node.key);
@@ -176,8 +178,9 @@ void IRLowerer::visit(ForInStmt &node)
 
     builder.SetInsertPoint(body_block);
     current_index = builder.CreateLoad(builder.getInt64Ty(), index_storage);
-    llvm::Value *element_address = lower_array_element_address(array_storage, current_index);
-    llvm::Value *element_value = builder.CreateLoad(array_type->getElementType(), element_address);
+    llvm::Value *one_based_index = builder.CreateAdd(current_index, builder.getInt64(1));
+    llvm::Value *element_address = lower_array_element_address(array, element_type->second, one_based_index);
+    llvm::Value *element_value = builder.CreateLoad(element_type->second, element_address);
     builder.CreateStore(element_value, element_storage);
 
     for (const auto &stmt : node.body.stmts)
@@ -222,4 +225,7 @@ void IRLowerer::visit(LocalDecl &node)
     builder.CreateStore(value, storage);
 
     local_values.insert({node.name, storage});
+    const auto element_type = array_element_types.find(value);
+    if (element_type != array_element_types.end())
+        array_element_types.emplace(storage, element_type->second);
 }
