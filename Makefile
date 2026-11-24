@@ -52,7 +52,7 @@ build:
 	    exit 1; \
 	fi; \
 	printf "\033[1;33m[2/3]\033[0m Compiling ADAN...\n"; \
-	if ! cmake --build "$(BUILD_DIR)" --parallel 4 > "$(BUILD_LOG)" 2>&1; then \
+	if ! cmake --build "$(BUILD_DIR)" --parallel 6 > "$(BUILD_LOG)" 2>&1; then \
 	    report_build_failure; \
 	    exit 1; \
 	fi; \
