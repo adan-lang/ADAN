@@ -256,6 +256,8 @@ void IRLowerer::visit(BinaryExpr &node)
         break;
     case BinaryOp::ModuloAssign:
         break;
+    case BinaryOp::Equal: // Impossible case
+        break;
     }
 
     if (instruction == nullptr)
