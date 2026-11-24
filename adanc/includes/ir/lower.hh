@@ -64,7 +64,7 @@ class IRLowerer : public ASTVisitor {
     void visit(ArrayIndex &node) override;
     void visit(CallExpr &node) override;
     void visit(Identifier &node) override;
-    void visit(BinaryExpr &node) override;
+    void visit(BinaryExpr &node) override; // @important This is not finished, just don't wanna finish this now.
     // void visit(Identifier &node) override;
     // void visit(UnaryExpr &node) override;
 
@@ -73,7 +73,7 @@ class IRLowerer : public ASTVisitor {
     void visit(ReturnStmt &node) override;
     void visit(ExprStmt &node) override;
     void visit(IfStmt &node) override;
-    // void visit(NumericForStmt &node) override;
+    void visit(NumericForStmt &node) override;
     // void visit(ForInStmt &node) override;
     // void visit(WhileStmt &node) override;
 

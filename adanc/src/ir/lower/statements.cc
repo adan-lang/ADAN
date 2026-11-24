@@ -61,6 +61,41 @@ void IRLowerer::visit(IfStmt &node)
     builder.SetInsertPoint(continuation_block);
 }
 
+void IRLowerer::visit(NumericForStmt &node)
+{
+    llvm::Value *value = lower_expr(*node.start);
+    llvm::Type *ident_type = value->getType();
+    if (ident_type == nullptr)
+        diagnostics.error("Local initializer did not produce an LLVM type");
+
+    llvm::IRBuilder<> temp_builder(context);
+
+    llvm::BasicBlock &entry_block = builder.GetInsertBlock()->getParent()->getEntryBlock();
+    temp_builder.SetInsertPoint(&entry_block, entry_block.begin());
+
+    llvm::AllocaInst *storage = temp_builder.CreateAlloca(ident_type);
+    builder.CreateStore(value, storage);
+
+    auto to_find = local_values.find(node.name);
+    llvm::AllocaInst *found = nullptr;
+    if (to_find != local_values.end())
+        found = to_find->second;
+    bool was_found = to_find != local_values.end();
+
+    local_values.insert_or_assign(node.name, storage);
+
+    ///////////////////////////////////////////
+    // for    i =     1,   10        { ... } //
+    // for    i =     1,   10,     1 { ... } //
+    // for NAME = START, STOP, STEP? { ... } //
+    ///////////////////////////////////////////
+
+    // @todo Figure out the goal and the stop thingy NOT DONE
+
+    llvm::Value *stop = lower_expr(*node.stop);
+    llvm::Value *step = lower_expr(*node.step);
+}
+
 void IRLowerer::visit(LocalDecl &node)
 {
     if (!node.init)
@@ -72,7 +107,7 @@ void IRLowerer::visit(LocalDecl &node)
         diagnostics.error("Local initializer did not produce an LLVM type");
 
     llvm::IRBuilder<> temp_builder(context);
-    
+
     llvm::BasicBlock &entry_block = builder.GetInsertBlock()->getParent()->getEntryBlock();
     temp_builder.SetInsertPoint(&entry_block, entry_block.begin());
 
