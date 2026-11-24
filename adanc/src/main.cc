@@ -17,7 +17,7 @@
 #include "tools.hh"
 #include "type-checker.hh"
 
-static constexpr std::string COMPILER_VERSION = "version-1.2.8";
+static constexpr std::string COMPILER_VERSION = "version-1.3.0";
 
 static inline void show_main_message()
 {
