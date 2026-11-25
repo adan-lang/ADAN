@@ -206,6 +206,36 @@ void IRLowerer::visit(ForInStmt &node)
         local_values.erase(node.key);
 }
 
+void IRLowerer::visit(WhileStmt &node)
+{
+    llvm::Function *function = builder.GetInsertBlock()->getParent();
+    llvm::BasicBlock *condition_block = llvm::BasicBlock::Create(context, "while.condition", function);
+    builder.CreateBr(condition_block);
+    builder.SetInsertPoint(condition_block);
+
+    llvm::Value *condition = lower_expr(*node.condition);
+    if (!condition->getType()->isIntegerTy(1))
+        diagnostics.error("While statement's condition did not lower to an LLVM i1 (boolean) value.");
+
+    llvm::BasicBlock *body_block = llvm::BasicBlock::Create(context, "while.then", function);
+    llvm::BasicBlock *exit_block = llvm::BasicBlock::Create(context, "while.cont", function);
+
+    builder.CreateCondBr(condition, body_block, exit_block);
+    builder.SetInsertPoint(body_block);
+
+    for (const auto &stmt : node.body.stmts)
+    {
+        if (builder.GetInsertBlock()->getTerminatorOrNull() != nullptr)
+            break;
+        lower_stmt(*stmt);
+    }
+
+    if (builder.GetInsertBlock()->getTerminatorOrNull() == nullptr)
+        builder.CreateBr(condition_block);
+
+    builder.SetInsertPoint(exit_block);
+}
+
 void IRLowerer::visit(LocalDecl &node)
 {
     if (!node.init)
