@@ -132,6 +132,7 @@ void TypeChecker::visit(LocalDecl &node)
         diagnostics.error("Local declaration was not collected");
 
     unify(symbol->type, infer(*node.init), diagnostics);
+    node.inferred_type = prune(symbol->type);
 }
 
 void TypeChecker::visit(FuncDecl &node)

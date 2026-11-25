@@ -212,9 +212,10 @@ void IRLowerer::visit(LocalDecl &node)
         diagnostics.error("Local declarations without an initializer are not supported in IR lowering");
 
     llvm::Value *value = lower_expr(*node.init);
-    llvm::Type *ident_type = value->getType();
+    llvm::Type *ident_type = node.inferred_type ? lower_type(node.inferred_type) : value->getType();
     if (ident_type == nullptr)
         diagnostics.error("Local initializer did not produce an LLVM type");
+    value = coerce_numeric_value(value, ident_type);
 
     llvm::IRBuilder<> temp_builder(context);
 

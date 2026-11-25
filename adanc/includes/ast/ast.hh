@@ -7,6 +7,8 @@
 #include <variant>
 #include <vector>
 
+#include "types.hh"
+
 class ASTVisitor;
 
 struct ASTNode {
@@ -160,6 +162,7 @@ struct ExprStmt : Stmt {
 struct LocalDecl : Stmt {
     std::string name;
     std::unique_ptr<Expr> init;
+    TypePtr inferred_type;
 
     LocalDecl(std::string name, std::unique_ptr<Expr> init) : name{std::move(name)}, init{std::move(init)} {}
 

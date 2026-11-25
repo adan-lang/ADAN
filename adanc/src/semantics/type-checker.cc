@@ -55,14 +55,37 @@ void TypeChecker::check(Stmt &stmt)
 void TypeChecker::check(Block &block)
 {
     bool unreachable{};
-    for (const auto &stmt : block.stmts)
-    {
-        if (unreachable)
-            diagnostics.warning("Unreachable statement after return");
+    const auto check_statements = [&](bool functions) {
+        for (const auto &stmt : block.stmts)
+        {
+            if ((dynamic_cast<FuncDecl *>(stmt.get()) != nullptr) != functions)
+                continue;
 
-        check(*stmt);
-        if (dynamic_cast<ReturnStmt *>(stmt.get()))
-            unreachable = true;
+            if (unreachable)
+                diagnostics.warning("Unreachable statement after return");
+
+            check(*stmt);
+            if (dynamic_cast<ReturnStmt *>(stmt.get()))
+                unreachable = true;
+        }
+    };
+
+    if (symbol_table.in_global_scope())
+    {
+        check_statements(false);
+        check_statements(true);
+    }
+    else
+    {
+        for (const auto &stmt : block.stmts)
+        {
+            if (unreachable)
+                diagnostics.warning("Unreachable statement after return");
+
+            check(*stmt);
+            if (dynamic_cast<ReturnStmt *>(stmt.get()))
+                unreachable = true;
+        }
     }
 
     symbol_table.warn_unused_declarations();

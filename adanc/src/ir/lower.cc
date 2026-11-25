@@ -53,6 +53,13 @@ llvm::Type *IRLowerer::lower_type(const TypePtr &type, bool allow_void)
     diagnostics.error(std::format("IR lowering does not support the {} type yet", type_to_string(resolved)));
 }
 
+llvm::Value *IRLowerer::coerce_numeric_value(llvm::Value *value, llvm::Type *destination_type)
+{
+    if (destination_type->isDoubleTy() && value->getType()->isIntegerTy())
+        return builder.CreateSIToFP(value, destination_type);
+    return value;
+}
+
 void IRLowerer::declare_function(std::string_view name, const TypePtr &function_type)
 {
     const TypePtr resolved_function_type = prune(function_type);
@@ -131,6 +138,7 @@ std::expected<llvm::Function *, std::string> IRLowerer::lower_function(const Fun
 
 void IRLowerer::lower_program(Block &program)
 {
+    local_values.clear();
     llvm::FunctionType *function_type = llvm::FunctionType::get(llvm::Type::getInt32Ty(context), false);
     llvm::Function *function = llvm::Function::Create(function_type, llvm::Function::ExternalLinkage, "main", *_module);
 

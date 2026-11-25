@@ -126,7 +126,7 @@ void IRLowerer::visit(BinaryExpr &node)
                 diagnostics.error(std::format("No lowered storage exists for assignment target: \"{}\"", lhs->name));
 
             llvm::AllocaInst *stored = value->second;
-            builder.CreateStore(rhs, stored);
+            builder.CreateStore(coerce_numeric_value(rhs, stored->getAllocatedType()), stored);
         }
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wshadow"

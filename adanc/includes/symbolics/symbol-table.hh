@@ -10,6 +10,8 @@
 #include "type-helpers.hh"
 #include "types.hh"
 
+struct LocalDecl;
+
 enum class SymbolKind {
     Other,
     Local,
@@ -21,6 +23,7 @@ struct Symbol {
     TypePtr type;
     SymbolKind kind{SymbolKind::Other};
     bool used{};
+    LocalDecl *declaration{};
 
     std::string to_string() const
     {

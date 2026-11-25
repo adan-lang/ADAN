@@ -5,11 +5,13 @@
 
 void DeclarationCollector::visit(LocalDecl &stmt)
 {
-    symbol_table.declare(Symbol{
+    Symbol symbol{
         stmt.name,
         make_var(),
         SymbolKind::Local,
-    });
+    };
+    symbol.declaration = &stmt;
+    symbol_table.declare(symbol);
 }
 
 void DeclarationCollector::visit(FuncDecl &stmt)

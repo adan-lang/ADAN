@@ -36,6 +36,8 @@ static bool rebind_compound_target(Expr &expr, TypePtr type, ScopeManager &symbo
         if (symbol)
         {
             symbol->type = std::move(type);
+            if (symbol->declaration)
+                symbol->declaration->inferred_type = symbol->type;
             return true;
         }
         return false;
@@ -129,6 +131,28 @@ void TypeChecker::visit(BinaryExpr &node)
     {
         if (is_mutable_lvalue(*node.lhs))
         {
+            if (auto *identifier = dynamic_cast<Identifier *>(node.lhs.get()); identifier != nullptr)
+            {
+                Symbol *symbol = symbol_table.lookup(identifier->name);
+                if (symbol != nullptr && symbol->kind == SymbolKind::Local && symbol->declaration != nullptr)
+                {
+                    TypePtr target = prune(symbol->type);
+                    TypePtr source = prune(rhs);
+                    if (target->kind == TypeKind::Int && source->kind == TypeKind::Float)
+                    {
+                        symbol->type = make_float();
+                        symbol->declaration->inferred_type = symbol->type;
+                        last_inferred_type = symbol->type;
+                        return;
+                    }
+                    if (target->kind == TypeKind::Float && source->kind == TypeKind::Int)
+                    {
+                        last_inferred_type = symbol->type;
+                        return;
+                    }
+                }
+            }
+
             unify(lhs, rhs, diagnostics);
             last_inferred_type = lhs;
             return;
