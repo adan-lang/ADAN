@@ -72,8 +72,7 @@ class IRLowerer : public ASTVisitor {
     void visit(CallExpr &node) override;
     void visit(Identifier &node) override;
     void visit(BinaryExpr &node) override; // @important This is not finished, just don't wanna finish this now.
-    // void visit(Identifier &node) override;
-    // void visit(UnaryExpr &node) override;
+    void visit(UnaryExpr &node) override;
 
     void lower_stmt(Stmt &stmt);
 

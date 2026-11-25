@@ -245,7 +245,46 @@ void IRLowerer::visit(BinaryExpr &node)
     }
 
     if (instruction == nullptr)
-        diagnostics.error(std::format("No IR lowering exists for binary operator: {}", op_to_string(node.op)));
+        diagnostics.error(std::format("No IR lowering exists for the binary operator: {}", op_to_string(node.op)));
+
+    result = instruction;
+}
+
+void IRLowerer::visit(UnaryExpr &node)
+{
+    llvm::Value *operand = lower_expr(*node.operand);
+
+    const bool is_float = operand->getType()->isDoubleTy();
+
+    llvm::Value *instruction = nullptr;
+    switch (node.op)
+    {
+    case UnaryOp::Minus:
+        if (!operand->getType()->isIntegerTy() && !operand->getType()->isDoubleTy())
+            diagnostics.error("Attempted to flip the sign of a non-number value.");
+        if (is_float)
+            instruction = builder.CreateFNeg(operand);
+        else
+            instruction = builder.CreateNeg(operand);
+        break;
+    case UnaryOp::Not:
+        if (!operand->getType()->isIntegerTy(1))
+            diagnostics.error("Attempted to inverse the truthiness of a non-boolean value.");
+        instruction = builder.CreateNot(operand);
+        break;
+    case UnaryOp::Hashtag:
+        // Support arrays. The intent is to get the length of an array (array literal or not).
+        break;
+    case UnaryOp::Increment:
+        // Support both integers and doubles, adding 1 or 1.0 depending on the type.
+        break;
+    case UnaryOp::Decrement:
+        // Support both integers and doubles, subtracting 1 or 1.0 depending on the type.
+        break;
+    }
+
+    if (instruction == nullptr)
+        diagnostics.error(std::format("No IR lowering exists for the unary operator: {}", op_to_string(node.op)));
 
     result = instruction;
 }
