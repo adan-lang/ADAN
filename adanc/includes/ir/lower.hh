@@ -57,6 +57,7 @@ class IRLowerer : public ASTVisitor {
   private:
     llvm::Type *lower_type(const TypePtr &type, bool allow_void = false);
     llvm::Value *lower_expr(Expr &expr);
+
     llvm::Value *coerce_numeric_value(llvm::Value *value, llvm::Type *destination_type);
     llvm::Value *lower_array_element_address(llvm::Value *array, llvm::Type *element_type, llvm::Value *index);
 
@@ -70,7 +71,7 @@ class IRLowerer : public ASTVisitor {
     void visit(ArrayIndex &node) override;
     void visit(CallExpr &node) override;
     void visit(Identifier &node) override;
-    void visit(BinaryExpr &node) override; // @important This is not finished, just don't wanna finish this now.
+    void visit(BinaryExpr &node) override; // @important This is not finished, just don't want to finish this now.
     void visit(UnaryExpr &node) override;
 
     void lower_stmt(Stmt &stmt);
@@ -83,5 +84,4 @@ class IRLowerer : public ASTVisitor {
     void visit(WhileStmt &node) override;
 
     void visit(LocalDecl &node) override;
-    // void visit(FuncDecl &node) override;
 };
