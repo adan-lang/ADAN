@@ -1,6 +1,8 @@
+#pragma once
+
 #include "ast.hh"
 
-inline std::string_view op_to_string(BinaryOp op)
+inline std::string_view op_to_string(const BinaryOp op)
 {
     switch (op)
     {
@@ -47,7 +49,7 @@ inline std::string_view op_to_string(BinaryOp op)
     return "[??]";
 }
 
-inline std::string_view op_to_string(UnaryOp op)
+inline std::string_view op_to_string(const UnaryOp op)
 {
     switch (op)
     {

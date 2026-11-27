@@ -36,7 +36,7 @@ class Lexer {
     std::queue<Token> pending{};
 
   public:
-    explicit Lexer(std::string_view source_text, Diagnostics &diagnostics, int start_line = 1, int start_column = 1) : source{source_text}, diagnostics{diagnostics}, line{start_line}, column{start_column} {}
+    explicit Lexer(const std::string_view source_text, Diagnostics &diagnostics, const int start_line = 1, const int start_column = 1) : source{source_text}, diagnostics{diagnostics}, line{start_line}, column{start_column} {}
 
     Token next()
     {
@@ -60,7 +60,7 @@ class Lexer {
   private:
     Token lex();
 
-    [[noreturn]] void report_error(std::string message)
+    [[noreturn]] void report_error(std::string message) const
     {
         diagnostics.error(std::move(message), token_line, token_column);
     }
@@ -134,7 +134,7 @@ class Lexer {
         }
     }
 
-    char unescape(const char c)
+    [[nodiscard]] char unescape(const char c) const
     {
         switch (c)
         {

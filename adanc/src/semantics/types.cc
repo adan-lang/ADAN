@@ -79,8 +79,8 @@ TypePtr prune(const TypePtr &type)
  */
 void unify(TypePtr a, TypePtr b, Diagnostics &diagnostics)
 {
-    auto lhs = prune(a);
-    auto rhs = prune(b);
+    const auto lhs = prune(a);
+    const auto rhs = prune(b);
 
     if (lhs == rhs)
         return;

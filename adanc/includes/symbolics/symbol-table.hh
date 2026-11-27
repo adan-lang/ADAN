@@ -25,7 +25,7 @@ struct Symbol {
     bool used{};
     LocalDecl *declaration{};
 
-    std::string to_string() const
+    [[nodiscard]] std::string to_string() const
     {
         return std::format("Symbol(Name: {}, Type: {})", name, type_to_string(type));
     }

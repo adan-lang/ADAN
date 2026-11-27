@@ -13,8 +13,7 @@
 
 void IRLowerer::visit(ReturnStmt &node)
 {
-    llvm::Value *value = lower_expr(*node.value);
-    if (value->getType()->isVoidTy())
+    if (llvm::Value *value = lower_expr(*node.value); value->getType()->isVoidTy())
         builder.CreateRetVoid();
     else
         builder.CreateRet(value);
@@ -83,11 +82,11 @@ void IRLowerer::visit(NumericForStmt &node)
     llvm::Value *stop = lower_expr(*node.stop);
     llvm::Value *step = lower_expr(*node.step);
 
-    auto to_find = local_values.find(node.name);
+    const auto to_find = local_values.find(node.name);
     llvm::AllocaInst *found = nullptr;
     if (to_find != local_values.end())
         found = to_find->second;
-    bool was_found = to_find != local_values.end();
+    const bool was_found = to_find != local_values.end();
 
     local_values.insert_or_assign(node.name, storage);
 
@@ -142,8 +141,7 @@ void IRLowerer::visit(ForInStmt &node)
     if (element_type == array_element_types.end())
         diagnostics.error("Array element type is unavailable during IR lowering");
 
-    auto *descriptor_type = llvm::dyn_cast<llvm::StructType>(array->getType());
-    if (descriptor_type == nullptr || descriptor_type->getNumElements() != 2 || !descriptor_type->getElementType(0)->isPointerTy() || !descriptor_type->getElementType(1)->isIntegerTy(64))
+    if (const auto *descriptor_type = llvm::dyn_cast<llvm::StructType>(array->getType()); descriptor_type == nullptr || descriptor_type->getNumElements() != 2 || !descriptor_type->getElementType(0)->isPointerTy() || !descriptor_type->getElementType(1)->isIntegerTy(64))
         diagnostics.error("For-in iteration requires a {ptr, i64} array descriptor");
     llvm::Value *length = builder.CreateExtractValue(array, {1});
 
@@ -169,7 +167,7 @@ void IRLowerer::visit(ForInStmt &node)
     llvm::Value *has_next = builder.CreateICmpSLT(current_index, length);
     builder.CreateCondBr(has_next, body_block, exit_block);
 
-    auto to_find = local_values.find(node.key);
+    const auto to_find = local_values.find(node.key);
     llvm::AllocaInst *found = nullptr;
     if (to_find != local_values.end())
         found = to_find->second;
@@ -256,7 +254,6 @@ void IRLowerer::visit(LocalDecl &node)
     builder.CreateStore(value, storage);
 
     local_values.insert({node.name, storage});
-    const auto element_type = array_element_types.find(value);
-    if (element_type != array_element_types.end())
+    if (const auto element_type = array_element_types.find(value); element_type != array_element_types.end())
         array_element_types.emplace(storage, element_type->second);
 }

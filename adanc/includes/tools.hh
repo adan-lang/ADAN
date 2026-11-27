@@ -5,7 +5,7 @@
 #include <sstream>
 #include <string>
 
-static inline std::string read_file(std::string source_file)
+static std::string read_file(std::string source_file)
 {
     std::ifstream file(source_file);
     if (!file.is_open())

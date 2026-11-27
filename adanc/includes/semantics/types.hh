@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -31,11 +30,11 @@ struct Type {
     TypePtr link;
     TypePtr result;
 
-    explicit Type(TypeKind type_kind) : kind{type_kind} {}
+    explicit Type(const TypeKind type_kind) : kind{type_kind} {}
 
     bool operator==(const Type &other) const
     {
-        const Type *lhs = this;
+        auto lhs = this;
         const Type *rhs = &other;
 
         while (lhs->kind == TypeKind::Var && lhs->link)
@@ -80,7 +79,7 @@ struct Type {
     }
 };
 
-template <typename T> static inline TypePtr make_type(T type_kind)
+template <typename T> static TypePtr make_type(T type_kind)
 {
     return std::make_shared<Type>(type_kind);
 }

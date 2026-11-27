@@ -30,10 +30,9 @@ static bool is_mutable_lvalue(Expr &expr)
 
 static bool rebind_compound_target(Expr &expr, TypePtr type, ScopeManager &symbol_table)
 {
-    if (auto *identifier = dynamic_cast<Identifier *>(&expr))
+    if (const auto *identifier = dynamic_cast<Identifier *>(&expr))
     {
-        Symbol *symbol = symbol_table.lookup(identifier->name);
-        if (symbol)
+        if (Symbol *symbol = symbol_table.lookup(identifier->name))
         {
             symbol->type = std::move(type);
             if (symbol->declaration)
@@ -45,13 +44,13 @@ static bool rebind_compound_target(Expr &expr, TypePtr type, ScopeManager &symbo
 
     std::size_t array_depth{};
     Expr *base = &expr;
-    while (auto *index = dynamic_cast<ArrayIndex *>(base))
+    while (const auto *index = dynamic_cast<ArrayIndex *>(base))
     {
         ++array_depth;
         base = index->array.get();
     }
 
-    auto *identifier = dynamic_cast<Identifier *>(base);
+    const auto *identifier = dynamic_cast<Identifier *>(base);
     if (!identifier || array_depth == 0)
         return false;
 
@@ -66,7 +65,7 @@ static bool rebind_compound_target(Expr &expr, TypePtr type, ScopeManager &symbo
     return true;
 }
 
-static std::vector<BinaryOperator> matching_binary_rules(OperatorTable &table, BinaryOp op, const TypePtr &lhs, const TypePtr &rhs, const TypePtr &result = {})
+static std::vector<BinaryOperator> matching_binary_rules(OperatorTable &table, const BinaryOp op, const TypePtr &lhs, const TypePtr &rhs, const TypePtr &result = {})
 {
     std::vector<BinaryOperator> matches;
     for (const BinaryOperator &rule : table.get_binary_rules(op))
@@ -80,11 +79,11 @@ static std::vector<BinaryOperator> matching_binary_rules(OperatorTable &table, B
 
 void TypeChecker::visit(ArrayIndex &node)
 {
-    TypePtr array = infer(*node.array);
-    TypePtr array_generic = make_array(make_var());
+    const TypePtr array = infer(*node.array);
+    const TypePtr array_generic = make_array(make_var());
     unify(array, array_generic, diagnostics);
 
-    TypePtr index = infer(*node.index);
+    const TypePtr index = infer(*node.index);
     unify(index, make_int(), diagnostics);
 
     last_inferred_type = array_generic->element;
@@ -92,11 +91,11 @@ void TypeChecker::visit(ArrayIndex &node)
 
 void TypeChecker::visit(CallExpr &node)
 {
-    Symbol *callee = symbol_table.lookup(node.callee);
+    const Symbol *callee = symbol_table.lookup(node.callee);
     if (!callee)
         diagnostics.error(std::format("Attempted to call an unknown function: {}", node.callee));
 
-    TypePtr callee_t = prune(callee->type);
+    const TypePtr callee_t = prune(callee->type);
     if (callee_t->kind != TypeKind::Function)
         diagnostics.error("Attempted to call something that isn't a function");
 
@@ -126,18 +125,17 @@ void TypeChecker::visit(BinaryExpr &node)
         lhs = infer(*node.lhs);
     }
 
-    TypePtr rhs = infer(*node.rhs);
+    const TypePtr rhs = infer(*node.rhs);
     if (node.op == BinaryOp::Equal)
     {
         if (is_mutable_lvalue(*node.lhs))
         {
-            if (auto *identifier = dynamic_cast<Identifier *>(node.lhs.get()); identifier != nullptr)
+            if (const auto *identifier = dynamic_cast<Identifier *>(node.lhs.get()); identifier != nullptr)
             {
-                Symbol *symbol = symbol_table.lookup(identifier->name);
-                if (symbol != nullptr && symbol->kind == SymbolKind::Local && symbol->declaration != nullptr)
+                if (Symbol *symbol = symbol_table.lookup(identifier->name); symbol != nullptr && symbol->kind == SymbolKind::Local && symbol->declaration != nullptr)
                 {
-                    TypePtr target = prune(symbol->type);
-                    TypePtr source = prune(rhs);
+                    const TypePtr target = prune(symbol->type);
+                    const TypePtr source = prune(rhs);
                     if (target->kind == TypeKind::Int && source->kind == TypeKind::Float)
                     {
                         symbol->type = make_float();
@@ -185,8 +183,7 @@ void TypeChecker::visit(BinaryExpr &node)
 
         if (compound_assignment)
         {
-            const bool target_widenable = rebind_compound_target(*node.lhs, rule.result, symbol_table);
-            if (!target_widenable && !(*lhs == *rule.result))
+            if (const bool target_widenable = rebind_compound_target(*node.lhs, rule.result, symbol_table); !target_widenable && *lhs != *rule.result)
                 diagnostics.error("This compound assignment cannot widen its target type");
         }
 
@@ -194,7 +191,7 @@ void TypeChecker::visit(BinaryExpr &node)
         return;
     }
 
-    TypePtr result = make_var();
+    const TypePtr result = make_var();
 
     const bool target_widenable = compound_assignment ? rebind_compound_target(*node.lhs, result, symbol_table) : true;
     pending_binary_operators.push_back(PendingBinaryOperator{
@@ -221,7 +218,7 @@ void TypeChecker::visit(Identifier &node)
 
 void TypeChecker::visit(UnaryExpr &node)
 {
-    TypePtr operand = infer(*node.operand);
+    const TypePtr operand = infer(*node.operand);
     if (node.op == UnaryOp::Hashtag)
     {
         unify(operand, make_array(make_var()), diagnostics);
@@ -246,7 +243,7 @@ void TypeChecker::visit(UnaryExpr &node)
         return;
     }
 
-    TypePtr result = make_var();
+    const TypePtr result = make_var();
 
     pending_unary_operators.push_back(PendingUnaryOperator{operand, node.op, result});
     last_inferred_type = result;

@@ -46,7 +46,7 @@ class TypeChecker : public ASTVisitor {
     TypePtr infer(Expr &expr);
 
     void check(Stmt &stmt);
-    void check(Block &block);
+    void check(const Block &block);
 
     void finalize();
 

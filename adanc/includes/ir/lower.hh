@@ -3,7 +3,6 @@
 #include <llvm/IR/Function.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Instructions.h>
-#include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
 
 #include <expected>
@@ -39,7 +38,7 @@ class IRLowerer : public ASTVisitor {
     void declare_function(std::string_view name, const TypePtr &function_type);
     std::expected<llvm::Function *, std::string> lower_function(const FuncDecl &declaration);
 
-    void lower_program(Block &program);
+    void lower_program(const Block &program);
 
     const llvm::Module &module() const
     {

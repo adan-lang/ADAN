@@ -18,8 +18,7 @@
 
 llvm::Value *IRLowerer::lower_array_element_address(llvm::Value *array, llvm::Type *element_type, llvm::Value *index)
 {
-    auto *descriptor_type = llvm::dyn_cast<llvm::StructType>(array->getType());
-    if (descriptor_type == nullptr || descriptor_type->getNumElements() != 2 || !descriptor_type->getElementType(0)->isPointerTy() || !descriptor_type->getElementType(1)->isIntegerTy(64))
+    if (const auto *descriptor_type = llvm::dyn_cast<llvm::StructType>(array->getType()); descriptor_type == nullptr || descriptor_type->getNumElements() != 2 || !descriptor_type->getElementType(0)->isPointerTy() || !descriptor_type->getElementType(1)->isIntegerTy(64))
         diagnostics.error("Array indexing requires a {ptr, i64} descriptor");
     if (!index->getType()->isIntegerTy(64))
         diagnostics.error("Array index did not lower to an i64 value");
@@ -81,8 +80,7 @@ void IRLowerer::visit(CallExpr &node)
     }
 
     result = builder.CreateCall(function, args);
-    const auto return_element_type = fn_array_return_types.find(node.callee);
-    if (return_element_type != fn_array_return_types.end())
+    if (const auto return_element_type = fn_array_return_types.find(node.callee); return_element_type != fn_array_return_types.end())
         array_element_types.emplace(result, return_element_type->second);
 }
 
@@ -92,14 +90,13 @@ void IRLowerer::visit(Identifier &node)
     if (value == local_values.end())
         diagnostics.error("No lowered value exists for identifier");
 
-    auto instance = llvm::dyn_cast<llvm::AllocaInst>(value->second);
+    const auto instance = llvm::dyn_cast<llvm::AllocaInst>(value->second);
     if (instance == nullptr)
         diagnostics.error(std::format("Identifier: \"{}\" does not refer to local storage", node.name));
 
     llvm::LoadInst *loaded = builder.CreateLoad(instance->getAllocatedType(), value->second);
     result = loaded;
-    const auto element_type = array_element_types.find(value->second);
-    if (element_type != array_element_types.end())
+    if (const auto element_type = array_element_types.find(value->second); element_type != array_element_types.end())
         array_element_types.emplace(result, element_type->second);
 }
 
@@ -119,26 +116,23 @@ void IRLowerer::visit(BinaryExpr &node)
     llvm::Value *rhs = lower_expr(*node.rhs);
     if (node.op == BinaryOp::Equal)
     {
-        if (auto lhs = dynamic_cast<Identifier *>(node.lhs.get()); lhs != nullptr)
+        if (const auto lhs = dynamic_cast<Identifier *>(node.lhs.get()); lhs != nullptr)
         {
-            auto value = local_values.find(lhs->name);
+            const auto value = local_values.find(lhs->name);
             if (value == std::end(local_values))
                 diagnostics.error(std::format("No lowered storage exists for assignment target: \"{}\"", lhs->name));
 
             llvm::AllocaInst *stored = value->second;
             builder.CreateStore(coerce_numeric_value(rhs, stored->getAllocatedType()), stored);
         }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wshadow"
-        else if (auto lhs = dynamic_cast<ArrayIndex *>(node.lhs.get()); lhs != nullptr)
-#pragma clang diagnostic pop
+        else if (const auto array_index = dynamic_cast<ArrayIndex *>(node.lhs.get()); array_index != nullptr)
         {
-            llvm::Value *array_value = lower_expr(*lhs->array);
+            llvm::Value *array_value = lower_expr(*array_index->array);
             const auto element_type = array_element_types.find(array_value);
             if (element_type == array_element_types.end())
                 diagnostics.error("Array element type is unavailable during IR lowering");
 
-            llvm::Value *index = lower_expr(*lhs->index);
+            llvm::Value *index = lower_expr(*array_index->index);
             llvm::Value *element = lower_array_element_address(array_value, element_type->second, index);
             builder.CreateStore(rhs, element);
         }

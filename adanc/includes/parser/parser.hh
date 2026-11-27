@@ -18,13 +18,17 @@ class Parser {
 
     Diagnostics &diagnostics;
 
-    [[noreturn]] void report_error(std::string message)
+    [[noreturn]] void report_error(std::string message) const
     {
         diagnostics.error(std::move(message), current_token.line, current_token.column);
     }
 
   public:
-    explicit Parser(std::string_view input, Diagnostics &diagnostics) : lexer{input, diagnostics}, diagnostics{diagnostics} {}
+    explicit Parser(const std::string_view input, Diagnostics &diagnostics) : lexer{input, diagnostics}, current_token(),
+                                                                        next_token(),
+                                                                        diagnostics{diagnostics}
+    {
+    }
 
     std::vector<std::unique_ptr<Stmt>> parse()
     {

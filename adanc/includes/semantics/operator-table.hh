@@ -29,12 +29,12 @@ class OperatorTable {
 
     // Binary Operators
 
-    inline void add_operator(BinaryOperator op)
+    void add_operator(const BinaryOperator& op)
     {
         binary_operators.emplace_back(op);
     }
 
-    inline std::vector<BinaryOperator> get_binary_operators()
+    std::vector<BinaryOperator> get_binary_operators()
     {
         return binary_operators;
     }
@@ -53,7 +53,7 @@ class OperatorTable {
      * };
      * ```
      */
-    inline std::vector<BinaryOperator> get_binary_rules(BinaryOp op)
+    std::vector<BinaryOperator> get_binary_rules(const BinaryOp op)
     {
         std::vector<BinaryOperator> rules;
 
@@ -68,17 +68,17 @@ class OperatorTable {
 
     // Unary Operators
 
-    inline void add_operator(UnaryOperator op)
+    void add_operator(const UnaryOperator& op)
     {
         unary_operators.emplace_back(op);
     }
 
-    inline std::vector<UnaryOperator> get_unary_operators()
+    std::vector<UnaryOperator> get_unary_operators()
     {
         return unary_operators;
     }
 
-    inline std::vector<UnaryOperator> get_unary_rules(UnaryOp op)
+    std::vector<UnaryOperator> get_unary_rules(const UnaryOp op)
     {
         std::vector<UnaryOperator> rules;
 

@@ -146,11 +146,9 @@ int main(const int argc, char *argv[])
 
         for (const auto &stmt : program.stmts)
         {
-            const auto *function = dynamic_cast<FuncDecl *>(stmt.get());
-            if (function != nullptr)
+            if (const auto *function = dynamic_cast<FuncDecl *>(stmt.get()); function != nullptr)
             {
-                auto lowered = lowerer.lower_function(*function);
-                if (!lowered)
+                if (auto lowered = lowerer.lower_function(*function); !lowered)
                     diagnostics.error(std::format("Failed to lower function: \"{}\": {}", function->name, lowered.error()));
             }
         }

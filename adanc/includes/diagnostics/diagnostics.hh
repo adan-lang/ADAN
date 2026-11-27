@@ -20,7 +20,7 @@ struct Log {
     int line;
     int column;
 
-    std::string to_string() const
+    [[nodiscard]] std::string to_string() const
     {
         std::string severity_name;
         switch (severity)
@@ -44,34 +44,30 @@ class Diagnostics {
     std::vector<Log> collected_logs;
 
   public:
-    inline void collect(Log log)
+    void collect(const Log& log)
     {
         collected_logs.emplace_back(log);
     }
 
-    [[noreturn]] inline void error(std::string message, int line = 0, int column = 0)
+    [[noreturn]] void error(std::string message, const int line = 0, const int column = 0)
     {
         collect(Log{Severity::Error, std::move(message), line, column});
         throw DiagnosticAbort{};
     }
 
-    inline void warning(std::string message, int line = 0, int column = 0)
+    void warning(std::string message, const int line = 0, const int column = 0)
     {
         collect(Log{Severity::Warning, std::move(message), line, column});
     }
 
-    inline bool has_errors() const
+    [[nodiscard]] bool has_errors() const
     {
-        for (const auto &log : collected_logs)
-        {
-            if (log.severity == Severity::Error)
-                return true;
-        }
-
-        return false;
+        return std::ranges::any_of(collected_logs, [](const auto &log) {
+            return log.severity == Severity::Error;
+        });
     }
 
-    inline void output()
+    void output() const
     {
         for (auto &log : collected_logs)
         {

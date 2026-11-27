@@ -1,10 +1,8 @@
 #include <llvm/ADT/ArrayRef.h>
-#include <llvm/ADT/SmallVector.h>
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
-#include <llvm/Support/Casting.h>
 
 #include <cstddef>
 
@@ -41,7 +39,7 @@ void IRLowerer::visit(ArrayLiteral &node)
         diagnostics.error("Cannot lower an empty array literal because its element type cannot be inferred");
 
     llvm::Type *element_type = vec.at(0)->getType();
-    for (auto &element : vec)
+    for (const auto &element : vec)
         if (element->getType() != element_type)
             diagnostics.error("Array literal elements must have the same lowered LLVM type");
 

@@ -136,7 +136,7 @@ std::expected<llvm::Function *, std::string> IRLowerer::lower_function(const Fun
     return function;
 }
 
-void IRLowerer::lower_program(Block &program)
+void IRLowerer::lower_program(const Block &program)
 {
     local_values.clear();
     llvm::FunctionType *function_type = llvm::FunctionType::get(llvm::Type::getInt32Ty(context), false);

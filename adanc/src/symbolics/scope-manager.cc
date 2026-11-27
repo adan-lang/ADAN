@@ -23,7 +23,7 @@ bool ScopeManager::in_global_scope() const
     return scopes.size() == 1;
 }
 
-void ScopeManager::print_scope()
+void ScopeManager::print_scope() const
 {
     std::println("Currently in scope {}", scopes.size());
 }

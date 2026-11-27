@@ -9,7 +9,7 @@ class ScopeManager : public SymbolTable {
     void enter_scope();
     void exit_scope();
 
-    bool in_global_scope() const;
+    [[nodiscard]] bool in_global_scope() const;
 
-    void print_scope();
+    void print_scope() const;
 };

@@ -8,7 +8,7 @@
 #include "type-helpers.hh"
 
 // made using AI
-std::string describe_expression(const Expr &expr)
+static std::string describe_expression(const Expr &expr)
 {
     if (dynamic_cast<const IntLiteral *>(&expr))
         return "IntLiteral";
@@ -52,7 +52,7 @@ void TypeChecker::check(Stmt &stmt)
     stmt.accept(*this);
 }
 
-void TypeChecker::check(Block &block)
+void TypeChecker::check(const Block &block)
 {
     bool unreachable{};
     const auto check_statements = [&](bool functions) {
@@ -101,7 +101,7 @@ void TypeChecker::resolve_pending_operators()
     std::vector<bool> binary_resolved(pending_binary_operators.size());
     std::vector<bool> unary_resolved(pending_unary_operators.size());
 
-    bool made_progress{};
+    bool made_progress;
     do
     {
         made_progress = false;
@@ -130,7 +130,7 @@ void TypeChecker::resolve_pending_operators()
             unify(pending.rhs, rule.rhs, diagnostics);
             unify(pending.result, rule.result, diagnostics);
 
-            if (!pending.target_widenable && !(*pending.lhs == *rule.result))
+            if (!pending.target_widenable && *pending.lhs != *rule.result)
                 diagnostics.error("This compound assignment cannot widen its target type");
 
             binary_resolved[i] = true;

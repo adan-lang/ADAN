@@ -8,7 +8,7 @@
 
 /**
  *
- * @brief Returns whether or not `variable` appears in `type`.
+ * @brief Returns whether `variable` appears in `type`.
  *
  * If the function returns false, that means `unify` can safely
  *  link the variable to the type.
@@ -40,6 +40,7 @@ inline bool occurs(const TypePtr &variable, const TypePtr &type)
 
         return occurs(variable, resolved->result);
     }
+    return false;
 }
 
 inline bool type_can_match(const TypePtr &actual, const TypePtr &expected)

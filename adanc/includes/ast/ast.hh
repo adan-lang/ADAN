@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
@@ -17,7 +16,7 @@ struct ASTNode {
 };
 
 struct Expr : ASTNode {
-    virtual ~Expr() = default;
+    ~Expr() override = default;
 };
 
 struct IntLiteral : Expr {
@@ -120,7 +119,7 @@ struct BinaryExpr : Expr {
     BinaryOp op{};
     std::unique_ptr<Expr> lhs, rhs;
 
-    BinaryExpr(BinaryOp op, std::unique_ptr<Expr> lhs, std::unique_ptr<Expr> rhs) : op{op}, lhs{std::move(lhs)}, rhs{std::move(rhs)} {}
+    BinaryExpr(const BinaryOp op, std::unique_ptr<Expr> lhs, std::unique_ptr<Expr> rhs) : op{op}, lhs{std::move(lhs)}, rhs{std::move(rhs)} {}
 
     void accept(ASTVisitor &visitor) override;
 };
@@ -130,13 +129,13 @@ struct UnaryExpr : Expr {
     bool postfix = false;
     std::unique_ptr<Expr> operand;
 
-    UnaryExpr(UnaryOp op, std::unique_ptr<Expr> operand, bool postfix = false) : op{op}, postfix{postfix}, operand{std::move(operand)} {}
+    UnaryExpr(const UnaryOp op, std::unique_ptr<Expr> operand, const bool postfix = false) : op{op}, postfix{postfix}, operand{std::move(operand)} {}
 
     void accept(ASTVisitor &visitor) override;
 };
 
 struct Stmt : ASTNode {
-    virtual ~Stmt() = default;
+    ~Stmt() override = default;
 };
 
 struct Block {

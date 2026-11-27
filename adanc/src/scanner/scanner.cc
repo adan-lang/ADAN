@@ -18,144 +18,144 @@ Token Lexer::lex()
     switch (const auto curr{peek()}; curr)
     {
     case '\0':
-        return Token{TokenKind::Eof, ""};
+        return Token{.kind = TokenKind::Eof, .lexeme = ""};
 
     case '+':
         advance();
         if (peek() == '+')
         {
             advance();
-            return Token{TokenKind::Increment, "++"};
+            return Token{.kind = TokenKind::Increment, .lexeme = "++"};
         }
         if (peek() == '=')
         {
             advance();
-            return Token{TokenKind::PlusAssign, "+="};
+            return Token{.kind = TokenKind::PlusAssign, .lexeme = "+="};
         }
-        return Token{TokenKind::Plus, "+"};
+        return Token{.kind = TokenKind::Plus, .lexeme = "+"};
 
     case '-':
         advance();
         if (peek() == '>')
         {
             advance();
-            return Token{TokenKind::Arrow, "->"};
+            return Token{.kind = TokenKind::Arrow, .lexeme = "->"};
         }
         if (peek() == '-')
         {
             advance();
-            return Token{TokenKind::Decrement, "--"};
+            return Token{.kind = TokenKind::Decrement, .lexeme = "--"};
         }
         if (peek() == '=')
         {
             advance();
-            return Token{TokenKind::MinusAssign, "-="};
+            return Token{.kind = TokenKind::MinusAssign, .lexeme = "-="};
         }
-        return Token{TokenKind::Minus, "-"};
+        return Token{.kind = TokenKind::Minus, .lexeme = "-"};
 
     case '*':
         advance();
         if (peek() == '=')
         {
             advance();
-            return Token{TokenKind::MultiplyAssign, "*="};
+            return Token{.kind = TokenKind::MultiplyAssign, .lexeme = "*="};
         }
-        return Token{TokenKind::Multiply, "*"};
+        return Token{.kind = TokenKind::Multiply, .lexeme = "*"};
 
     case '/':
         advance();
         if (peek() == '=')
         {
             advance();
-            return Token{TokenKind::DivideAssign, "/="};
+            return Token{.kind = TokenKind::DivideAssign, .lexeme = "/="};
         }
-        return Token{TokenKind::Divide, "/"};
+        return Token{.kind = TokenKind::Divide, .lexeme = "/"};
 
     case '^':
         advance();
         if (peek() == '=')
         {
             advance();
-            return Token{TokenKind::PowerAssign, "^="};
+            return Token{.kind = TokenKind::PowerAssign, .lexeme = "^="};
         }
-        return Token{TokenKind::Power, "^"};
+        return Token{.kind = TokenKind::Power, .lexeme = "^"};
 
     case '%':
         advance();
         if (peek() == '=')
         {
             advance();
-            return Token{TokenKind::ModuloAssign, "%="};
+            return Token{.kind = TokenKind::ModuloAssign, .lexeme = "%="};
         }
-        return Token{TokenKind::Modulo, "%"};
+        return Token{.kind = TokenKind::Modulo, .lexeme = "%"};
 
     case '>':
         advance();
         if (peek() == '=')
         {
             advance();
-            return Token{TokenKind::GreaterEqual, ">="};
+            return Token{.kind = TokenKind::GreaterEqual, .lexeme = ">="};
         }
-        return Token{TokenKind::GreaterThan, ">"};
+        return Token{.kind = TokenKind::GreaterThan, .lexeme = ">"};
 
     case '<':
         advance();
         if (peek() == '=')
         {
             advance();
-            return Token{TokenKind::LessEqual, "<="};
+            return Token{.kind = TokenKind::LessEqual, .lexeme = "<="};
         }
         if (peek() == '-')
         {
             advance();
-            return Token{TokenKind::BackArrow, "<-"};
+            return Token{.kind = TokenKind::BackArrow, .lexeme = "<-"};
         }
-        return Token{TokenKind::LessThan, "<"};
+        return Token{.kind = TokenKind::LessThan, .lexeme = "<"};
 
     case '=':
         advance();
         if (peek() == '=')
         {
             advance();
-            return Token{TokenKind::EqualEqual, "=="};
+            return Token{.kind = TokenKind::EqualEqual, .lexeme = "=="};
         }
-        return Token{TokenKind::Equal, "="};
+        return Token{.kind = TokenKind::Equal, .lexeme = "="};
 
     case ';':
         advance();
-        return Token{TokenKind::SemiColon, ";"};
+        return Token{.kind = TokenKind::SemiColon, .lexeme = ";"};
 
     case '#':
         advance();
-        return Token{TokenKind::Hashtag, "#"};
+        return Token{.kind = TokenKind::Hashtag, .lexeme = "#"};
 
     case '$':
         advance();
-        return Token{TokenKind::Dollar, "$"};
+        return Token{.kind = TokenKind::Dollar, .lexeme = "$"};
 
     case '(':
         advance();
-        return Token{TokenKind::LParen, "("};
+        return Token{.kind = TokenKind::LParen, .lexeme = "("};
 
     case ')':
         advance();
-        return Token{TokenKind::RParen, ")"};
+        return Token{.kind = TokenKind::RParen, .lexeme = ")"};
 
     case '[':
         advance();
-        return Token{TokenKind::LBracket, "["};
+        return Token{.kind = TokenKind::LBracket, .lexeme = "["};
 
     case ']':
         advance();
-        return Token{TokenKind::RBracket, "]"};
+        return Token{.kind = TokenKind::RBracket, .lexeme = "]"};
 
     case '{':
         advance();
-        return Token{TokenKind::LBrace, "{"};
+        return Token{.kind = TokenKind::LBrace, .lexeme = "{"};
 
     case '}':
         advance();
-        return Token{TokenKind::RBrace, "}"};
+        return Token{.kind = TokenKind::RBrace, .lexeme = "}"};
 
     case '.':
         if (peek(1) == '.' && peek(2) == '.')
@@ -163,13 +163,13 @@ Token Lexer::lex()
             advance();
             advance();
             advance();
-            return Token{TokenKind::Ellipsis, "..."};
+            return Token{.kind = TokenKind::Ellipsis, .lexeme = "..."};
         }
         report_error("Unexpected character '.'");
 
     case ',':
         advance();
-        return Token{TokenKind::Comma, ","};
+        return Token{.kind = TokenKind::Comma, .lexeme = ","};
 
     case '!':
         if (peek(1) == '=' && peek(2) == '=')
@@ -177,10 +177,10 @@ Token Lexer::lex()
             advance();
             advance();
             advance();
-            return Token{TokenKind::NotEqualEqual, "!=="};
+            return Token{.kind = TokenKind::NotEqualEqual, .lexeme = "!=="};
         }
         advance();
-        return Token{TokenKind::Not, "!"};
+        return Token{.kind = TokenKind::Not, .lexeme = "!"};
 
     default:
         if (std::isdigit(curr))
@@ -206,7 +206,7 @@ Token Lexer::lex()
             }
 
             const std::string value{source.substr(start, position - start)};
-            return Token{is_float ? TokenKind::Float : TokenKind::Int, value};
+            return Token{.kind = is_float ? TokenKind::Float : TokenKind::Int, .lexeme = value};
         }
 
         if (curr == '"' || curr == '\'')
@@ -236,7 +236,7 @@ Token Lexer::lex()
             else
                 advance();
 
-            return Token{TokenKind::String, contents};
+            return Token{.kind = TokenKind::String, .lexeme = contents};
         }
 
         if (curr == '`')
@@ -258,9 +258,7 @@ Token Lexer::lex()
                     continue;
                 }
 
-                const char c{peek()};
-
-                if (c == '`')
+                if (const char c{peek()}; c == '`')
                 {
                     if (stack.back() == '`')
                     {
@@ -339,7 +337,7 @@ Token Lexer::lex()
                 {
                     if (!segment.empty())
                     {
-                        pending.push(Token{TokenKind::TemplateString, segment, segment_line, segment_column});
+                        pending.push(Token{.kind = TokenKind::TemplateString, .lexeme = segment, .line = segment_line, .column = segment_column});
                         segment.clear();
                     }
 
@@ -348,7 +346,7 @@ Token Lexer::lex()
                     advance();
                     advance();
 
-                    pending.push(Token{TokenKind::InterpolateStart, "${", interpolation_line, interpolation_column});
+                    pending.push(Token{.kind = TokenKind::InterpolateStart, .lexeme = "${", .line = interpolation_line, .column = interpolation_column});
                     segment_line = line;
                     segment_column = column;
                     stack.push_back('{');
@@ -390,7 +388,7 @@ Token Lexer::lex()
                             }
                         }
 
-                        pending.push(Token{TokenKind::InterpolateEnd, "}", line, column});
+                        pending.push(Token{.kind = TokenKind::InterpolateEnd, .lexeme = "}", .line = line, .column = column});
                         advance();
                         segment_line = line;
                         segment_column = column;
@@ -413,7 +411,7 @@ Token Lexer::lex()
             else
                 advance();
 
-            pending.push(Token{TokenKind::TemplateString, segment, segment_line, segment_column});
+            pending.push(Token{.kind = TokenKind::TemplateString, .lexeme = segment, .line = segment_line, .column = segment_column});
 
             auto first = pending.front();
             pending.pop();
@@ -427,7 +425,7 @@ Token Lexer::lex()
             {
                 for (std::size_t i{}; i < value.length(); ++i)
                     advance();
-                return Token{key, std::string(value)};
+                return Token{.kind = key, .lexeme = std::string(value)};
             }
         }
 
@@ -439,9 +437,9 @@ Token Lexer::lex()
 
             std::string value{source.substr(start, position - start)};
             if (value == "true" || value == "false")
-                return Token{TokenKind::Bool, std::move(value)};
+                return Token{.kind = TokenKind::Bool, .lexeme = std::move(value)};
 
-            return Token{TokenKind::Ident, std::move(value)};
+            return Token{.kind = TokenKind::Ident, .lexeme = std::move(value)};
         }
 
         report_error(std::format("Unexpected character '{}'", curr));

@@ -2,7 +2,6 @@
 
 #include <fast_float/fast_float.h>
 
-#include <cstdint>
 #include <memory>
 #include <system_error>
 #include <utility>
@@ -269,9 +268,8 @@ std::unique_ptr<Expr> Parser::parse_primary()
     {
     case TokenKind::Int: {
         int64_t value{};
-        auto [ptr, ec] = fast_float::from_chars(current_token.lexeme.data(), current_token.lexeme.data() + current_token.lexeme.size(), value);
 
-        if (ec != std::errc())
+        if (auto [ptr, ec] = fast_float::from_chars(current_token.lexeme.data(), current_token.lexeme.data() + current_token.lexeme.size(), value); ec != std::errc())
         {
             report_error("Failed to parse integer literal");
         }
@@ -282,9 +280,8 @@ std::unique_ptr<Expr> Parser::parse_primary()
 
     case TokenKind::Float: {
         double value{};
-        auto [ptr, ec] = fast_float::from_chars(current_token.lexeme.data(), current_token.lexeme.data() + current_token.lexeme.size(), value);
 
-        if (ec != std::errc())
+        if (auto [ptr, ec] = fast_float::from_chars(current_token.lexeme.data(), current_token.lexeme.data() + current_token.lexeme.size(), value); ec != std::errc())
         {
             report_error("Failed to parse floating-point literal");
         }
@@ -299,7 +296,7 @@ std::unique_ptr<Expr> Parser::parse_primary()
     }
 
     case TokenKind::Bool: {
-        auto token = advance();
+        const auto token = advance();
         return std::make_unique<BoolLiteral>(token.lexeme == "true");
     }
 

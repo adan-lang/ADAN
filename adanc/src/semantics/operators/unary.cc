@@ -2,7 +2,7 @@
 #include "operator-table.hh"
 #include "types.hh"
 
-void register_unary(OperatorTable &table)
+[[maybe_unused]] static void register_unary(OperatorTable &table)
 {
     {
         table.add_operator(UnaryOperator{make_int(), UnaryOp::Minus, make_int()});
