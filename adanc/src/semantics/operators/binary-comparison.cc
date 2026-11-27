@@ -2,7 +2,7 @@
 #include "operator-table.hh"
 #include "types.hh"
 
-[[maybe_unused]] static void register_binary_comparison(OperatorTable &table)
+[[maybe_unused]] void register_binary_comparison(OperatorTable &table)
 {
     {
         table.add_operator(BinaryOperator{make_int(), BinaryOp::GreaterThan, make_int(), make_bool()});

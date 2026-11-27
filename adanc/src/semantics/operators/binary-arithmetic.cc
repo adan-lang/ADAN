@@ -1,7 +1,7 @@
 #include "ast.hh"
 #include "operator-table.hh"
 
-[[maybe_unused]] static void register_binary_arithmetic(OperatorTable &table)
+[[maybe_unused]] void register_binary_arithmetic(OperatorTable &table)
 {
     {
         table.add_operator(BinaryOperator{make_int(), BinaryOp::Plus, make_int(), make_int()});
