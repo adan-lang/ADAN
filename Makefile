@@ -4,6 +4,8 @@ SHELL := /bin/bash
 
 BUILD_DIR ?= ./build/ninja
 BUILD_LOG ?= /tmp/adan_build.log
+LLVM_DIR ?= $(shell for config in /usr/lib/llvm-*/lib/cmake/llvm/LLVMConfigVersion.cmake; do [ -f "$$config" ] || continue; version=$$(sed -n 's/^set(PACKAGE_VERSION "\([^"]*\)").*/\1/p' "$$config"); major=$${version%%.*}; [ "$$major" -ge 23 ] && printf '%s %s\n' "$$version" "$${config%/LLVMConfigVersion.cmake}"; done | sort -V | tail -n 1 | cut -d' ' -f2-)
+LLVM_DIR_ARG = $(if $(strip $(LLVM_DIR)),-DLLVM_DIR="$(LLVM_DIR)")
 
 run: build
 	@output_file=$$(mktemp) || { printf "Failed to create temporary output file\n" >&2; exit 1; }; \
@@ -48,23 +50,25 @@ build:
 	    fi; \
 	}; \
 	printf "————————————————————————— Build Logs —————————————————————————\n"; \
-	if ! cmake -S . -B "$(BUILD_DIR)" -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Release > "$(BUILD_LOG)" 2>&1; then \
+	if ! cmake -S . -B "$(BUILD_DIR)" $(LLVM_DIR_ARG) -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Release > "$(BUILD_LOG)" 2>&1; then \
 	    report_build_failure; \
 	    exit 1; \
 	fi; \
-	printf "\n"; \
-	if ! cmake --build "$(BUILD_DIR)" --parallel 6 2>&1 | tee "$(BUILD_LOG)" | awk ' \
-	    /^ninja: no work to do\./ { print "Build is up to date."; next } \
-	    /warning:/ { print "  " $$0; next } \
+	awk_interactive_option=; \
+	if awk -W interactive 'BEGIN { exit }' </dev/null >/dev/null 2>&1; then \
+	    awk_interactive_option="-W interactive"; \
+	fi; \
+	if ! cmake --build "$(BUILD_DIR)" --parallel 6 2>&1 | tee "$(BUILD_LOG)" | awk $$awk_interactive_option ' \
 	    /^\[[0-9]+\/[0-9]+\] / { \
 	        progress = $$1; \
 	        sub(/^\[/, "", progress); \
 	        sub(/\]$$/, "", progress); \
 	        split(progress, counters, "/"); \
-	        command_total = counters[2] - 1; \
+	        command_total = counters[2] - 2; \
 	        detail = $$0; \
 	        sub(/^\[[0-9]+\/[0-9]+\] /, "", detail); \
 	        if (detail ~ /^Building CXX object /) { \
+	            if (!progress_printed++) { printf "\n"; fflush() } \
 	            source_position = index(detail, "adanc/src/"); \
 	            if (source_position > 0) \
 	                detail = substr(detail, source_position + length("adanc/src/")); \
@@ -72,12 +76,17 @@ build:
 	                sub(/^.*\//, "", detail); \
 	            sub(/\.o$$/, "", detail); \
 	            printf "\033[1;33m[%02d/%02d]\033[0m Compiling: %s\n", counters[1], command_total, detail; \
+	            fflush(); \
 	        } else if (detail ~ /^Linking CXX executable /) { \
+	            if (!progress_printed++) { printf "\n"; fflush() } \
 	            sub(/^Linking CXX executable /, "", detail); \
 	            printf "\033[1;33m[%02d/%02d]\033[0m Linking: %s\n", counters[1], command_total, detail; \
+	            fflush(); \
 	        } else if (detail ~ /^Linking CXX static library /) { \
+	            if (!progress_printed++) { printf "\n"; fflush() } \
 	            sub(/^Linking CXX static library /, "", detail); \
 	            printf "\033[1;33m[%02d/%02d]\033[0m Linking: %s\n", counters[1], command_total, detail; \
+	            fflush(); \
 	        } \
 	    } \
 	'; then \
