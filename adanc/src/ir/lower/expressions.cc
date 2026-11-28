@@ -270,11 +270,47 @@ void IRLowerer::visit(UnaryExpr &node)
         // Support arrays. The intent is to get the length of an array (array literal or not).
         break;
     case UnaryOp::Increment:
-        // Support both integers and doubles, adding 1 or 1.0 depending on the type.
-        break;
+        {
+            const auto *ident = dynamic_cast<Identifier *>(node.operand.get());
+            if (ident == nullptr)
+                diagnostics.error("Increment operand must be an identifier.");
+
+            const auto value = local_values.find(ident->name);
+            if (value == local_values.end())
+                diagnostics.error("No lowering storage exists for increment operand.");
+
+            llvm::AllocaInst *storage = value->second;
+            if (is_float)
+                instruction = builder.CreateFAdd(operand, llvm::ConstantFP::get(builder.getDoubleTy(), 1.0));
+            else
+                instruction = builder.CreateAdd(operand, llvm::ConstantInt::get(builder.getInt64Ty(), 1));
+
+            builder.CreateStore(instruction, storage);
+            if (node.postfix)
+                instruction = operand;
+            break;
+        }
     case UnaryOp::Decrement:
-        // Support both integers and doubles, subtracting 1 or 1.0 depending on the type.
-        break;
+        {
+            const auto *ident = dynamic_cast<Identifier *>(node.operand.get());
+            if (ident == nullptr)
+                diagnostics.error("Decrement operand must be an identifier.");
+
+            const auto value = local_values.find(ident->name);
+            if (value == local_values.end())
+                diagnostics.error("No lowering storage exists for decrement operand.");
+
+            llvm::AllocaInst *storage = value->second;
+            if (is_float)
+                instruction = builder.CreateFSub(operand, llvm::ConstantFP::get(builder.getDoubleTy(), 1.0));
+            else
+                instruction = builder.CreateSub(operand, llvm::ConstantInt::get(builder.getInt64Ty(), 1));
+
+            builder.CreateStore(instruction, storage);
+            if (node.postfix)
+                instruction = operand;
+            break;
+        }
     }
 
     if (instruction == nullptr)
